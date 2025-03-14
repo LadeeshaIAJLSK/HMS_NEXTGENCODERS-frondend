@@ -1,0 +1,71 @@
+.sidebar {
+    height: 100vh;
+    width: 200px;
+    background-color: #008080; /* Teal color */
+    color: white;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0px;
+  }
+  
+  /* Hotel Name Styling */
+  .sidebar h2 {
+    font-size: 25px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 10px;
+
+  }
+
+  .head-title{
+    background-color: rgb(42 63,84,100%);
+    display:inline;
+    width:100%;
+    height: 50px;
+    border-top: 0px;
+    }
+
+ .sidebar-title{
+  font-size: 25px;
+  color: #faf9f7; /* Light yellow */
+  margin-bottom: 18px;
+}
+  
+  .sidebar-nav {
+    list-style: none;
+    padding: 0;
+    width:100%;
+    display:block;
+  }
+  
+  .sidebar-nav li {
+    padding: 15px 20px;
+  }
+  
+  .sidebar-nav li a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    display: block;
+    transition: background 0.3s;
+  }
+  
+  .sidebar-nav li a:hover {
+    background: rgb(131 197,190,100%);
+    border-radius: 5px;
+  }
+  
+  .sidebar-nav .active {
+    color: #fff;
+    background-color: rgb(131 197,190,100%);
+  }
+  
+  .main-content {
+    margin-left: 220px;
+    padding: 20px;
+    flex-grow: 1;
+  }
+  
