@@ -51,7 +51,7 @@ export default function Products() {
 
   return (
     <div className="product-container">
-      <h2>Product Management</h2>
+      <h2>Product</h2>
       <button onClick={() => { setEditingProduct(null); setShowPopup(true); }}>Add a New Item</button>
 
       {showPopup && (
