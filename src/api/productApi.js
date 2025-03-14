@@ -1,3 +1,4 @@
+
 const BASE_URL = "http://localhost:5003/products";
 
 export const fetchProducts = async () => {
