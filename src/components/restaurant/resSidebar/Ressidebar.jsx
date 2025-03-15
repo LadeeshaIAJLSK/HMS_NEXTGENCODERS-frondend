@@ -1,8 +1,8 @@
 import React from "react";
-import { Link } from "react-router";
-import "./Navbar.css"; 
+import { Link } from "react-router-dom";
+import "./Ressidebar.css"; 
 
-const Navbar = () => {
+const Ressidebar = () => {
   return (
     <div className="sidebar">
       <h2>NexStay Hotel</h2>
@@ -18,10 +18,10 @@ const Navbar = () => {
           <Link to="/create-order">📝 Create Order</Link>
         </li>
         <li>
-          <Link to="/products">📦 Products</Link>
+          <Link to="/restaurant/products">📦 Products</Link>
         </li>
         <li>
-          <Link to="/category">📂 Category</Link>
+          <Link to="/restaurant/categories">📂 Category</Link>
         </li>
         <li>
           <Link to="/analytics">📈 Analytics</Link>
@@ -31,4 +31,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Ressidebar;
