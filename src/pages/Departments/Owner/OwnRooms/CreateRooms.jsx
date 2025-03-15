@@ -1,9 +1,8 @@
-{/*import React, { Component } from "react";
+import React, { Component } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 
-    export default class CreateRooms extends Component {
-
+export default class CreateRooms extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -25,12 +24,12 @@ import { Navigate } from "react-router-dom";
 
     onSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!this.state.RoomNo) {
             this.setState({ errorMessage: "Room-No cannot be empty!" });
             return;
         }
-        
+
         try {
             const response = await axios.post("http://localhost:8000/api/posts/save", this.state);
             if (response.data.success) {
@@ -44,15 +43,14 @@ import { Navigate } from "react-router-dom";
 
     render() {
         if (this.state.redirect) {
-            return <Navigate to="/" />;
+            return <Navigate to="/rooms/home" />;
         }
-
         return (
-            <div className="col-md-8 mt-4 mx-auto">
+            <div className="content">
                 <h1 className="h3 mb-3 font-weight-normal">Add a New Room</h1>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
-                        <label>Room-No</label>
+                        <label>Room-No</label>&nbsp;&nbsp;
                         <input
                             type="number"
                             className="form-control"
@@ -169,7 +167,7 @@ Save</button></form></div>
         
     );}}*/}
 
-import React, { Component } from "react";
+    import React, { Component } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios"; // Ensure you have this installed via npm
 

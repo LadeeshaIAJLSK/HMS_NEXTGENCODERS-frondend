@@ -1,14 +1,17 @@
 .sidebar {
-    height: 100vh;
-    width: 200px;
-    background-color: #008080; /* Teal color */
-    color: white;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 0px;
-  }
+  width: 200px;
+  height: 100vh;
+  background-color: #008080;
+  color: white;
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 0;
+  padding-top: 0px;
+  flex-direction: column;
+  align-items: center;
+}
+  
   
   /* Hotel Name Styling */
   .sidebar h2 {
@@ -65,7 +68,12 @@
   
   .main-content {
     margin-left: 220px;
-    padding: 20px;
+    padding: 10px;
     flex-grow: 1;
   }
+  
+  .sidebar-nav .active i {
+    color: #070707; /* Highlight color when active */
+  }
+  
   

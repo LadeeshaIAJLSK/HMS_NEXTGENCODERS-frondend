@@ -1,3 +1,4 @@
+import React from 'react'; // Add this line
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -10,33 +11,30 @@ import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
 import CreateRooms from "./pages/Departments/Owner/OwnRooms/CreateRooms";
 import EditRooms from "./pages/Departments/Owner/OwnRooms/EditRooms";
 import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails";
-import Sidebar from "./components/owner/ownSidebar/Ownsidebar.jsx"; 
 
-import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
-
+import Sidebar from "./components/owner/ownSidebar/Ownsidebar.jsx";
+//import SettingsPage from "../Pages/Setting";
+//import "./Styles/App.css"; 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
+      <div className="app-container">
+        <Ownsidebar />
+        <div className="main-content">
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/restaurant/categories" element={<ResCategories />} />
         <Route path="/restaurant/products" element={<Products />} />
-        <Route path="/info1" element={<Info1 />} />
 
-        {/* Corrected Room Management Routes */}
-        <Route path="/rooms/home" element={<RoomHome />} />
-        <Route path="/rooms/add" element={<CreateRooms />} />
-        <Route path="/rooms/edit/:id" element={<EditRooms />} />
-        <Route path="/rooms/:id" element={<RoomDetails />} />
-
-        {/* Redirect unknown routes to "/rooms/home" */}
-        <Route path="*" element={<Navigate replace to="/rooms/home" />} />
-
-        
-        
-
-      </Routes>
+        <Route path="/" element={<Navigate replace to="/rooms/homee" />} /> {/* Redirect "/" to "/rooms" */}
+        <Route path="/rooms/home" element={<Home />} />
+        <Route path="/add" element={<CreateRooms />} />
+        <Route path="/edit/:id" element={<EditRooms />} />
+        <Route path="/room/:id" element={<RoomDetails />} />
+        <Route path="*" element={<Navigate replace to="/rooms/home" />} /> {/* Redirect unknown routes to "/rooms" */}
+        <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
     </Router>
   </StrictMode>
 );

@@ -52,7 +52,7 @@ const EditRooms = () => {
 
             if (response.data.success) {
                 alert("Room Updated Successfully!");
-                navigate("/"); // Redirect to Home
+                navigate("/rooms/home"); // Redirect to Home
             } else {
                 setErrorMessage("Failed to update room.");
             }
@@ -63,8 +63,8 @@ const EditRooms = () => {
     };
 
     return (
-        <div className="col-md-8 mt-4 mx-auto">
-            <h1 className="h3 mb-3 font-weight-normal">Edit Room Details</h1>
+            <div className="content">
+                <h1 className="h3 mb-3 font-weight-normal">Edit Room Details</h1>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <label>Room-No</label>
