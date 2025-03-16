@@ -114,11 +114,8 @@ const RoomHome = () => {
                     <Link className="btn btn-warning" to={`/edit/${room._id}`}>
                       <i className="fas fa-edit"></i> Edit
                     </Link>
-                    &nbsp;&nbsp;
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(room._id)}
-                    >
+                    &nbsp;&nbsp;<button className="btn btn-danger" style={{ color: "black", backgroundColor: "red" }}
+                      onClick={() => handleDelete(room._id)}>
                       <i className="far fa-trash-alt"></i> Delete
                     </button>
                   </td>

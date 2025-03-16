@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
@@ -12,7 +13,7 @@ function App() {
       <br></br>
 
       <Link to="/rooms/home">Go to Room Management Home</Link>
-      <br /><br />
+      <br /><br />  
       <Link to="/rooms/add">Add a New Room</Link>
 
       <Link to="/info1">Click here to go to Info1 page</Link>
