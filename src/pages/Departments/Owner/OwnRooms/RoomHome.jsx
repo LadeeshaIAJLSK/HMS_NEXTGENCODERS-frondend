@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+
+
 const RoomHome = () => {
   const [rooms, setRooms] = useState([]); // Default state as an empty array
   const [allRooms, setAllRooms] = useState([]); // State to store original data
@@ -66,7 +69,9 @@ const RoomHome = () => {
   if (error) return <div className="text-danger">{error}</div>;
 
   return (
-    <div className="container mt-4">
+    
+    <div className="content">
+    <Ownsidebar/>
       <div className="d-flex justify-content-between align-items-center">
         <h1 className="mb-0">Rooms List</h1>
 
@@ -111,7 +116,7 @@ const RoomHome = () => {
                   <td>{room.RClass || "No Room Class"}</td>
                   <td>{room.Price ? `$${room.Price}` : "No Price"}</td>
                   <td>
-                    <Link className="btn btn-warning" to={`/edit/${room._id}`}>
+                    <Link className="btn btn-warning" to={`/rooms/edit/${room._id}`}>
                       <i className="fas fa-edit"></i> Edit
                     </Link>
                     &nbsp;&nbsp;<button className="btn btn-danger" style={{ color: "black", backgroundColor: "red" }}
@@ -123,7 +128,7 @@ const RoomHome = () => {
               ))}
             </tbody>
           </table>
-          <Link to="/add" className="btn btn-success">
+          <Link to="/rooms/add" className="btn btn-success">
             Add a New Room
           </Link>
         </>

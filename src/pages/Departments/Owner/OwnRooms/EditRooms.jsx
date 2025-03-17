@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
+import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+
+
 const EditRooms = () => {
     const { id } = useParams(); // Get the room ID from URL
     const navigate = useNavigate(); // To redirect after updating
@@ -63,7 +66,8 @@ const EditRooms = () => {
     };
 
     return (
-            <div className="content">
+        <div className="content">
+            <Ownsidebar/>
                 <h1 className="h3 mb-3 font-weight-normal">Edit Room Details</h1>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
