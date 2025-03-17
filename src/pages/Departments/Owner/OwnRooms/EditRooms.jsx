@@ -68,7 +68,7 @@ const EditRooms = () => {
     return (
         <div className="content">
             <Ownsidebar/>
-                <h1 className="h3 mb-3 font-weight-normal">Edit Room Details</h1>
+                <h1 className="h3 mb-3 font-weight-normal">Edit Room Details.</h1>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <label>Room-No</label>
