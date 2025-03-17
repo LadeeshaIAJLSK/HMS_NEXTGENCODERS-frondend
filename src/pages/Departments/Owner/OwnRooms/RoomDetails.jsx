@@ -43,7 +43,8 @@ const RoomDetails = () => {
 
   // Once data is loaded, display room details in a table format
   return (
-    <div className="container mt-4">
+    <div className="content">
+        <Ownsidebar/>
     <h4>{room?.RoomNo ? `R${room.RoomNo}` : "No Room-No"}</h4>
 
       <h4>{room?.Guest || "No Guest"}</h4>
