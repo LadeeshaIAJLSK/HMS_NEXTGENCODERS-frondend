@@ -52,7 +52,7 @@ export default function ResCategories() {
 
       {/* Main Content */}
       <div className="category-container" style={{ flex: 1, padding: "20px" }}>
-        <h2>Category Management</h2>
+        <h2>Category Management_</h2>
         <button onClick={() => { setEditingCategory(null); setShowPopup(true); }}>Add a Category</button>
 
         {showPopup && (
