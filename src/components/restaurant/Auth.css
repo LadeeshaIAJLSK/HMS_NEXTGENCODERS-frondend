@@ -1,0 +1,116 @@
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #1a7b7b;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+  overflow: hidden;
+  background-image: url('/BG.png');
+  background-size: contain;
+  background-position: right;
+  background-repeat: no-repeat;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-form h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px 12px 40px;
+  margin-bottom: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+.auth-btn {
+  background-color: #fff;
+  color: #1a7b7b;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-left: unset !important;
+}
+
+.auth-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.error-message {
+  background-color: rgba(255, 0, 0, 0.2);
+  border: 1px solid #ff3333;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.forgot-password {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password svg {
+  margin-right: 5px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-icon svg {
+  position: absolute;
+  left: 12px;
+  top: calc(50% - 16px);
+  color: #999;
+  z-index: 2;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+}
