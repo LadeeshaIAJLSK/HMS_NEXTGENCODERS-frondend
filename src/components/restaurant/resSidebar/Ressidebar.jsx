@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import "./Ressidebar.css"; 
+import { AuthContext } from "../../../context/AuthContext.jsx";
+import "./Ressidebar.css";
 
 const Ressidebar = () => {
+  const { logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/restaurant/login";
+  };
+
   return (
     <div className="sidebar">
       <h2>NexStay Hotel</h2>
@@ -25,6 +33,11 @@ const Ressidebar = () => {
         </li>
         <li>
           <Link to="/analytics">📈 Analytics</Link>
+        </li>
+        <li className="logout-item">
+          <a onClick={handleLogout} style={{ cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "start" }}>
+            <span>⏻</span>
+            Logout</a>
         </li>
       </ul>
     </div>

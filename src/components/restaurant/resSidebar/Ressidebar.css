@@ -50,6 +50,6 @@
     display: flex;
   }
   .content {
-    margin-left: 250px; /* Adjust for sidebar */
+    margin-left: 250px;
     padding: 20px;
   }
