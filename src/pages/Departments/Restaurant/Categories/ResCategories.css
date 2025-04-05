@@ -1,11 +1,17 @@
  /* General styles */
 .category-container {
-    margin-left: 250px; /* Space for the left sidebar */
+    margin-left: 250px; 
     padding: 20px;
     font-family: Arial, sans-serif;
     background-color: #f8f9fa;
     min-height: 100vh;
-    min-width: 170vh;
+  }
+  
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
   }
   
   /* Heading */
