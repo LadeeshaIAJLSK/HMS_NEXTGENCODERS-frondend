@@ -118,7 +118,20 @@ export default function Products() {
     <div className="page-layout">
       <Ressidebar />
       <div className="product-container">
-        <h2>Product Management</h2>
+        <div className="product-header">
+          <h2>Product Management</h2>
+          <button
+            onClick={() => {
+              setEditingProduct(null);
+              setShowPopup(true);
+            }}
+            className="add-button"
+          >
+            Add a New Product
+          </button>
+
+        </div>
+
 
         {error && (
           <div className={`message ${error.type === 'success' ? 'success-message' : 'error-message'}`}>
@@ -126,15 +139,6 @@ export default function Products() {
           </div>
         )}
 
-        <button
-          onClick={() => {
-            setEditingProduct(null);
-            setShowPopup(true);
-          }}
-          className="add-button"
-        >
-          Add a New Product
-        </button>
 
         {loading ? (
           <div className="loading">Loading products...</div>
