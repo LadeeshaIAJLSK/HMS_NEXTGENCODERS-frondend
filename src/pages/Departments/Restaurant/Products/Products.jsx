@@ -5,11 +5,13 @@ import {
   updateProduct,
   deleteProduct,
 } from "../../../../api/productApi";
+import { fetchCategories } from "../../../../api/categoryApi";
 import "./Products.css";
 import Ressidebar from "../../../../components/restaurant/resSidebar/Ressidebar";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: 0,
@@ -27,6 +29,7 @@ export default function Products() {
 
   useEffect(() => {
     loadProducts();
+    loadCategories();
   }, []);
 
   const loadProducts = async () => {
@@ -43,16 +46,32 @@ export default function Products() {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error("Failed to load categories:", err);
+    }
+  };
+
   const handleAddProduct = async () => {
-    if (!newProduct.name || !newProduct.category) return;
+    if (!validateForm()) return;
 
     try {
+      setUpdateLoading(true);
       const data = await addProduct(newProduct);
       setProducts([...products, data]);
-      resetForm();
+      setError({ type: 'success', message: 'Product added successfully!' });
+      
+      setTimeout(() => {
+        resetForm();
+      }, 1500);
     } catch (err) {
-      setError("Failed to add product. Please try again.");
+      setError({ type: 'error', message: err.message || "Failed to add product. Please try again." });
       console.error(err);
+    } finally {
+      setUpdateLoading(false);
     }
   };
 
@@ -114,6 +133,70 @@ export default function Products() {
     setFormErrors({});
   };
 
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat._id === categoryId);
+    return category ? category.name : "Unknown";
+  };
+
+  const getCategoryFullName = (category) => {
+    if (!category) return "Unknown";
+    
+    if (category.parentId) {
+      const parentCategory = categories.find(cat => 
+        cat._id === (typeof category.parentId === 'object' ? category.parentId._id : category.parentId)
+      );
+      
+      if (parentCategory) {
+        return `${parentCategory.name} > ${category.name}`;
+      }
+    }
+    
+    return category.name;
+  };
+
+  const formatPrice = (price) => {
+    if (price === undefined || price === null) return "0.00";
+    return typeof price === 'number' ? price.toFixed(2) : "0.00";
+  };
+
+  const renderCategoryOptions = () => {
+    const topLevelCategories = categories.filter(cat => !cat.parentId);
+    
+    return (
+      <>
+        <option value="">Select a Category</option>
+        
+        {topLevelCategories.map(category => (
+          <React.Fragment key={category._id}>
+            <option value={category._id}>
+              {category.name}
+            </option>
+            
+            {renderSubcategoryOptions(category._id)}
+          </React.Fragment>
+        ))}
+      </>
+    );
+  };
+
+  const renderSubcategoryOptions = (parentId) => {
+    const subcategories = categories.filter(cat => {
+      if (!cat.parentId) return false;
+      
+      const catParentId = typeof cat.parentId === 'object' 
+        ? cat.parentId._id 
+        : cat.parentId;
+        
+      return catParentId === parentId;
+    });
+    
+    return subcategories.map(subcat => (
+      <option key={subcat._id} value={subcat._id}>
+        &nbsp;&nbsp;&nbsp;└─ {subcat.name}
+      </option>
+    ));
+  };
+
   return (
     <div className="page-layout">
       <Ressidebar />
@@ -129,16 +212,13 @@ export default function Products() {
           >
             Add a New Product
           </button>
-
         </div>
-
 
         {error && (
           <div className={`message ${error.type === 'success' ? 'success-message' : 'error-message'}`}>
             {error.message}
           </div>
         )}
-
 
         {loading ? (
           <div className="loading">Loading products...</div>
@@ -165,28 +245,45 @@ export default function Products() {
                     <tr key={product._id}>
                       <td>{index + 1}</td>
                       <td>{product.name}</td>
-                      <td>${product.price?.toFixed(2) || "0.00"}</td>
-                      <td>{product.category}</td>
-                      <td>{product.inStock ? "In Stock" : "Out of Stock"}</td>
+                      <td>${formatPrice(product.price)}</td>
+                      <td>
+                        {product.category && typeof product.category === 'object' 
+                          ? getCategoryFullName(product.category)
+                          : getCategoryName(product.category)}
+                      </td>
+                      <td>
+                        <span className={product.inStock ? "in-stock" : "out-of-stock"}>
+                          {product.inStock ? "In Stock" : "Out of Stock"}
+                        </span>
+                      </td>
                       <td>
                         <div className="action-buttons">
-                          <button onClick={() => {
-                            setEditingProduct(product);
-                            setNewProduct({
-                              name: product.name,
-                              price: product.price,
-                              description: product.description || "",
-                              category: product.category,
-                              image: product.image || "",
-                              inStock: product.inStock
-                            });
-                            setShowPopup(true);
-                          }}>
+                          <button
+                            onClick={() => {
+                              setEditingProduct(product);
+                              setNewProduct({
+                                name: product.name,
+                                price: product.price,
+                                description: product.description || "",
+                                category: product.category && typeof product.category === 'object' 
+                                  ? product.category._id 
+                                  : product.category,
+                                image: product.image || "",
+                                inStock: product.inStock,
+                              });
+                              setShowPopup(true);
+                            }}
+                            className="edit-button"
+                          >
                             ✏️
                           </button>
-                          <button onClick={() => handleDeleteProduct(product._id)}>🗑️</button>
+                          <button
+                            onClick={() => handleDeleteProduct(product._id)}
+                            className="delete-button"
+                          >
+                            🗑️
+                          </button>
                         </div>
-
                       </td>
                     </tr>
                   ))
@@ -240,10 +337,8 @@ export default function Products() {
 
               <div className="form-group">
                 <label htmlFor="productCategory">Category *</label>
-                <input
+                <select
                   id="productCategory"
-                  type="text"
-                  placeholder="Category"
                   value={newProduct.category}
                   onChange={(e) => {
                     setNewProduct({ ...newProduct, category: e.target.value });
@@ -252,7 +347,9 @@ export default function Products() {
                     }
                   }}
                   className={formErrors.category ? "input-error" : ""}
-                />
+                >
+                  {renderCategoryOptions()}
+                </select>
                 {formErrors.category && <div className="error-text">{formErrors.category}</div>}
               </div>
 

@@ -11,6 +11,7 @@ th {
   width: 100%;
 }
 
+
 .product-container {
   padding: 20px;
   width: 100%;
@@ -25,8 +26,9 @@ th {
 }
 
 .product-container h2 {
-  margin-bottom: 20px;
   color: #333;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .product-container button {

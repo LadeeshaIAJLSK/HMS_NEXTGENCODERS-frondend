@@ -32,11 +32,9 @@ export default function ResCategories() {
       setError(null);
       const data = await fetchCategories();
       
-      // Filter out only top-level categories (no parent)
       const topLevelCategories = data.filter(cat => !cat.parentId);
       setCategories(topLevelCategories);
       
-      // Create a map of subcategories by parent ID
       const subCatMap = {};
       data.filter(cat => cat.parentId).forEach(cat => {
         const parentId = cat.parentId._id || cat.parentId;
@@ -59,13 +57,10 @@ export default function ResCategories() {
     const newExpandedState = { ...expandedCategories };
     
     if (newExpandedState[categoryId]) {
-      // If already expanded, collapse it
       newExpandedState[categoryId] = false;
     } else {
-      // If not expanded, expand it and load subcategories if needed
       newExpandedState[categoryId] = true;
       
-      // If we don't have subcategories for this category yet, fetch them
       if (!subcategories[categoryId]) {
         try {
           const subCats = await fetchSubcategories(categoryId);
@@ -97,11 +92,9 @@ export default function ResCategories() {
         parentId: categoryForm.parentId
       });
       
-      // If it's a top-level category, add it to the main list
       if (!data.parentId) {
         setCategories([...categories, data]);
       } 
-      // If it's a subcategory, add it to the subcategories map
       else {
         const parentId = data.parentId;
         setSubcategories(prev => ({
@@ -138,20 +131,16 @@ export default function ResCategories() {
         parentId: categoryForm.parentId
       });
       
-      // Handle category moving between parent/child relationships
       const newParentId = data.parentId;
       
-      // If parent hasn't changed
       if ((oldParentId === newParentId) || 
           (oldParentId && newParentId && oldParentId === newParentId)) {
         
-        // Update in main categories if it's a top-level category
         if (!newParentId) {
           setCategories(categories.map(cat => 
             cat._id === data._id ? data : cat
           ));
         } 
-        // Update in subcategories if it's a child category
         else {
           setSubcategories(prev => ({
             ...prev,
@@ -161,39 +150,29 @@ export default function ResCategories() {
           }));
         }
       } 
-      // If parent has changed, we need to move the category
       else {
-        // If it was a top-level category and now has a parent
         if (!oldParentId && newParentId) {
-          // Remove from top-level categories
           setCategories(categories.filter(cat => cat._id !== data._id));
           
-          // Add to new parent's subcategories
           setSubcategories(prev => ({
             ...prev,
             [newParentId]: [...(prev[newParentId] || []), data]
           }));
         }
-        // If it was a child category and now is top-level
         else if (oldParentId && !newParentId) {
-          // Remove from old parent's subcategories
           setSubcategories(prev => ({
             ...prev,
             [oldParentId]: prev[oldParentId].filter(cat => cat._id !== data._id)
           }));
           
-          // Add to top-level categories
           setCategories([...categories, data]);
         }
-        // If it moved from one parent to another
         else if (oldParentId && newParentId) {
-          // Remove from old parent's subcategories
           setSubcategories(prev => ({
             ...prev,
             [oldParentId]: prev[oldParentId].filter(cat => cat._id !== data._id)
           }));
           
-          // Add to new parent's subcategories
           setSubcategories(prev => ({
             ...prev,
             [newParentId]: [...(prev[newParentId] || []), data]
@@ -217,13 +196,11 @@ export default function ResCategories() {
       
       await deleteCategory(id);
       
-      // Check if it's a top-level category
       const isTopLevel = categories.some(cat => cat._id === id);
       
       if (isTopLevel) {
         setCategories(categories.filter(category => category._id !== id));
       } else {
-        // Find which parent this subcategory belongs to
         for (const parentId in subcategories) {
           if (subcategories[parentId].some(cat => cat._id === id)) {
             setSubcategories(prev => ({
@@ -379,7 +356,6 @@ export default function ResCategories() {
                 >
                   <option value="">None (Top Level)</option>
                   {categories.map(cat => (
-                    // Prevent a category from being its own parent when editing
                     (editingCategory && cat._id === editingCategory._id) ? null : (
                       <option key={cat._id} value={cat._id}>
                         {cat.name}
