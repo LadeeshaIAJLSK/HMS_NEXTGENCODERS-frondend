@@ -1,6 +1,5 @@
 
 
-
 import React from 'react'; // Add this line
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -17,7 +16,7 @@ import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails";
 
 import "./pages/Departments/Owner/OwnRooms/OwnRooms.css";
 import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
-import Info2 from "./pages/Departments/Reception/DOReservations/info2/Info2";
+import Info2 from "./pages/Departments/Reception/DOReservations/info2/info2";
 import Sidebar from "./components/reception/recSidebar/Recsidebar";
 import CheckInForm from './components/reception/CheckInForm/CheckInForm.jsx';
 
@@ -29,8 +28,8 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
 
-        <Route path="/info2" element={<Info2 />} />
         <Route path="/info1" element={<Info1 />} />
+        <Route path="/info2" element={<Info2 />} />
         <Route path="/sidebar" element={<Sidebar />} />
         <Route path="/checkin" element={<CheckInForm />} />
        
@@ -39,7 +38,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/restaurant/categories" element={<ResCategories />} />
         <Route path="/restaurant/products" element={<Products />} />
 
-        <Route path="/info1" element={<Info1 />} />
+        
 
         {/* Corrected Room Management Routes */}
         <Route path="/rooms/home" element={<RoomHome />} />
