@@ -1,15 +1,23 @@
-import React from "react";
-import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
-import Info2 from "./pages/Departments/Reception/DOReservations/info2/info2"; 
-// Adjust path if needed
+import { useState } from 'react';
+import { Link } from 'react-router-dom'; // Only import from 'react-router-dom'
+import './App.css';
 
-const App = () => {
+function App() {
   return (
     <div>
-      <Info1 />
-      <Info2 />
+      <Link to="/info1">Click here to go to Info1 page</Link>
+      <Link to="/info2">Click here to go to Info2 page</Link>
     </div>
   );
-};
+
+
+  
+}
 
 export default App;
+
+
+
+
+
+
