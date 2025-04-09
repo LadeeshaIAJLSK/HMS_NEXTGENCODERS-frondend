@@ -2,18 +2,18 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f7fafc;
   margin: 0;
-  padding: 0;
+  padding: 20px;
 }
 
+
 form-container {
-  padding: 1.5rem;
+  width: 100%;
   background-color: #ffffff;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
   border-radius: 0.5rem;
-  width: 85%; /* Takes up 85% of the space */
-  margin-left: 15%; /* Adjust the left margin to create space for the sidebar */
-  margin-top: 12rem; /* Adjust to move it below the header if necessary */
-  overflow-y: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
 }
 
 .form-heading {
