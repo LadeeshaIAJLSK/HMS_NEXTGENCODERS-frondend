@@ -23,7 +23,7 @@ function App() {
       <br /><br /> 
       <Link to="/rooms/edit/:id">Edit Room Details</Link>
       
-      
+      <br /><br />
       <Link to="/info1">Click here to go to Info1 page</Link>
       <br /><br /> 
       <Link to="/info2">Click here to go to Info2 page</Link>

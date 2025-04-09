@@ -16,7 +16,7 @@ import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails";
 
 import "./pages/Departments/Owner/OwnRooms/OwnRooms.css";
 import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
-import Info2 from "./pages/Departments/Reception/DOReservations/info2/info2";
+import Info2 from './pages/Departments/Reception/DOReservations/info2/Info2.jsx';
 import Sidebar from "./components/reception/recSidebar/Recsidebar";
 import CheckInForm from './components/reception/CheckInForm/CheckInForm.jsx';
 
