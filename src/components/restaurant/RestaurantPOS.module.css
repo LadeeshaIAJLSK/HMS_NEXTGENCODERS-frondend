@@ -1,0 +1,187 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background: #fff;
+}
+.sidebar {
+  width: 200px;
+  background: #188a94;
+  min-width: 200px;
+}
+.mainArea {
+  flex: 1 1 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eee;
+  background: #fff;
+}
+.tabsRow {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+  overflow-x: auto;
+}
+
+.scrollRow {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.tab {
+  display: inline-block;
+  min-width: 120px;
+  text-align: center;
+  padding: 12px 18px;
+  border-right: 1px solid #eee;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+.selectedTab {
+  background: #188a94 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px rgba(24,138,148,0.13);
+}
+
+
+.tab:last-child {
+  border-right: none;
+}
+.subTabsRow {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  background: #f8f8f8;
+  overflow-x: auto;
+}
+
+.subTab {
+  display: inline-block;
+  min-width: 110px;
+  padding: 10px 18px;
+  font-size: 15px;
+  border-right: 1px solid #eee;
+  cursor: pointer;
+  background: #f0f6f7;
+  color: #155a5e;
+  font-weight: 500;
+  margin-right: 6px;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 1px 2px rgba(24,138,148,0.04);
+}
+
+
+.subTab:last-child {
+  border-right: none;
+}
+.tilesGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 0;
+  flex: 1 1 auto;
+  background: #fff;
+}
+.tile {
+  border: 1px solid #eee;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: #fff;
+}
+.tile:hover {
+  background: #f0f8fa;
+}
+.tileName {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.tilePrice {
+  font-size: 14px;
+  color: #188a94;
+}
+.orderSection {
+  width: 370px;
+  background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #eee;
+  padding: 0 0 0 0;
+}
+.orderTop {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 14px 0 14px;
+}
+.searchInput {
+  width: 100%;
+  padding: 7px 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 15px;
+}
+.toggleRow {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-top: 2px;
+}
+.orderList {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  margin: 8px 0;
+  padding: 0 14px;
+}
+.orderTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+.orderTable th, .orderTable td {
+  border-bottom: 1px solid #eee;
+  padding: 7px 8px;
+  text-align: left;
+  font-size: 14px;
+}
+.orderTable th {
+  font-weight: 600;
+  background: #f2f2f2;
+}
+.totalRow {
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  border-top: 1px solid #eee;
+  background: #f2f2f2;
+  display: flex;
+  justify-content: space-between;
+}
+.buttonRow {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px 0 14px;
+}
+.actionBtn {
+  flex: 1;
+  padding: 9px 0;
+  background: #188a94;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.17s;
+}
+.actionBtn:hover {
+  background: #125d63;
+}
