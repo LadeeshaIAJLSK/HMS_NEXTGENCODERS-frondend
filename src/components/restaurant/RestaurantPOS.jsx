@@ -17,6 +17,58 @@ const RestaurantPOS = () => {
   // Billing/order state
   const [billItems, setBillItems] = useState([]);
 
+  // Popup state
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [showGuestPopup, setShowGuestPopup] = useState(false);
+
+  // Order type state
+  const [orderType, setOrderType] = useState("Take Away");
+
+  // Bill meta (for demo, generate on open)
+  const [billMeta, setBillMeta] = useState({ date: '', time: '', billNo: '' });
+
+  // Generate bill meta when showing receipt
+  const handleShowReceipt = () => {
+    const now = new Date();
+    setBillMeta({
+      date: now.toLocaleDateString(),
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      billNo: Math.floor(Math.random() * 90000 + 10000),
+    });
+    setShowReceipt(true);
+    setBillItems([]); // Clear cart after generating receipt
+  };
+
+  // Dummy guest+room list
+  const guestList = [
+    { id: 1, name: 'John Doe', room: '101' },
+    { id: 2, name: 'Jane Smith', room: '102' },
+    { id: 3, name: 'Alice Johnson', room: '201' },
+    { id: 4, name: 'Bob Lee', room: '202' },
+    { id: 5, name: 'Charlie Brown', room: '301' },
+    { id: 6, name: 'David Kim', room: '302' },
+    { id: 7, name: 'Eva Green', room: '303' },
+  ];
+  const [guestSearch, setGuestSearch] = useState("");
+  const [selectedGuest, setSelectedGuest] = useState(null);
+
+  // Filtered guest list
+  const filteredGuests = guestList.filter(g => {
+    const q = guestSearch.trim().toLowerCase();
+    return (
+      g.name.toLowerCase().includes(q) ||
+      g.room.toLowerCase().includes(q)
+    );
+  });
+
+  // Handle guest select
+  const handleSelectGuest = (guest) => {
+    setSelectedGuest(guest);
+    setShowGuestPopup(false);
+    setBillItems([]); // Clear cart after add to bill
+  };
+
+
   // Add or update product in bill
   const handleAddToBill = (product) => {
     setBillItems((prev) => {
@@ -44,6 +96,11 @@ const RestaurantPOS = () => {
         ];
       }
     });
+  };
+
+  // Remove item from bill
+  const handleRemoveFromBill = (_id) => {
+    setBillItems((prev) => prev.filter(item => item._id !== _id));
   };
 
   // Calculate total
@@ -180,24 +237,34 @@ const RestaurantPOS = () => {
           <input className={styles.searchInput} placeholder="Search Products" />
           <div className={styles.toggleRow}>
             <label>
-              <input type="radio" name="orderType" defaultChecked /> Take Away
+              <input
+                type="radio"
+                name="orderType"
+                checked={orderType === "Take Away"}
+                onChange={() => setOrderType("Take Away")}
+              /> Take Away
             </label>
             <label>
-              <input type="radio" name="orderType" /> Din in
+              <input
+                type="radio"
+                name="orderType"
+                checked={orderType === "Din in"}
+                onChange={() => setOrderType("Din in")}
+              /> Din in
             </label>
           </div>
-        </div>
+        </div> 
         {/* Order List */}
         <div className={styles.orderList}>
           <table className={styles.orderTable}>
             <thead>
               <tr>
-                <th>No</th><th>Name</th><th>Quantity</th><th>Price</th><th>Amount</th>
+                <th>No</th><th>Name</th><th>Quantity</th><th>Price</th><th>Amount</th><th></th>
               </tr>
             </thead>
             <tbody>
               {billItems.length === 0 ? (
-                <tr><td colSpan={5} style={{ textAlign: 'center', color: '#aaa' }}>No items</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center', color: '#aaa' }}>No items</td></tr>
               ) : (
                 billItems.map((item, idx) => (
                   <tr key={item._id}>
@@ -206,6 +273,15 @@ const RestaurantPOS = () => {
                     <td>{item.quantity}</td>
                     <td>{Number(item.price).toFixed(2)}</td>
                     <td>{Number(item.amount).toFixed(2)}</td>
+                    <td>
+                      <button
+                        className={styles.removeBtn}
+                        title="Remove"
+                        onClick={() => handleRemoveFromBill(item._id)}
+                      >
+                        🗑️
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -215,16 +291,98 @@ const RestaurantPOS = () => {
         {/* Total & Buttons */}
         <div className={styles.totalRow}>Total Amount = <span>{totalAmount.toFixed(2)}</span></div>
         <div className={styles.buttonRow}>
-          <button className={styles.actionBtn}>Cash</button>
-          <button className={styles.actionBtn}>Card</button>
-          <button className={styles.actionBtn}>Add to Bill</button>
+          <button className={styles.actionBtn} onClick={handleShowReceipt} disabled={billItems.length === 0}>Cash</button>
+          <button className={styles.actionBtn} disabled={billItems.length === 0}>Card</button>
+          <button className={styles.actionBtn} disabled={billItems.length === 0} onClick={() => setShowGuestPopup(true)}>Add to Bill</button>
         </div>
         <div className={styles.buttonRow}>
-          <button className={styles.actionBtn}>Send to Kitchen</button>
-          <button className={styles.actionBtn}>Add a Note</button>
+          <button className={styles.actionBtn} disabled={billItems.length === 0}>Send to Kitchen</button>
+          <button className={styles.actionBtn} disabled={billItems.length === 0}>Add a Note</button>
         </div>
       </div>
-    </div>
+    {/* Guest Select Popup */}
+    {showGuestPopup && (
+      <div className={styles.receiptOverlay}>
+        <div className={styles.guestPopup}>
+          <div className={styles.guestContent}>
+            <h2 className={styles.receiptTitle}>Select Guest</h2>
+            <input
+              className={styles.guestSearch}
+              placeholder="Search by Room No or Name"
+              value={guestSearch}
+              onChange={e => setGuestSearch(e.target.value)}
+              autoFocus
+            />
+            <div className={styles.guestList}>
+              {filteredGuests.length === 0 ? (
+                <div className={styles.guestEmpty}>No guests found.</div>
+              ) : (
+                filteredGuests.map((g) => (
+                  <div
+                    key={g.id}
+                    className={
+                      g.id === (selectedGuest && selectedGuest.id)
+                        ? styles.guestRowSelected
+                        : styles.guestRow
+                    }
+                    onClick={() => handleSelectGuest(g)}
+                  >
+                    <div className={styles.guestName}>{g.name}</div>
+                    <div className={styles.guestRoom}>Room {g.room}</div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    {/* Receipt Popup */}
+    {showReceipt && (
+      <div className={styles.receiptOverlay}>
+        <div className={styles.receiptPopup}>
+          <div className={styles.receiptContent}>
+            <h2 className={styles.receiptTitle}>Receipt</h2>
+            <div className={styles.receiptMeta}>
+              <div>Bill Date : <span>{billMeta.date}</span></div>
+              <div>Bill Time : <span>{billMeta.time}</span></div>
+              <div>Bill No : <span>{billMeta.billNo}</span></div>
+              <div>Order Type : <span>{orderType}</span></div>
+            </div>
+            <table className={styles.receiptTable}>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {billItems.map((item, idx) => (
+                  <tr key={item._id}>
+                    <td>{item.name}</td>
+                    <td style={{ textAlign: 'center' }}>{item.quantity}</td>
+                    <td>{Number(item.price).toFixed(2)}</td>
+                    <td>{Number(item.amount).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className={styles.receiptTotals}>
+              <div><span>Total :</span> <span>{totalAmount.toFixed(2)}</span></div>
+              <div><span>Cash :</span> <span>{totalAmount.toFixed(2)}</span></div>
+              <div><span>Change :</span> <span>{totalAmount.toFixed(2)}</span></div>
+            </div>
+            <div className={styles.receiptBtnRow}>
+              <button className={styles.receiptBtnCancel} onClick={() => setShowReceipt(false)}>Cancel</button>
+              <button className={styles.receiptBtnPrint} onClick={() => window.print()}>Print</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
   );
 };
 
