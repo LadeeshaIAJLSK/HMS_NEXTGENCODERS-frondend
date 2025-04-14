@@ -14,6 +14,41 @@ const RestaurantPOS = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Billing/order state
+  const [billItems, setBillItems] = useState([]);
+
+  // Add or update product in bill
+  const handleAddToBill = (product) => {
+    setBillItems((prev) => {
+      const idx = prev.findIndex((item) => item._id === product._id);
+      if (idx !== -1) {
+        // Update quantity
+        const updated = [...prev];
+        updated[idx] = {
+          ...updated[idx],
+          quantity: updated[idx].quantity + 1,
+          amount: (updated[idx].quantity + 1) * updated[idx].price,
+        };
+        return updated;
+      } else {
+        // Add new item
+        return [
+          ...prev,
+          {
+            _id: product._id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            amount: product.price,
+          },
+        ];
+      }
+    });
+  };
+
+  // Calculate total
+  const totalAmount = billItems.reduce((sum, item) => sum + item.amount, 0);
+
   // Fetch all categories on mount
   useEffect(() => {
     const loadCategories = async () => {
@@ -123,7 +158,13 @@ const RestaurantPOS = () => {
             <div style={{ gridColumn: "span 6", textAlign: "center", padding: 40 }}>No Products</div>
           ) : (
             products.map((prod) => (
-              <div className={styles.tile} key={prod._id}>
+              <div
+                className={styles.tile}
+                key={prod._id}
+                onClick={() => handleAddToBill(prod)}
+                style={{ cursor: "pointer" }}
+                title="Add to bill"
+              >
                 <div className={styles.tileName}>{prod.name}</div>
                 <div className={styles.tilePrice}>Rs.{prod.price}</div>
               </div>
@@ -155,16 +196,24 @@ const RestaurantPOS = () => {
               </tr>
             </thead>
             <tbody>
-              {[1,2,3].map(i => (
-                <tr key={i}>
-                  <td>01</td><td>Cheese Burger</td><td>2</td><td>450.00</td><td>900.00</td>
-                </tr>
-              ))}
+              {billItems.length === 0 ? (
+                <tr><td colSpan={5} style={{ textAlign: 'center', color: '#aaa' }}>No items</td></tr>
+              ) : (
+                billItems.map((item, idx) => (
+                  <tr key={item._id}>
+                    <td>{String(idx + 1).padStart(2, '0')}</td>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>{Number(item.price).toFixed(2)}</td>
+                    <td>{Number(item.amount).toFixed(2)}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
         {/* Total & Buttons */}
-        <div className={styles.totalRow}>Total Amount = <span>2700.00</span></div>
+        <div className={styles.totalRow}>Total Amount = <span>{totalAmount.toFixed(2)}</span></div>
         <div className={styles.buttonRow}>
           <button className={styles.actionBtn}>Cash</button>
           <button className={styles.actionBtn}>Card</button>
