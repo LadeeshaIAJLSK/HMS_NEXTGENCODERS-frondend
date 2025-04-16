@@ -36,16 +36,25 @@
   text-align: center;
   padding: 12px 18px;
   border-right: 1px solid #eee;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
   background: transparent;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px 4px 0 0;
+  margin: 0 2px;
 }
 .selectedTab {
   background: #188a94 !important;
   color: #fff !important;
-  box-shadow: 0 2px 6px rgba(24,138,148,0.13);
+  box-shadow: 0 2px 6px rgba(24,138,148,0.3);
+}
+
+.tab:hover:not(.selectedTab) {
+  background: #f0f8fa;
+  transform: translateY(-2px);
 }
 
 
@@ -70,8 +79,16 @@
   color: #155a5e;
   font-weight: 500;
   margin-right: 6px;
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  transition: all 0.2s ease;
   box-shadow: 0 1px 2px rgba(24,138,148,0.04);
+  border-radius: 4px;
+  margin: 6px;
+}
+
+.subTab:hover:not(.selectedTab) {
+  background: #e0f0f2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(24,138,148,0.1);
 }
 
 
@@ -81,32 +98,53 @@
 .tilesGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-gap: 0;
+  grid-gap: 8px;
+  grid-auto-rows: 100px;
   flex: 1 1 auto;
   background: #fff;
+  padding: 10px;
+  overflow-y: auto;
 }
 .tile {
-  border: 1px solid #eee;
-  height: 90px;
+  border: 1px solid #e0e0e0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s ease;
   background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+  padding: 10px 5px;
 }
 .tile:hover {
   background: #f0f8fa;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-color: #188a94;
 }
 .tileName {
   font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 2px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  text-align: center;
+  color: #333;
+  max-width: 95%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .tilePrice {
   font-size: 14px;
   color: #188a94;
+  font-weight: 500;
+  background-color: rgba(24,138,148,0.1);
+  padding: 3px 8px;
+  border-radius: 12px;
 }
 .orderSection {
   width: 370px;
@@ -124,10 +162,18 @@
 }
 .searchInput {
   width: 100%;
-  padding: 7px 12px;
+  padding: 10px 15px;
   border: 1px solid #ccc;
-  border-radius: 3px;
+  border-radius: 6px;
   font-size: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #188a94;
+  box-shadow: 0 0 0 3px rgba(24,138,148,0.2);
 }
 .toggleRow {
   display: flex;
@@ -190,6 +236,194 @@
 }
 .actionBtn:hover:not(:disabled) {
   background: #125d63;
+}
+
+.receiptBtnCheckout, .receiptBtnPrint {
+  background-color: #008080;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.receiptBtnCheckout:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Card Payment Popup Styles */
+.cardPopup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cardTitle {
+  margin: 0;
+  color: #333;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.cardForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cardFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cardFormGroup label {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+.cardFormGroup input {
+  padding: 12px;
+  border: none;
+  background-color: #eee;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.cardFormRow {
+  display: flex;
+  gap: 20px;
+}
+
+.cardFormRow .cardFormGroup {
+  flex: 1;
+}
+
+.cardInputError {
+  border: 1px solid #e74c3c !important;
+}
+
+.cardErrorText {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.cardBtnRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.cardBtnCancel {
+  background-color: #008080;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.cardBtnConfirm {
+  background-color: #008080;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.cardBtnCancel:hover, .cardBtnConfirm:hover {
+  opacity: 0.9;
+}
+
+.cardBtnConfirm:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Success Popup Styles */
+.successPopup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.successContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.successTitle {
+  margin: 0;
+  color: #008080;
+  text-align: center;
+  font-size: 24px;
+}
+
+.successInfo {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #008080;
+}
+
+.successInfo p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.successBtnRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.successBtnPrint {
+  background-color: #008080;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.successBtnDone {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.successBtnPrint:hover, .successBtnDone:hover {
+  opacity: 0.9;
 }
 
 /* Receipt Popup Styles */
@@ -362,8 +596,8 @@
   transition: background 0.18s;
   cursor: pointer;
 }
-.receiptBtnCancel:hover, .receiptBtnPrint:hover {
-  background: #0a6d73;
+.receiptBtnCancel:hover, .receiptBtnPrint:hover, .receiptBtnCheckout:hover:not(:disabled) {
+  opacity: 0.9;
 }
 
 .removeBtn {

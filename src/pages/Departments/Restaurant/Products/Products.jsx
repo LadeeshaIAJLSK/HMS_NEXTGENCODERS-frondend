@@ -14,11 +14,12 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
-    price: 0,
-    description: "",
+    price: "",
+    quantity: "",
+    limit: "",
     category: "",
-    image: "",
-    inStock: true,
+    subCategory: "",
+    active: true,
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -60,10 +61,11 @@ export default function Products() {
 
     try {
       setUpdateLoading(true);
-      const data = await addProduct(newProduct);
+      const productToAdd = { ...newProduct, price: Number(newProduct.price) };
+      const data = await addProduct(productToAdd);
       setProducts([...products, data]);
       setError({ type: 'success', message: 'Product added successfully!' });
-      
+
       setTimeout(() => {
         resetForm();
       }, 1500);
@@ -78,9 +80,10 @@ export default function Products() {
   const validateForm = () => {
     const errors = {};
     if (!newProduct.name.trim()) errors.name = "Product name is required";
+    if (!newProduct.price || isNaN(newProduct.price) || Number(newProduct.price) < 0) errors.price = "Valid price is required";
+    if (!newProduct.quantity || isNaN(newProduct.quantity) || Number(newProduct.quantity) < 0) errors.quantity = "Valid quantity is required";
+    if (newProduct.limit && (isNaN(newProduct.limit) || Number(newProduct.limit) < 0)) errors.limit = "Limit must be a positive number";
     if (!newProduct.category) errors.category = "Category is required";
-    if (newProduct.price < 0) errors.price = "Price cannot be negative";
-
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -92,7 +95,8 @@ export default function Products() {
       setUpdateLoading(true);
       setError(null);
 
-      const data = await updateProduct(editingProduct._id, newProduct);
+      const productToUpdate = { ...newProduct, price: Number(newProduct.price) };
+      const data = await updateProduct(editingProduct._id, productToUpdate);
 
       setProducts(products.map((prod) => (prod._id === data._id ? data : prod)));
 
@@ -123,11 +127,12 @@ export default function Products() {
     setEditingProduct(null);
     setNewProduct({
       name: "",
-      price: 0,
-      description: "",
+      price: "",
+      quantity: "",
+      limit: "",
       category: "",
-      image: "",
-      inStock: true,
+      subCategory: "",
+      active: true,
     });
     setShowPopup(false);
     setFormErrors({});
@@ -140,17 +145,17 @@ export default function Products() {
 
   const getCategoryFullName = (category) => {
     if (!category) return "Unknown";
-    
+
     if (category.parentId) {
-      const parentCategory = categories.find(cat => 
+      const parentCategory = categories.find(cat =>
         cat._id === (typeof category.parentId === 'object' ? category.parentId._id : category.parentId)
       );
-      
+
       if (parentCategory) {
         return `${parentCategory.name} > ${category.name}`;
       }
     }
-    
+
     return category.name;
   };
 
@@ -161,17 +166,17 @@ export default function Products() {
 
   const renderCategoryOptions = () => {
     const topLevelCategories = categories.filter(cat => !cat.parentId);
-    
+
     return (
       <>
         <option value="">Select a Category</option>
-        
+
         {topLevelCategories.map(category => (
           <React.Fragment key={category._id}>
             <option value={category._id}>
               {category.name}
             </option>
-            
+
             {renderSubcategoryOptions(category._id)}
           </React.Fragment>
         ))}
@@ -182,14 +187,14 @@ export default function Products() {
   const renderSubcategoryOptions = (parentId) => {
     const subcategories = categories.filter(cat => {
       if (!cat.parentId) return false;
-      
-      const catParentId = typeof cat.parentId === 'object' 
-        ? cat.parentId._id 
+
+      const catParentId = typeof cat.parentId === 'object'
+        ? cat.parentId._id
         : cat.parentId;
-        
+
       return catParentId === parentId;
     });
-    
+
     return subcategories.map(subcat => (
       <option key={subcat._id} value={subcat._id}>
         &nbsp;&nbsp;&nbsp;└─ {subcat.name}
@@ -231,7 +236,7 @@ export default function Products() {
                   <th>Name</th>
                   <th>Price</th>
                   <th>Category</th>
-                  <th>Status</th>
+                  <th>IsActive</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -245,15 +250,15 @@ export default function Products() {
                     <tr key={product._id}>
                       <td>{index + 1}</td>
                       <td>{product.name}</td>
-                      <td>${formatPrice(product.price)}</td>
+                      <td>Rs {formatPrice(product.price)}</td>
                       <td>
-                        {product.category && typeof product.category === 'object' 
+                        {product.category && typeof product.category === 'object'
                           ? getCategoryFullName(product.category)
                           : getCategoryName(product.category)}
                       </td>
                       <td>
-                        <span className={product.inStock ? "in-stock" : "out-of-stock"}>
-                          {product.inStock ? "In Stock" : "Out of Stock"}
+                        <span className={product.active ? "active-status" : "inactive-status"}>
+                          {product.active ? "Active" : "Not Active"}
                         </span>
                       </td>
                       <td>
@@ -264,12 +269,15 @@ export default function Products() {
                               setNewProduct({
                                 name: product.name,
                                 price: product.price,
-                                description: product.description || "",
-                                category: product.category && typeof product.category === 'object' 
-                                  ? product.category._id 
+                                quantity: product.quantity || "",
+                                limit: product.limit || "",
+                                category: product.category && typeof product.category === 'object'
+                                  ? product.category._id
                                   : product.category,
-                                image: product.image || "",
-                                inStock: product.inStock,
+                                subCategory: product.subCategory && typeof product.subCategory === 'object'
+                                  ? product.subCategory._id
+                                  : product.subCategory || "",
+                                active: product.active !== undefined ? product.active : true,
                               });
                               setShowPopup(true);
                             }}
@@ -296,94 +304,151 @@ export default function Products() {
         {showPopup && (
           <div className="popup-overlay">
             <div className="popup">
-              <h3>{editingProduct ? "Edit Product" : "Add a New Product"}</h3>
-
-              <div className="form-group">
-                <label htmlFor="productName">Product Name *</label>
-                <input
-                  id="productName"
-                  type="text"
-                  placeholder="Product Name"
-                  value={newProduct.name}
-                  onChange={(e) => {
-                    setNewProduct({ ...newProduct, name: e.target.value });
-                    if (formErrors.name) {
-                      setFormErrors({ ...formErrors, name: null });
-                    }
-                  }}
-                  className={formErrors.name ? "input-error" : ""}
-                />
-                {formErrors.name && <div className="error-text">{formErrors.name}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="productPrice">Price *</label>
-                <input
-                  id="productPrice"
-                  type="number"
-                  step="0.01"
-                  placeholder="Price"
-                  value={newProduct.price}
-                  onChange={(e) => {
-                    setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 });
-                    if (formErrors.price) {
-                      setFormErrors({ ...formErrors, price: null });
-                    }
-                  }}
-                  className={formErrors.price ? "input-error" : ""}
-                />
-                {formErrors.price && <div className="error-text">{formErrors.price}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="productCategory">Category *</label>
-                <select
-                  id="productCategory"
-                  value={newProduct.category}
-                  onChange={(e) => {
-                    setNewProduct({ ...newProduct, category: e.target.value });
-                    if (formErrors.category) {
-                      setFormErrors({ ...formErrors, category: null });
-                    }
-                  }}
-                  className={formErrors.category ? "input-error" : ""}
-                >
-                  {renderCategoryOptions()}
-                </select>
-                {formErrors.category && <div className="error-text">{formErrors.category}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="productDescription">Description</label>
-                <textarea
-                  id="productDescription"
-                  placeholder="Description (optional)"
-                  value={newProduct.description}
-                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                  rows="3"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="productImage">Image URL</label>
-                <input
-                  id="productImage"
-                  type="text"
-                  placeholder="Image URL (optional)"
-                  value={newProduct.image}
-                  onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                />
-              </div>
-
-              <div className="form-group checkbox-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={newProduct.inStock}
-                    onChange={(e) => setNewProduct({ ...newProduct, inStock: e.target.checked })}
-                  />
-                  In Stock
-                </label>
+              <h3 style={{ marginTop: '0', marginBottom: '15px' }}>{editingProduct ? "Edit Product" : "Add a New Product"}</h3>
+              <div className="form-container" style={{ width: '100%' }}>
+                {/* Row 1: Name and Price */}
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div className="form-group">
+                      <label htmlFor="productName">Product Name *</label>
+                      <input
+                        id="productName"
+                        type="text"
+                        placeholder="Product Name"
+                        value={newProduct.name}
+                        onChange={(e) => {
+                          setNewProduct({ ...newProduct, name: e.target.value });
+                          if (formErrors.name) {
+                            setFormErrors({ ...formErrors, name: null });
+                          }
+                        }}
+                        className={formErrors.name ? "input-error" : ""}
+                      />
+                      {formErrors.name && <div className="error-text">{formErrors.name}</div>}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="form-group">
+                      <label htmlFor="productPrice">Price *</label>
+                      <input
+                        id="productPrice"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter Price"
+                        value={newProduct.price}
+                        onChange={(e) => {
+                          setNewProduct({ ...newProduct, price: e.target.value });
+                          if (formErrors.price) {
+                            setFormErrors({ ...formErrors, price: null });
+                          }
+                        }}
+                        className={formErrors.price ? "input-error" : ""}
+                      />
+                      {formErrors.price && <div className="error-text">{formErrors.price}</div>}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Row 2: Quantity and Limit */}
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div className="form-group">
+                      <label htmlFor="itemQuantity">Quantity *</label>
+                      <input
+                        id="itemQuantity"
+                        type="number"
+                        min="0"
+                        placeholder="Enter Quantity"
+                        value={newProduct.quantity}
+                        onChange={(e) => {
+                          setNewProduct({ ...newProduct, quantity: e.target.value });
+                          if (formErrors.quantity) {
+                            setFormErrors({ ...formErrors, quantity: null });
+                          }
+                        }}
+                        className={formErrors.quantity ? "input-error" : ""}
+                      />
+                      {formErrors.quantity && <div className="error-text">{formErrors.quantity}</div>}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="form-group">
+                      <label htmlFor="itemLimit">Set Limit</label>
+                      <input
+                        id="itemLimit"
+                        type="number"
+                        min="0"
+                        placeholder="Set Limit"
+                        value={newProduct.limit}
+                        onChange={(e) => setNewProduct({ ...newProduct, limit: e.target.value })}
+                        className={formErrors.limit ? "input-error" : ""}
+                      />
+                      {formErrors.limit && <div className="error-text">{formErrors.limit}</div>}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Row 3: Category and Subcategory */}
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div className="form-group">
+                      <label htmlFor="category">Category *</label>
+                      <select
+                        id="category"
+                        value={newProduct.category}
+                        onChange={(e) => {
+                          setNewProduct({ ...newProduct, category: e.target.value });
+                          if (formErrors.category) {
+                            setFormErrors({ ...formErrors, category: null });
+                          }
+                        }}
+                        className={formErrors.category ? "input-error" : ""}
+                      >
+                        <option value="">Select Category</option>
+                        {categories.filter(cat => !cat.parentId).map(cat => (
+                          <option key={cat._id} value={cat._id}>{cat.name}</option>
+                        ))}
+                      </select>
+                      {formErrors.category && <div className="error-text">{formErrors.category}</div>}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="form-group">
+                      <label htmlFor="itemSubCategory">Sub Category</label>
+                      <select
+                        id="itemSubCategory"
+                        value={newProduct.subCategory}
+                        onChange={(e) => setNewProduct({ ...newProduct, subCategory: e.target.value })}
+                      >
+                        <option value="">Select Sub Category</option>
+                        {categories
+                          .filter(cat => {
+                            if (!cat.parentId) return false;
+                            const parentId = typeof cat.parentId === "object" ? cat.parentId._id : cat.parentId;
+                            return parentId === newProduct.category;
+                          })
+                          .map(subcat => (
+                            <option key={subcat._id} value={subcat._id}>{subcat.name}</option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Row 4: Active */}
+                <div style={{ marginBottom: '15px' }}>
+                  <div className="form-group" style={{ display: 'flex', alignItems: 'center' }}>
+                    <label htmlFor="itemActive" style={{ marginRight: '10px' }}>Active</label>
+                    <input
+                      id="itemActive"
+                      type="checkbox"
+                      checked={newProduct.active}
+                      onChange={(e) => setNewProduct({ ...newProduct, active: e.target.checked })}
+                      style={{ width: '20px', height: '20px' }}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="popup-buttons">
