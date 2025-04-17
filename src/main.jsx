@@ -16,7 +16,7 @@ import "./pages/Departments/Owner/OwnRooms/OwnRooms.css";
 import Login from "./components/restaurant/Login.jsx";
 import { AuthProvider } from './context/AuthContext.jsx';
 import RestaurantPOS from './components/restaurant/RestaurantPOS';
-// import SettingsPage from "../Pages/Setting";
+import Dashboard from './pages/Departments/Restaurant/Dashboard/Dashboard.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -28,6 +28,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/restaurant/categories" element={<ResCategories />} />
           <Route path="/restaurant/products" element={<Products />} />
           <Route path="/restaurant/create-order" element={<RestaurantPOS />} />
+          <Route path="/restaurant/dashboard" element={<Dashboard />} />
 
           <Route path="/info1" element={<Info1 />} />
 

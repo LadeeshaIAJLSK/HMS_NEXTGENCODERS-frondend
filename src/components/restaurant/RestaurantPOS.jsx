@@ -463,7 +463,7 @@ const RestaurantPOS = () => {
           </table>
         </div>
         {/* Total & Buttons */}
-        <div className={styles.totalRow}>Total Amount = <span>{totalAmount.toFixed(2)}</span></div>
+        <div className={styles.totalRow}>Total Amount <span>{totalAmount.toFixed(2)}</span></div>
         <div className={styles.buttonRow}>
           <button className={styles.actionBtn} onClick={handleShowReceipt} disabled={billItems.length === 0 || orderProcessing}>Cash</button>
           <button className={styles.actionBtn} onClick={() => setShowCardPopup(true)} disabled={billItems.length === 0 || orderProcessing}>Card</button>

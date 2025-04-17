@@ -44,6 +44,8 @@
   
   ul li a:hover {
     background: #005f66;
+    text-decoration: unset;
+    color: white;
   }
   
   .restaurant-container {
