@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
+import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+
+
 const EditRooms = () => {
     const { id } = useParams(); // Get the room ID from URL
     const navigate = useNavigate(); // To redirect after updating
@@ -52,7 +55,7 @@ const EditRooms = () => {
 
             if (response.data.success) {
                 alert("Room Updated Successfully!");
-                navigate("/"); // Redirect to Home
+                navigate("/rooms/home"); // Redirect to Home
             } else {
                 setErrorMessage("Failed to update room.");
             }
@@ -63,8 +66,9 @@ const EditRooms = () => {
     };
 
     return (
-        <div className="col-md-8 mt-4 mx-auto">
-            <h1 className="h3 mb-3 font-weight-normal">Edit Room Details</h1>
+        <div className="content">
+            <Ownsidebar/>
+                <h1 className="h3 mb-3 font-weight-normal">Edit Room Details.</h1>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <label>Room-No</label>

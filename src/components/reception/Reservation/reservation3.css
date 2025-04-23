@@ -1,0 +1,109 @@
+.reservation3-container {
+    
+        width: 100%;
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.5rem;
+      
+      
+  }
+  
+  h2 {
+    color: #4a5568;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .person-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  
+  .person-table th,
+  .person-table td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .person-table th:nth-child(1),
+  .person-table td:nth-child(1),
+  .person-table th:nth-child(2),
+  .person-table td:nth-child(2),
+  .person-table th:nth-child(3),
+  .person-table td:nth-child(3),
+  .person-table th:nth-child(4),
+  .person-table td:nth-child(4),
+  .person-table th:nth-child(5),
+  .person-table td:nth-child(5),
+  .person-table th:nth-child(6),
+  .person-table td:nth-child(6),
+  .person-table th:nth-child(7),
+  .person-table td:nth-child(7) {
+    width: auto;
+  }
+  
+  .table-input, .table-select {
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .table-select {
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 1em;
+  }
+  
+  .add-btn, .remove-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-btn {
+    background-color: #285e61;
+    color: white;
+  }
+  
+  .remove-btn {
+    background-color: #e53e3e;
+    color: white;
+  }
+  
+  .add-btn:hover {
+    background-color: #1e4a4e;
+  }
+  
+  .remove-btn:hover {
+    background-color: #c53030;
+  }
+  
+  @media (max-width: 768px) {
+    .reservation3-container {
+      padding: 1rem;
+    }
+  
+    .person-table th, 
+    .person-table td {
+      font-size: 14px;
+    }
+  }
+  

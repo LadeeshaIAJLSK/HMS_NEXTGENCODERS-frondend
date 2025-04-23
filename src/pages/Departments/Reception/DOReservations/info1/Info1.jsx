@@ -1,11 +1,20 @@
 import React from "react";
-import CheckInForm from "../../../../.././components/reception/CheckInForm/CheckInForm"; // Adjust path if needed
+import CheckInForm from "../../../../.././components/reception/CheckInForm/CheckInForm";
+import Sidebar from "../../../../../components/reception/recSidebar/Recsidebar";
 
 const Info1 = () => {
   return (
-    <div>
+    <div style={{ 
+      display: 'grid',
+      gridTemplateColumns: '20% 80%',
       
-      <CheckInForm />
+    }}>
+      <div>
+        <Sidebar />
+      </div>
+      <div style={{ padding: '20px' }}>
+        <CheckInForm />
+      </div>
     </div>
   );
 };

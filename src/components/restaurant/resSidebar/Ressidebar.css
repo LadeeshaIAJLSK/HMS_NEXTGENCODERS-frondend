@@ -46,3 +46,10 @@
     background: #005f66;
   }
   
+  .restaurant-container {
+    display: flex;
+  }
+  .content {
+    margin-left: 250px; /* Adjust for sidebar */
+    padding: 20px;
+  }
