@@ -47,14 +47,9 @@ const RoomDetails = () => {
         <Ownsidebar/>
     <h4>{room?.RoomNo ? `R${room.RoomNo}` : "No Room-No"}</h4>
 
-      <h4>{room?.Guest || "No Guest"}</h4>
       <hr />
       <table className="table table-bordered">
         <tbody>
-          <tr>
-            <th>Housekeeping Status:</th>
-            <td>{room?.Hstatus || "No Status available"}</td>
-          </tr>
           <tr>
             <th>Room Status:</th>
             <td>{room?.RStatus || "No Room Status"}</td>

@@ -47,7 +47,6 @@ const RoomHome = () => {
   const filterData = (searchKey) => {
     const result = allRooms.filter((room) =>
       room.RoomNo.toString().toLowerCase().includes(searchKey.toLowerCase()) ||
-      room.Hstatus.toLowerCase().includes(searchKey.toLowerCase()) ||
       room.RStatus.toLowerCase().includes(searchKey.toLowerCase()) ||
       room.RType.toLowerCase().includes(searchKey.toLowerCase()) ||
       room.RClass.toLowerCase().includes(searchKey.toLowerCase())
@@ -96,8 +95,6 @@ const RoomHome = () => {
             <thead className="table-dark">
               <tr>
                 <th>Room-No</th>
-                <th>Guest</th>
-                <th>Housekeeping Status</th>
                 <th>Room Status</th>
                 <th>Room Type</th>
                 <th>Room Class</th>
@@ -109,8 +106,6 @@ const RoomHome = () => {
               {rooms.map((room) => (
                 <tr key={room._id}>
                   <td>{room.RoomNo ? `R${room.RoomNo}` : "No Room-No"}</td>
-                  <td>{room.Guest || "No Guest"}</td>
-                  <td>{room.Hstatus || "No Status"}</td>
                   <td>{room.RStatus || "No Room Status"}</td>
                   <td>{room.RType || "No Room Type"}</td>
                   <td>{room.RClass || "No Room Class"}</td>

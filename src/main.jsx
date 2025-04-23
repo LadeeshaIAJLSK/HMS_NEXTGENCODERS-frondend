@@ -14,6 +14,10 @@ import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails";
 import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
 import "./pages/Departments/Owner/OwnRooms/OwnRooms.css";
 
+import SettingsPage from "./pages/Departments/Owner/OwnSettings/OwnSettings.jsx";
+import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx";
+
+
 // import SettingsPage from "../Pages/Setting";
 
 createRoot(document.getElementById('root')).render(
@@ -31,6 +35,9 @@ createRoot(document.getElementById('root')).render(
         <Route path="/rooms/add" element={<CreateRooms />} />
         <Route path="/rooms/edit/:id" element={<EditRooms />} />
         <Route path="/rooms/:id" element={<RoomDetails />} />
+        
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/reports" element={<TransactionReport />} />
       </Routes>
     </Router>
   </StrictMode>
