@@ -11,8 +11,6 @@ const EditRooms = () => {
 
     const [room, setRoom] = useState({
         RoomNo: "",
-        Guest: "",
-        Hstatus: "",
         RStatus: "",
         RType: "",
         RClass: "",
@@ -23,7 +21,7 @@ const EditRooms = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8000/api/rooms/${id}`)  // Fixed endpoint with template literal
+            .get(`http://localhost:8000/api/posts/rooms/${id}`)  // Fixed endpoint with template literal
             .then((res) => {
                 if (res.data.success && res.data.room) {
                     setRoom(res.data.room);
@@ -48,7 +46,7 @@ const EditRooms = () => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8000/api/rooms/${id}`,  // Fixed endpoint with template literal
+                `http://localhost:8000/api/posts/rooms/${id}`,  // Fixed endpoint with template literal
                 room,
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -80,35 +78,6 @@ const EditRooms = () => {
                         onChange={handleInputChange}
                         required
                     />
-                </div>
-                <br />
-
-                <div className="form-group">
-                    <label>Guest</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="Guest"
-                        value={room.Guest}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-                <br />
-
-                <div className="form-group">
-                    <label>Housekeeping Status</label>
-                    <select
-                        name="Hstatus"
-                        className="form-control"
-                        value={room.Hstatus}
-                        onChange={handleInputChange}
-                        required
-                    >
-                        <option value="" disabled hidden>Select Housekeeping Status</option>
-                        <option value="Clean">Clean</option>
-                        <option value="Dirty">Dirty</option>
-                    </select>
                 </div>
                 <br />
 

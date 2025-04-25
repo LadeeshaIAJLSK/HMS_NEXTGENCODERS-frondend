@@ -12,7 +12,7 @@ const RoomDetails = () => {
   // Use effect to fetch room details when the component mounts or the id changes
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/rooms/${id}`) // Corrected API route to fetch room details by ID
+      .get(`http://localhost:8000/api/posts//rooms/${id}`) // Corrected API route to fetch room details by ID
       .then((res) => {
         if (res.data.success) {
           setRoom(res.data.room); // Set room data on successful response
@@ -47,14 +47,9 @@ const RoomDetails = () => {
         <Ownsidebar/>
     <h4>{room?.RoomNo ? `R${room.RoomNo}` : "No Room-No"}</h4>
 
-      <h4>{room?.Guest || "No Guest"}</h4>
       <hr />
       <table className="table table-bordered">
         <tbody>
-          <tr>
-            <th>Housekeeping Status:</th>
-            <td>{room?.Hstatus || "No Status available"}</td>
-          </tr>
           <tr>
             <th>Room Status:</th>
             <td>{room?.RStatus || "No Room Status"}</td>

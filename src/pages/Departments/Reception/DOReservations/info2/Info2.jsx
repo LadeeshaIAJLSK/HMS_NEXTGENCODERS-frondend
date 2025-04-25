@@ -3,6 +3,7 @@ import Reservation1 from "../../../../../components/reception/Reservation/reserv
 import Reservation2 from "../../../../../components/reception/Reservation/reservation2";
 import Reservation3 from "../../../../../components/reception/Reservation/reservation3";
 import Sidebar from "../../../../../components/reception/recSidebar/Recsidebar";
+import ReservationForm from "../../../../../components/reception/Reservation/ReservationForm";
 
 const Info2 = () => {
   return (
@@ -10,7 +11,7 @@ const Info2 = () => {
       display: 'grid',
       gridTemplateColumns: '20% 80%',
       height: '100vh',
-      overflow: 'hidden'
+      overflow: 'auto'
     }}>
       <div style={{ overflowY: 'auto' }}>
         <Sidebar />
@@ -25,6 +26,7 @@ const Info2 = () => {
           <Reservation1 />
           <Reservation2 />
           <Reservation3 />
+          <ReservationForm />
         </div>
       </div>
     </div>

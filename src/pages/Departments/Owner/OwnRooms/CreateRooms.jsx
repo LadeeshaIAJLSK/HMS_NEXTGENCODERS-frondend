@@ -8,8 +8,6 @@ export default class CreateRooms extends Component {
         super(props);
         this.state = {
             RoomNo: "",
-            Guest: "",
-            Hstatus: "",
             RStatus: "",
             RType: "",
             RClass: "",
@@ -61,33 +59,6 @@ export default class CreateRooms extends Component {
                             onChange={this.handleInputChange}
                             required
                         />
-                    </div>
-                    <br />
-                    <div className="form-group">
-                        <label>Guest</label> &nbsp;&nbsp;
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="Guest"
-                            value={this.state.Guest}
-                            onChange={this.handleInputChange}
-                            required
-                        />
-                    </div>
-                    <br />
-                    <div className="form-group">
-                        <label>Housekeeping Status</label>&nbsp;&nbsp;
-                        <select
-                            name="Hstatus"
-                            className="form-control"
-                            value={this.state.Hstatus}
-                            onChange={this.handleInputChange}
-                            required
-                        >
-                            <option value="" disabled hidden>Select Housekeeping Status</option>
-                            <option value="Clean">Clean</option>
-                            <option value="Dirty">Dirty</option>
-                        </select>
                     </div>
                     <br />
                     <div className="form-group">
