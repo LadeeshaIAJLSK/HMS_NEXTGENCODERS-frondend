@@ -13,7 +13,7 @@ export default function ResCategories() {
   const [categories, setCategories] = useState([]);
   const [categoryForm, setCategoryForm] = useState({
     name: "",
-    parentId: null
+    parentId:  null
   });
   const [editingCategory, setEditingCategory] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -119,12 +119,12 @@ export default function ResCategories() {
     }
     
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true); 
+      setError(null); 
       
       const oldParentId = editingCategory.parentId ? 
         (typeof editingCategory.parentId === 'object' ? editingCategory.parentId._id : editingCategory.parentId) : 
-        null;
+        null; 
       
       const data = await updateCategory(editingCategory._id, {
         name: categoryForm.name,
