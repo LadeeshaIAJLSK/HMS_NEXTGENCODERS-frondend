@@ -1,0 +1,276 @@
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { countries } from './countries';
+
+const useCheckInForm = () => {
+  const fileInputRef = useRef(null);
+  
+  const [formData, setFormData] = useState({
+    checkIn: "",
+    checkOut: "",
+    duration: "",
+    adults: "1",
+    kids: "0",
+    firstName: "",
+    mobile: "",
+    email: "",
+    middleName: "",
+    surname: "",
+    dob: "",
+    address: "",
+    city: "",
+    gender: "",
+    idType: "",
+    idNumber: "",
+    customerId: "",
+    advancePayment: "",
+    paymentMethod: "",
+    paymentNotes: ""
+  });
+
+  const [customerType, setCustomerType] = useState("new");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [persons, setPersons] = useState([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
+  const [rooms, setRooms] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState([]);
+  const [roomTypeFilter, setRoomTypeFilter] = useState("all");
+  const [roomClassFilter, setRoomClassFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [uniqueTypes, setUniqueTypes] = useState([]);
+  const [uniqueClasses, setUniqueClasses] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [emailError, setEmailError] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const fetchRooms = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/posts/rooms");
+      const vacantRooms = res.data.rooms.filter(r => r.RStatus === "Vacant");
+      setRooms(vacantRooms);
+      setUniqueTypes([...new Set(vacantRooms.map(room => room.RType))]);
+      setUniqueClasses([...new Set(vacantRooms.map(room => room.RClass))]);
+    } catch (err) {
+      console.error("Error fetching rooms:", err);
+    }
+  };
+
+  const handleCustomerSearch = async () => {
+    if (!searchTerm.trim()) return;
+    
+    try {
+      const response = await axios.get(`http://localhost:8000/api/reservations/search?term=${searchTerm}`);
+      setSearchResults(response.data);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error("Error searching customers:", error);
+      alert("Error searching customers");
+    }
+  };
+
+  const handleCustomerSelect = (customer) => {
+    setFormData({
+      ...formData,
+      customerId: customer._id,
+      firstName: customer.firstName,
+      middleName: customer.middleName || "",
+      surname: customer.surname || "",
+      mobile: customer.mobile,
+      email: customer.email || "",
+      dob: customer.dob || "",
+      address: customer.address || "",
+      city: customer.city || "",
+      gender: customer.gender || "",
+    });
+    
+    if (customer.country) {
+      const country = countries.find(c => c.label === customer.country);
+      if (country) setSelectedCountry(country);
+    }
+    
+    setShowSearchResults(false);
+  };
+
+  useEffect(() => {
+    if (selectedCountry) {
+      setFormData(prev => ({
+        ...prev,
+        mobile: selectedCountry.value + " " + (prev.mobile.split(' ')[1] || ""),
+      }));
+    }
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    const { checkIn, checkOut } = formData;
+    if (checkIn && checkOut) {
+      const start = new Date(checkIn);
+      const end = new Date(checkOut);
+      const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      setFormData(prev => ({ ...prev, duration: diff > 0 ? diff : "" }));
+    }
+  }, [formData.checkIn, formData.checkOut]);
+
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files);
+    setSelectedFiles(files);
+  };
+
+  const handleFormChange = (e) => {
+    const { id, name, value } = e.target;
+    const key = id || name;
+
+    setFormData(prev => ({ ...prev, [key]: value }));
+
+    if (key === "email") {
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      setEmailError(!emailPattern.test(value));
+    }
+  };
+
+  const handleAddPerson = () => {
+    setPersons([...persons, { name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
+  };
+
+  const handleRemovePerson = (index) => {
+    if (persons.length > 1) {
+      const updatedPersons = [...persons];
+      updatedPersons.splice(index, 1);
+      setPersons(updatedPersons);
+    }
+  };
+
+  const handlePersonChange = (index, field, value) => {
+    const updatedPersons = [...persons];
+    updatedPersons[index][field] = value;
+    setPersons(updatedPersons);
+  };
+
+  const handleRoomSelect = (roomNo) => {
+    setSelectedRooms(prev => 
+      prev.includes(roomNo) 
+        ? prev.filter(r => r !== roomNo) 
+        : [...prev, roomNo]
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const formDataToSend = new FormData();
+      
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+      
+      if (customerType === "existing" && formData.customerId) {
+        formDataToSend.append('customerId', formData.customerId);
+      }
+      
+      formDataToSend.append('otherPersons', JSON.stringify(persons));
+      formDataToSend.append('selectedRooms', JSON.stringify(selectedRooms));
+      
+      selectedFiles.forEach((file) => {
+        formDataToSend.append('idFiles', file);
+      });
+      
+      if (selectedCountry) {
+        formDataToSend.append('country', selectedCountry.label);
+        formDataToSend.append('countryCode', selectedCountry.value);
+      }
+
+      await axios.post("http://localhost:8000/api/reservations", formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      alert("Reservation submitted successfully! ✅");
+      
+      // Reset form
+      setFormData({
+        checkIn: "",
+        checkOut: "",
+        duration: "",
+        adults: "1",
+        kids: "0",
+        firstName: "",
+        mobile: "",
+        email: "",
+        middleName: "",
+        surname: "",
+        dob: "",
+        address: "",
+        city: "",
+        gender: "",
+        idType: "",
+        idNumber: "",
+        customerId: "",
+        advancePayment: "",
+        paymentMethod: "",
+        paymentNotes: ""
+      });
+      setPersons([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
+      setSelectedCountry(null);
+      setSelectedFiles([]);
+      setSelectedRooms([]);
+      setCustomerType("new");
+      setSearchTerm("");
+      setSearchResults([]);
+      setShowSearchResults(false);
+      
+      await fetchRooms();
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      
+    } catch (error) {
+      console.error("Error saving data:", error);
+      alert("Error submitting reservation. Please try again. ❌");
+    }
+  };
+
+  return {
+    formData,
+    customerType,
+    searchTerm,
+    searchResults,
+    showSearchResults,
+    persons,
+    rooms,
+    selectedRooms,
+    roomTypeFilter,
+    roomClassFilter,
+    searchQuery,
+    uniqueTypes,
+    uniqueClasses,
+    selectedCountry,
+    emailError,
+    selectedFiles,
+    fileInputRef,
+    handleFormChange,
+    setCustomerType,
+    setSearchTerm,
+    handleCustomerSearch,
+    handleCustomerSelect,
+    setSelectedCountry,
+    handleAddPerson,
+    handleRemovePerson,
+    handlePersonChange,
+    handleRoomSelect,
+    setRoomTypeFilter,
+    setRoomClassFilter,
+    setSearchQuery,
+    handleFileChange,
+    handleSubmit,
+    fetchRooms
+  };
+};
+
+export default useCheckInForm;

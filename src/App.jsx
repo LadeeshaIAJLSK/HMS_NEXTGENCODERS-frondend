@@ -31,13 +31,11 @@ function App() {
       <br/>
       <Link to="/reports">Reports</Link>
       <br/><br/>
+
+      <Link to="/reservation">Go to Reception Reservation</Link>
       
 
-      <Link to="/info1">Click here to go to Info1 page</Link>
-      <br /><br /> 
-      <Link to="/info2">Click here to go to Info2 page</Link>
-      <br /><br /> 
-      <Link to="/Rooms">Click here to go to Rooms page</Link>
+      
 
 
 

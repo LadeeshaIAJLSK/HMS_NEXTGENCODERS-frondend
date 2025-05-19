@@ -1,35 +1,10 @@
-import React, { useState } from 'react';
-import './reservation3.css';
+import React from 'react';
 
-const Reservation3 = () => {
-  const [persons, setPersons] = useState([
-    { name: '', gender: '', age: '', address: '', idType: '', idNo: '' }
-  ]);
-
-  const handleAddPerson = () => {
-    setPersons([...persons, { name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
-  };
-
-  const handleRemovePerson = (index) => {
-    if (persons.length > 1) {
-      const updatedPersons = [...persons];
-      updatedPersons.splice(index, 1);
-      setPersons(updatedPersons);
-    }
-  };
-
-  const handleChange = (index, field, value) => {
-    const updatedPersons = [...persons];
-    updatedPersons[index][field] = value;
-    setPersons(updatedPersons);
-  };
-
-  const getTextColor = (value) => (value ? '#000000' : '#718096');
-
+const AdditionalPersons = ({ persons, handleAddPerson, handleRemovePerson, handlePersonChange }) => {
   return (
-    <div className="reservation3-container">
-      <h2>Information of Other Person</h2>
-      <div className="table-responsive">
+    <div className="checkinform-form-container">
+      <h2 className="checkinform-form-heading">Information of Other Person</h2>
+      <div className="person-table-responsive">
         <table className="person-table">
           <thead>
             <tr>
@@ -49,18 +24,16 @@ const Reservation3 = () => {
                   <input
                     type="text"
                     value={person.name}
-                    onChange={(e) => handleChange(index, 'name', e.target.value)}
+                    onChange={(e) => handlePersonChange(index, 'name', e.target.value)}
                     placeholder="Enter Name"
-                    style={{ color: getTextColor(person.name) }}
-                    className="table-input"
+                    className="person-table-input"
                   />
                 </td>
                 <td>
                   <select
                     value={person.gender}
-                    onChange={(e) => handleChange(index, 'gender', e.target.value)}
-                    style={{ color: getTextColor(person.gender) }}
-                    className="table-select"
+                    onChange={(e) => handlePersonChange(index, 'gender', e.target.value)}
+                    className="person-table-select"
                   >
                     <option value="">--Select--</option>
                     <option value="Male">Male</option>
@@ -72,28 +45,25 @@ const Reservation3 = () => {
                   <input
                     type="text"
                     value={person.age}
-                    onChange={(e) => handleChange(index, 'age', e.target.value)}
+                    onChange={(e) => handlePersonChange(index, 'age', e.target.value)}
                     placeholder="Enter Age"
-                    style={{ color: getTextColor(person.age) }}
-                    className="table-input"
+                    className="person-table-input"
                   />
                 </td>
                 <td>
                   <input
                     type="text"
                     value={person.address}
-                    onChange={(e) => handleChange(index, 'address', e.target.value)}
+                    onChange={(e) => handlePersonChange(index, 'address', e.target.value)}
                     placeholder="Enter Address"
-                    style={{ color: getTextColor(person.address) }}
-                    className="table-input"
+                    className="person-table-input"
                   />
                 </td>
                 <td>
                   <select
                     value={person.idType}
-                    onChange={(e) => handleChange(index, 'idType', e.target.value)}
-                    style={{ color: getTextColor(person.idType) }}
-                    className="table-select"
+                    onChange={(e) => handlePersonChange(index, 'idType', e.target.value)}
+                    className="person-table-select"
                   >
                     <option value="">--Select--</option>
                     <option value="Passport">Passport</option>
@@ -105,19 +75,18 @@ const Reservation3 = () => {
                   <input
                     type="text"
                     value={person.idNo}
-                    onChange={(e) => handleChange(index, 'idNo', e.target.value)}
+                    onChange={(e) => handlePersonChange(index, 'idNo', e.target.value)}
                     placeholder="Enter ID No."
-                    style={{ color: getTextColor(person.idNo) }}
-                    className="table-input"
+                    className="person-table-input"
                   />
                 </td>
                 <td>
                   {index === 0 ? (
-                    <button className="add-btn" onClick={handleAddPerson}>
+                    <button type="button" className="person-add-btn" onClick={handleAddPerson}>
                       +
                     </button>
                   ) : (
-                    <button className="remove-btn" onClick={() => handleRemovePerson(index)}>
+                    <button type="button" className="person-remove-btn" onClick={() => handleRemovePerson(index)}>
                       -
                     </button>
                   )}
@@ -131,4 +100,4 @@ const Reservation3 = () => {
   );
 };
 
-export default Reservation3;
+export default AdditionalPersons;
