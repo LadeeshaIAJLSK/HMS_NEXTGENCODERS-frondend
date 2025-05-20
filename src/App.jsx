@@ -37,6 +37,8 @@ function App() {
       <Link to="/rooms">Go to Reception Rooms</Link>
       <br/><br/>
       <Link to="/guest">Go to Reservation Management</Link>
+      <br/><br/>
+      <Link to="/dashboard">Go to Reception Dashboard</Link>
       
 
       
