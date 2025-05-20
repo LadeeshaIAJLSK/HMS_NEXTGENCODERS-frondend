@@ -22,8 +22,11 @@ import FormSection from './components/reception/Formsection1.jsx';
 
 import SettingsPage from "./pages/Departments/Owner/OwnSettings/OwnSettings.jsx";
 import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx";
-
+//reception goes here
 import Reservation1 from './pages/Departments/Reception/DNReservations/Reservation1.jsx';
+import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
+import GuestRes from './components/reception/Formedit/GuestManegement.jsx';
+
 
 
 //RECEPTION
@@ -66,6 +69,8 @@ createRoot(document.getElementById('root')).render(
         {/* Reception Routes */}
         <Route path="/reception" element={<FormSection />} />
         <Route path="/page1"  element={<Reservation1 />} />
+        <Route path="/rooms" element={<Rooms/>} />
+        <Route path="/guest" element={<GuestRes />} />
 
         {/* Redirect to home if no match */}
 

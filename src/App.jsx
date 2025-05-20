@@ -32,7 +32,11 @@ function App() {
       <Link to="/reports">Reports</Link>
       <br/><br/>
 
-      <Link to="/reservation">Go to Reception Reservation</Link>
+      <Link to="/page1">Go to Reception Reservation</Link>
+      <br/><br/>
+      <Link to="/rooms">Go to Reception Rooms</Link>
+      <br/><br/>
+      <Link to="/guest">Go to Reservation Management</Link>
       
 
       
