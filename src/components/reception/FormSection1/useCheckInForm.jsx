@@ -159,10 +159,12 @@ const useCheckInForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();// Stop page reload when form submits
+
     
     try {
-      const formDataToSend = new FormData();
+      const formDataToSend = new FormData();// Create a new FormData object to hold the data
+    
       
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
@@ -172,7 +174,9 @@ const useCheckInForm = () => {
         formDataToSend.append('customerId', formData.customerId);
       }
       
-      formDataToSend.append('otherPersons', JSON.stringify(persons));
+      formDataToSend.append('otherPersons', JSON.stringify(persons));//Both are converted to strings using JSON.stringify() so they can be sent in FormData.
+
+
       formDataToSend.append('selectedRooms', JSON.stringify(selectedRooms));
       
       selectedFiles.forEach((file) => {
