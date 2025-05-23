@@ -42,7 +42,7 @@ const Login = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-blue-800/90"></div>
           </div>
           <div className="relative p-8 text-white h-full flex flex-col justify-center">
-            <h2 className="text-4xl font-bold mb-6">Welcome to Nexus Hotels</h2>
+            <h2 className="text-4xl font-bold mb-6">Welcome to NexStay Hotels</h2>
             <p className="text-lg text-blue-100 mb-8">Where luxury meets innovation in hospitality management</p>
             <div className="space-y-4 text-blue-100">
               <div className="flex items-center">
@@ -70,7 +70,7 @@ const Login = () => {
         {/* Right Side - Login Form */}
         <div className="md:w-1/2 p-8 md:p-12 bg-white">
           <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Sign In to Nexus HMS</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Sign In to NexStay HMS</h2>
             <p className="text-gray-600">Access your hotel management portal</p>
           </div>
 

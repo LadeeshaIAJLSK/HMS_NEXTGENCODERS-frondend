@@ -166,8 +166,8 @@ const HMSHome = () => {
           transition={{ duration: 0.8 }}
           className="relative z-10 h-full flex flex-col items-center justify-center text-white text-center px-4"
         >
-          <h1 className="text-6xl font-bold mb-6 tracking-tight">Nexus Hotel Management System</h1>
-          <p className="text-2xl max-w-3xl mb-8 text-gray-200">Elevate your hotel operations with Nexus HMS - Where luxury meets efficiency</p>
+          <h1 className="text-6xl font-bold mb-6 tracking-tight">NexStay Hotel Management System</h1>
+          <p className="text-2xl max-w-3xl mb-8 text-gray-200">Elevate your hotel operations with NexStay HMS - Where luxury meets efficiency</p>
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -189,7 +189,7 @@ const HMSHome = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Nexus HMS?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose NexStay HMS?</h2>
             <p className="text-xl text-gray-600">Experience the next generation of hotel management solutions</p>
           </motion.div>
           
@@ -257,7 +257,7 @@ const HMSHome = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Nexus HMS Packages</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">NexStay HMS Packages</h2>
             <p className="text-xl text-gray-600">Choose from our specialized packages to enhance your hotel's operations</p>
           </motion.div>
 
@@ -338,7 +338,7 @@ const HMSHome = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Hotel with Nexus HMS?</h2>
+            <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Hotel with NexStay HMS?</h2>
             <p className="text-2xl mb-12 text-gray-200">Experience the future of hotel management with our comprehensive suite of features</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
