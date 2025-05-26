@@ -20,10 +20,10 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/is-auth`, {
-        method: 'POST',
-        credentials: 'include',
+        method: 'POST', // Use POST to check auth status
+        credentials: 'include', // Include cookies in the request
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json' // Ensure the server can parse the request body
         }
       });
       const data = await response.json();
@@ -75,13 +75,13 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       console.log('Attempting registration with:', { email: userData.email });
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response = await fetch(`${API_BASE_URL}/register`, { // Use POST for registration
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
-        body: JSON.stringify(userData),
+        credentials: 'include',// Include cookies in the request
+        body: JSON.stringify(userData),// Ensure userData contains name, email, password, etc.
       });
 
       if (!response.ok) {
