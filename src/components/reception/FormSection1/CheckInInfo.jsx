@@ -1,5 +1,7 @@
 import React from 'react';
-
+//accept props
+//form data object containg current values
+//handleformchange fun tion
 const CheckInInfo = ({ formData, handleFormChange }) => {
   return (
     <div className="checkinform-form-container">
@@ -11,8 +13,8 @@ const CheckInInfo = ({ formData, handleFormChange }) => {
             type="date"
             name="checkIn"
             className="checkinform-form-input"
-            value={formData.checkIn}
-            onChange={handleFormChange}
+            value={formData.checkIn}//the input’s current value from props
+            onChange={handleFormChange}//calls the function when user changes input
             required
           />
         </div>
@@ -37,7 +39,7 @@ const CheckInInfo = ({ formData, handleFormChange }) => {
             className="checkinform-form-input"
             value={formData.duration}
             placeholder="Duration"
-            disabled
+            disabled//user cannot edit 
           />
         </div>
         

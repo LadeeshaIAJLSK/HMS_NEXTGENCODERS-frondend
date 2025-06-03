@@ -1,5 +1,8 @@
 import React from 'react';
-
+//an array of person objects.
+//function to add a new person.
+//function to remove a person.
+ //function to update person info
 const AdditionalPersons = ({ persons, handleAddPerson, handleRemovePerson, handlePersonChange }) => {
   return (
     <div className="checkinform-form-container">
@@ -18,6 +21,7 @@ const AdditionalPersons = ({ persons, handleAddPerson, handleRemovePerson, handl
             </tr>
           </thead>
           <tbody>
+            
             {persons.map((person, index) => (
               <tr key={index}>
                 <td>

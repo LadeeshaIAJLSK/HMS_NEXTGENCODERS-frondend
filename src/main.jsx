@@ -25,7 +25,7 @@ import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx"
 //reception goes here
 import Reservation1 from './pages/Departments/Reception/DNReservations/Reservation1.jsx';
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
-import GuestRes from './components/reception/Formedit/GuestManegement.jsx';
+import GuestRes from './components/reception/GuestRes.jsx';
 import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
 
 

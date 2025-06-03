@@ -67,9 +67,10 @@ const FormSection = () => {
           setSearchQuery={form.setSearchQuery}
         />
         
-        <PaymentInfo 
+         <PaymentInfo 
           formData={form.formData}
           handleFormChange={form.handleFormChange}
+          errors={form.errors}
         />
         
         <div className="text-right">

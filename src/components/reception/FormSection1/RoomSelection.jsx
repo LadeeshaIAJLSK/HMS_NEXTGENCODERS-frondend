@@ -13,6 +13,30 @@ const RoomSelection = ({
   setRoomClassFilter,
   setSearchQuery
 }) => {
+  // Filter rooms based on the current filter criteria
+  const filteredRooms = rooms.filter(room => {
+    // Convert room number to string for comparison
+    const roomNoString = room.RoomNo.toString();
+    
+    // Apply search query filter
+    const matchesSearch = 
+      roomNoString.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      room.RType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      room.RClass.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Apply type filter
+    const matchesType = 
+      roomTypeFilter === 'all' || 
+      room.RType === roomTypeFilter;
+    
+    // Apply class filter
+    const matchesClass = 
+      roomClassFilter === 'all' || 
+      room.RClass === roomClassFilter;
+    
+    return matchesSearch && matchesType && matchesClass;
+  });
+
   return (
     <div className="checkinform-form-container">
       <h2 className="checkinform-form-heading">Search For Rooms</h2>
@@ -67,8 +91,8 @@ const RoomSelection = ({
             </tr>
           </thead>
           <tbody>
-            {rooms.length > 0 ? (
-              rooms.map(room => (
+            {filteredRooms.length > 0 ? (
+              filteredRooms.map(room => (
                 <tr key={room._id}>
                   <td>
                     <input
@@ -85,7 +109,7 @@ const RoomSelection = ({
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="no-rooms">No rooms available</td>
+                <td colSpan="5" className="no-rooms">No rooms available matching your criteria</td>
               </tr>
             )}
           </tbody>

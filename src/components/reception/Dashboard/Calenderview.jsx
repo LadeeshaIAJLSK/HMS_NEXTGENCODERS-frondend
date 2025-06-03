@@ -14,6 +14,7 @@ const Calenderview = () => {
   const [showEventForm, setShowEventForm] = useState(false);
 
   useEffect(() => {
+    // Try to get saved events from browser's local storage
     const savedEvents = localStorage.getItem('calendarEvents');
     if (savedEvents) {
       setEvents(JSON.parse(savedEvents));
@@ -21,25 +22,32 @@ const Calenderview = () => {
   }, []);
 
   useEffect(() => {
+    // Save events to browser's local storage whenever they change
     localStorage.setItem('calendarEvents', JSON.stringify(events));
   }, [events]);
-
+  
+  //Returns how many days are in the given month and year.
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
   };
 
+
+  // Finds the day of the week the month starts on.
   const getFirstDayOfMonth = (year, month) => {
     return new Date(year, month, 1).getDay();
   };
-
+ 
+  //Moves the calendar back by one month.
   const handlePrevMonth = () => {
     setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() - 1, 1));
   };
-
+   
+  //Moves the calendar forward by one month.
   const handleNextMonth = () => {
     setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1));
   };
 
+   //When click a day in the calendar, selects that date.
   const handleDateClick = (day) => {
     const clickedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     setSelectedDate(clickedDate);
@@ -48,6 +56,7 @@ const Calenderview = () => {
       date: clickedDate.toISOString().split('T')[0]
     }));
   };
+  
 
   const handleAddEvent = () => {
     if (newEvent.title.trim() === '') return;
