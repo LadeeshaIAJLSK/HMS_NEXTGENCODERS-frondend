@@ -1,18 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const RoomSelectionSection = ({
-  rooms,
+const RoomSelectionForm = ({
+  selectedReservation,
   selectedRooms,
-  handleRoomSelect,
-  searchQuery,
-  setSearchQuery,
-  roomTypeFilter,
-  setRoomTypeFilter,
-  roomClassFilter,
-  setRoomClassFilter,
-  uniqueTypes,
-  uniqueClasses,
+  setSelectedRooms
 }) => {
+  const [rooms, setRooms] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roomTypeFilter, setRoomTypeFilter] = useState("all");
+  const [roomClassFilter, setRoomClassFilter] = useState("all");
+  const [uniqueTypes, setUniqueTypes] = useState([]);
+  const [uniqueClasses, setUniqueClasses] = useState([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/posts/rooms");
+        const roomsData = response.data.rooms || response.data;
+        setRooms(roomsData);
+        
+        // Extract unique types and classes
+        const types = [...new Set(roomsData.map(room => room.RType))];
+        const classes = [...new Set(roomsData.map(room => room.RClass))];
+        setUniqueTypes(types);
+        setUniqueClasses(classes);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
+
+  const handleRoomSelect = (roomNo) => {
+    if (selectedRooms.includes(roomNo)) {
+      setSelectedRooms(selectedRooms.filter(room => room !== roomNo));
+    } else {
+      setSelectedRooms([...selectedRooms, roomNo]);
+    }
+  };
+
   const filteredRooms = rooms.filter(room => {
     const typeMatch = roomTypeFilter === "all" || 
                       room.RType.toLowerCase().includes(roomTypeFilter.toLowerCase());
@@ -105,9 +133,15 @@ const RoomSelectionSection = ({
             </tbody>
           </table>
         </div>
+        
+        {selectedRooms.length > 0 && (
+          <div className="selected-rooms">
+            <h3>Selected Rooms: {selectedRooms.join(", ")}</h3>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default RoomSelectionSection;
+export default RoomSelectionForm;

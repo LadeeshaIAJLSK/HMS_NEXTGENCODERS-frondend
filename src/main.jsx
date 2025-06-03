@@ -25,7 +25,7 @@ import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx"
 //reception goes here
 import Reservation1 from './pages/Departments/Reception/DNReservations/Reservation1.jsx';
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
-import GuestRes from './components/reception/GuestRes.jsx';
+import GuestRes from './components/reception/Formedit/GuestRes.jsx';
 import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
 
 
@@ -71,7 +71,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/reception" element={<FormSection />} />
         <Route path="/page1"  element={<Reservation1 />} />
         <Route path="/rooms" element={<Rooms/>} />
-        <Route path="/guest" element={<GuestRes />} />
+        <Route path="/edit/:id" element={<GuestRes />} />
         <Route path="/dashboard" element={<Fulldashboard />} />
 
         {/* Redirect to home if no match */}

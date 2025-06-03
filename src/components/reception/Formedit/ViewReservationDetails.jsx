@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const ViewReservation = ({ 
+const ViewReservationDetails = ({ 
   selectedReservation, 
-  setViewMode,
-  setError,
-  setSuccess
+  onBackToEdit,
+  onSuccess,
+  onError,
+  onCheckoutComplete
 }) => {
   const [roomDetails, setRoomDetails] = useState([]);
   const [paymentHistory, setPaymentHistory] = useState([]);
@@ -36,7 +37,8 @@ const ViewReservation = ({
     const fetchDetails = async () => {
       try {
         const roomsResponse = await axios.get("http://localhost:8000/api/posts/rooms");
-        const bookedRooms = roomsResponse.data.rooms.filter(room => 
+        const roomsData = roomsResponse.data.rooms || roomsResponse.data;
+        const bookedRooms = roomsData.filter(room => 
           selectedReservation.selectedRooms.includes(room.RoomNo)
         );
         setRoomDetails(bookedRooms);
@@ -86,7 +88,7 @@ const ViewReservation = ({
 
   const handlePayment = async () => {
     if (!paymentAmount || paymentAmount <= 0) {
-      setError("Please enter a valid payment amount");
+      onError("Please enter a valid payment amount");
       return;
     }
     
@@ -106,14 +108,12 @@ const ViewReservation = ({
       );
       setPaymentHistory(paymentsResponse.data);
       
-      setSuccess("Payment recorded successfully!");
-      setError("");
+      onSuccess("Payment recorded successfully!");
       setPaymentAmount(0);
       setPaymentNotes("");
     } catch (err) {
       console.error("Error recording payment:", err);
-      setError("Error recording payment. Please try again.");
-      setSuccess("");
+      onError("Error recording payment. Please try again.");
     }
   };
 
@@ -131,13 +131,12 @@ const ViewReservation = ({
         )
       );
       
-      setSuccess("Guest checked out successfully! Rooms are now vacant.");
-      setError("");
-      setViewMode(false);
+      onSuccess("Guest checked out successfully! Rooms are now vacant.");
+      if (onCheckoutComplete) onCheckoutComplete();
+      onBackToEdit();
     } catch (err) {
       console.error("Error during checkout:", err);
-      setError("Error during checkout. Please try again.");
-      setSuccess("");
+      onError("Error during checkout. Please try again.");
     }
   };
 
@@ -145,7 +144,7 @@ const ViewReservation = ({
     <div className="view-container">
       <div className="view-header">
         <h2>Reservation Details</h2>
-        <button className="back-button" onClick={() => setViewMode(false)}>
+        <button className="back-button" onClick={onBackToEdit}>
           Back to Edit
         </button>
       </div>
@@ -313,4 +312,4 @@ const ViewReservation = ({
   );
 };
 
-export default ViewReservation;
+export default ViewReservationDetails;

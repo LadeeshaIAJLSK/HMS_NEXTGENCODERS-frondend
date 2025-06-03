@@ -2,13 +2,22 @@ import React from "react";
 import Select from "react-select";
 
 const countries = [
-  // Same countries array as in your original code
+  { value: "+1", label: "United States (+1)" },
+  { value: "+44", label: "United Kingdom (+44)" },
+  { value: "+91", label: "India (+91)" },
+  { value: "+86", label: "China (+86)" },
+  { value: "+33", label: "France (+33)" },
+  { value: "+49", label: "Germany (+49)" },
+  { value: "+81", label: "Japan (+81)" },
+  { value: "+61", label: "Australia (+61)" },
+  { value: "+55", label: "Brazil (+55)" },
+  { value: "+7", label: "Russia (+7)" },
+  // Add more countries as needed
 ];
 
-const GuestForm = ({
+const GuestInformationForm = ({
   formData,
   handleFormChange,
-  getTextColor,
   selectedCountry,
   setSelectedCountry,
   emailError,
@@ -16,70 +25,6 @@ const GuestForm = ({
 }) => {
   return (
     <>
-      <h2 className="checkinform-form-heading">Check In Information</h2>
-      <div className="checkinform-form-grid">
-        <div>
-          <label className="checkinform-form-label">Check In</label>
-          <input
-            type="date"
-            name="checkIn"
-            className="checkinform-form-input"
-            value={formData.checkIn}
-            onChange={handleFormChange}
-            style={{ color: getTextColor(formData.checkIn) }}
-            required
-          />
-        </div>
-        <div>
-           <label className="checkinform-form-label">Check Out</label>
-          <input
-            type="date"
-            name="checkOut"
-            className="checkinform-form-input"
-            value={formData.checkOut}
-            onChange={handleFormChange}
-            style={{ color: getTextColor(formData.checkOut) }}
-            required
-          />
-        </div>
-        <div>
-          <label className="checkinform-form-label">Duration of Stay</label>
-          <input
-            type="number"
-            name="duration"
-            className="checkinform-form-input"
-            value={formData.duration}
-            placeholder="Duration"
-            disabled
-            style={{ color: getTextColor(formData.duration) }}
-          />
-        </div>
-        <div>
-         <label className="checkinform-form-label">Adults</label>
-          <input
-            type="number"
-            name="adults"
-            className="checkinform-form-input"
-            value={formData.adults}
-            min="1"
-            onChange={handleFormChange}
-            style={{ color: getTextColor(formData.adults) }}
-          />
-        </div>
-        <div>
-          <label className="checkinform-form-label">Kids</label>
-          <input
-            type="number"
-            name="kids"
-            className="checkinform-form-input"
-            value={formData.kids}
-            min="0"
-            onChange={handleFormChange}
-            style={{ color: getTextColor(formData.kids) }}
-          />
-        </div>
-      </div>
-
       <h2 className="checkinform-form-heading">Guest Information</h2>
       <div className="checkinform-form-grid">
         
@@ -97,7 +42,7 @@ const GuestForm = ({
             required
           />
 
-        <label className="checkinform-form-label">Mobile No. <span className="asterisk">*</span></label>
+          <label className="checkinform-form-label">Mobile No. <span className="asterisk">*</span></label>
           <input
             type="tel"
             id="mobile"
@@ -145,7 +90,7 @@ const GuestForm = ({
             style={{ color: inputColor.middleName || "#718096" }}
           />
 
-           <label className="checkinform-form-label">E-mail</label>
+          <label className="checkinform-form-label">E-mail</label>
           <input
             type="email"
             id="email"
@@ -155,12 +100,11 @@ const GuestForm = ({
             onChange={handleFormChange}
             style={{ color: inputColor.email || "#718096" }}
           />
-         {emailError && (
+          {emailError && (
             <span className="error-message">Invalid email address</span>
           )}
 
-
-           <label className="checkinform-form-label">City</label>
+          <label className="checkinform-form-label">City</label>
           <input
             type="text"
             id="city"
@@ -172,7 +116,7 @@ const GuestForm = ({
           />
         </div>
 
-       <div>
+        <div>
           <label className="checkinform-form-label">Surname</label>
           <input
             type="text"
@@ -184,7 +128,7 @@ const GuestForm = ({
             style={{ color: inputColor.surname || "#718096" }}
           />
 
-        <label className="checkinform-form-label">Date of Birth</label>
+          <label className="checkinform-form-label">Date of Birth</label>
           <input
             type="date"
             id="dob"
@@ -194,7 +138,7 @@ const GuestForm = ({
             style={{ color: inputColor.dob || "#718096" }}
           />
 
-             <label className="checkinform-form-label">Address <span className="asterisk">*</span></label>
+          <label className="checkinform-form-label">Address <span className="asterisk">*</span></label>
           <textarea
             id="address"
             className="checkinform-form-input"
@@ -210,4 +154,4 @@ const GuestForm = ({
   );
 };
 
-export default GuestForm;
+export default GuestInformationForm;

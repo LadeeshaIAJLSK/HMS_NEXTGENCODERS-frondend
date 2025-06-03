@@ -43,7 +43,7 @@ const countries = [
     { label: "United States", value: "+1" },
     { label: "Vietnam", value: "+84" }
 ];
-
+// programmatically navigate to another route (e.g., navigate to the home page after form submission
 const GuestRes = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
