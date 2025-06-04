@@ -71,7 +71,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/reception" element={<FormSection />} />
         <Route path="/page1"  element={<Reservation1 />} />
         <Route path="/rooms" element={<Rooms/>} />
-        <Route path="/edit/:id" element={<GuestRes />} />
+        <Route path="/guest" element={<GuestRes />} />
         <Route path="/dashboard" element={<Fulldashboard />} />
 
         {/* Redirect to home if no match */}
