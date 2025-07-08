@@ -26,12 +26,12 @@ const RoomSelection = ({
     
     // Apply type filter
     const matchesType = 
-      roomTypeFilter === 'all' || 
+      roomTypeFilter === 'all' ||
       room.RType === roomTypeFilter;
     
     // Apply class filter
     const matchesClass = 
-      roomClassFilter === 'all' || 
+      roomClassFilter === 'all' ||
       room.RClass === roomClassFilter;
     
     return matchesSearch && matchesType && matchesClass;
@@ -87,6 +87,7 @@ const RoomSelection = ({
               <th>Room No.</th>
               <th>Type</th>
               <th>Class</th>
+              <th>Price</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -104,12 +105,17 @@ const RoomSelection = ({
                   <td>{room.RoomNo}</td>
                   <td>{room.RType}</td>
                   <td>{room.RClass}</td>
+                  <td>
+                    {/* Fixed: Check both Price and RPrice fields */}
+                    {room.RPrice ? `Rs. ${room.RPrice}` : 
+                     room.Price ? `Rs. ${room.Price}` : 'N/A'}
+                  </td>
                   <td>{room.RStatus}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="no-rooms">No rooms available matching your criteria</td>
+                <td colSpan="6" className="no-rooms">No rooms available matching your criteria</td>
               </tr>
             )}
           </tbody>

@@ -9,9 +9,9 @@ const PaymentInfo = ({ formData, handleFormChange }) => {
           <label className="checkinform-form-label">Advance Payment (Rs.) <span className="asterisk">*</span></label>
           <input
             type="number"
-            name="advancePayment"
+            name="paidAmount" // Fixed: Changed from advancePayment to paidAmount
             className="checkinform-form-input"
-            value={formData.advancePayment}
+            value={formData.paidAmount || ''}
             onChange={handleFormChange}
             placeholder="Enter amount"
             min="0"
@@ -25,7 +25,7 @@ const PaymentInfo = ({ formData, handleFormChange }) => {
           <select
             name="paymentMethod"
             className="checkinform-form-input"
-            value={formData.paymentMethod}
+            value={formData.paymentMethod || ''}
             onChange={handleFormChange}
             required
           >
@@ -44,7 +44,7 @@ const PaymentInfo = ({ formData, handleFormChange }) => {
           <textarea
             name="paymentNotes"
             className="checkinform-form-input"
-            value={formData.paymentNotes}
+            value={formData.paymentNotes || ''}
             onChange={handleFormChange}
             placeholder="Any additional payment information"
             rows="2"
