@@ -25,7 +25,8 @@ const useCheckInForm = () => {
     customerId: "",
     advancePayment: "",
     paymentMethod: "",
-    paymentNotes: ""
+    paymentNotes: "",
+    totalAmount: 0 // Added total amount field
   });
 
   const [customerType, setCustomerType] = useState("new");
@@ -55,6 +56,28 @@ const useCheckInForm = () => {
       console.error("Error fetching rooms:", err);
     }
   };
+
+  // Calculate total amount when rooms or duration changes
+  const calculateTotalAmount = () => {
+    if (selectedRooms.length === 0 || !formData.duration) return 0;
+    
+    const selectedRoomObjects = rooms.filter(room => 
+      selectedRooms.includes(room.RoomNo)
+    );
+    
+    const totalRoomPrice = selectedRoomObjects.reduce((sum, room) => {
+      const roomPrice = room.RPrice || room.Price || 0;
+      return sum + roomPrice;
+    }, 0);
+    
+    return totalRoomPrice * parseInt(formData.duration);
+  };
+
+  // Update total amount when selected rooms or duration changes
+  useEffect(() => {
+    const totalAmount = calculateTotalAmount();
+    setFormData(prev => ({ ...prev, totalAmount }));
+  }, [selectedRooms, formData.duration, rooms]);
 
   const handleCustomerSearch = async () => {
     if (!searchTerm.trim()) return;
@@ -159,13 +182,24 @@ const useCheckInForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();// Stop page reload when form submits
+    e.preventDefault();
 
+    // Validate that rooms are selected
+    if (selectedRooms.length === 0) {
+      alert("Please select at least one room");
+      return;
+    }
+
+    // Validate that duration is calculated
+    if (!formData.duration) {
+      alert("Please select valid check-in and check-out dates");
+      return;
+    }
     
     try {
-      const formDataToSend = new FormData();// Create a new FormData object to hold the data
+      const formDataToSend = new FormData();
     
-      
+      // Add all form data including totalAmount
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
@@ -174,10 +208,13 @@ const useCheckInForm = () => {
         formDataToSend.append('customerId', formData.customerId);
       }
       
-      formDataToSend.append('otherPersons', JSON.stringify(persons));//Both are converted to strings using JSON.stringify() so they can be sent in FormData.
-
-
+      formDataToSend.append('otherPersons', JSON.stringify(persons));
       formDataToSend.append('selectedRooms', JSON.stringify(selectedRooms));
+      
+      // Add advance payment as paid amount if provided
+      if (formData.advancePayment) {
+        formDataToSend.append('paidAmount', formData.advancePayment);
+      }
       
       selectedFiles.forEach((file) => {
         formDataToSend.append('idFiles', file);
@@ -217,7 +254,8 @@ const useCheckInForm = () => {
         customerId: "",
         advancePayment: "",
         paymentMethod: "",
-        paymentNotes: ""
+        paymentNotes: "",
+        totalAmount: 0
       });
       setPersons([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
       setSelectedCountry(null);
@@ -273,7 +311,8 @@ const useCheckInForm = () => {
     setSearchQuery,
     handleFileChange,
     handleSubmit,
-    fetchRooms
+    fetchRooms,
+    calculateTotalAmount // Export the calculation function
   };
 };
 
