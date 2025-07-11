@@ -1,5 +1,7 @@
 import React from "react";
 import ReservationsTable from "./ReservationsTable";
+import "./SearchSection.css"; // Assuming you have a CSS file for styling
+
 
 const SearchSection = ({
   searchTerm,

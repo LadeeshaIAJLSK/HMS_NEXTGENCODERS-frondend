@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calculator, Receipt, CreditCard, DollarSign, AlertCircle, CheckCircle, Clock, User, MapPin, Calendar, Users, Bed, FileText, Download, LogOut } from "lucide-react";
+import "./ViewReservationDetails.css"; // Assuming you have a CSS file for styling
 
 const ViewReservationDetails = ({ 
   selectedReservation, 
@@ -260,6 +261,15 @@ const ViewReservationDetails = ({
     return "text-red-600 bg-red-100";
   };
 
+  // Add the missing function
+  const getPaymentStatusClass = () => {
+    const balance = getBalanceDue();
+    if (balance < 0) return "overpaid";
+    if (balance === 0) return "fully-paid";
+    if (getTotalPaid() > 0) return "partially-paid";
+    return "not-paid";
+  };
+
   const generateBill = () => {
     const bill = {
       reservationId: mockSelectedReservation._id,
@@ -350,491 +360,460 @@ Thank you for staying with us!
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <div className="text-center py-8">
-          <Clock className="mx-auto h-8 w-8 text-gray-400 animate-spin" />
-          <p className="mt-2 text-gray-600">Loading reservation details...</p>
+      <div className="view-reservation-scope">
+        <div className="reservation-details-container">
+          <div className="reservation-card">
+            <div className="loading-container">
+              <Clock className="loading-spinner" />
+              <p className="loading-text">Loading reservation details...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <User className="h-6 w-6" />
-          Reservation Details
-        </h2>
-        <button
-          onClick={onBackToEdit}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 flex items-center gap-2"
-        >
-          ← Back to Edit
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Guest Information */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border border-blue-200">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-blue-800">
-            <User className="h-5 w-5" />
-            Guest Information
-          </h3>
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-gray-700">Name:</span>
-                  <span className="text-gray-900">{formData.firstName} {formData.middleName} {formData.surname}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-gray-700">Phone:</span>
-                  <span className="text-gray-900">{formData.mobile}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-gray-700">Email:</span>
-                  <span className="text-gray-900">{formData.email || "N/A"}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-700">Check-In:</span>
-                  <span className="text-gray-900">{formData.checkIn}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-700">Check-Out:</span>
-                  <span className="text-gray-900">{formData.checkOut}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-700">Duration:</span>
-                  <span className="text-gray-900">{formData.duration} nights</span>
-                </div>
-              </div>
-            </div>
-            <div className="pt-2 border-t border-blue-200">
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-700">Guests:</span>
-                  <span className="text-gray-900">{formData.adults} Adults, {formData.kids} Kids</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-700">ID:</span>
-                  <span className="text-gray-900">{formData.idType}: {formData.idNumber}</span>
-                </div>
-              </div>
-            </div>
+    <div className="view-reservation-scope">
+      <div className="reservation-details-container">
+        <div className="reservation-card fade-in">
+          <div className="reservation-header">
+            <h2>
+              <User />
+              Reservation Details
+            </h2>
+            <button onClick={onBackToEdit} className="back-button">
+              ← Back to Edit
+            </button>
           </div>
-        </div>
 
-        {/* Booked Rooms */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border border-green-200">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-green-800">
-            <Bed className="h-5 w-5" />
-            Booked Rooms
-          </h3>
-          {roomDetails.length > 0 ? (
-            <div className="space-y-3">
-              {roomDetails.map(room => {
-                const roomPrice = room.RPrice || room.Price || 0;
-                const totalPrice = roomPrice * parseInt(formData.duration);
-                return (
-                  <div key={room.RoomNo} className="bg-white p-4 rounded-lg border border-green-200">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-semibold text-green-800">Room {room.RoomNo}</h4>
-                        <p className="text-sm text-gray-600">{room.RType} - {room.RClass}</p>
-                        <p className="text-sm text-gray-600">${roomPrice.toFixed(2)} per night</p>
+          <div className="details-grid">
+            {/* Guest Information */}
+            <div className="section-card guest-info-card slide-up">
+              <h3 className="section-header">
+                <User />
+                Guest Information
+              </h3>
+              <div className="info-grid">
+                <div className="info-item">
+                  <span className="info-label">Name:</span>
+                  <span className="info-value font-semibold">
+                    {formData.firstName} {formData.middleName} {formData.surname}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Phone:</span>
+                  <span className="info-value">{formData.mobile}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Email:</span>
+                  <span className="info-value">{formData.email || "N/A"}</span>
+                </div>
+                <div className="info-item">
+                  
+                  <span className="info-label">Check-Out:</span>
+                  <span className="info-value">{formData.checkOut}</span>
+                </div>
+                <div className="info-item">
+                  
+                  <span className="info-label">Duration:</span>
+                  <span className="info-value">{formData.duration} nights</span>
+                </div>
+                <div className="info-item">
+                  
+                  <span className="info-label">Guests:</span>
+                  <span className="info-value">{formData.adults} Adults, {formData.kids} Kids</span>
+                </div>
+                <div className="info-item">
+                  
+                  <span className="info-label">ID:</span>
+                  <span className="info-value">{formData.idType}: {formData.idNumber}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Booked Rooms */}
+            <div className="section-card rooms-card slide-up">
+              <h3 className="section-header">
+                <Bed />
+                Booked Rooms
+              </h3>
+              {roomDetails.length > 0 ? (
+                <div>
+                  {roomDetails.map(room => {
+                    const roomPrice = room.RPrice || room.Price || 0;
+                    const totalPrice = roomPrice * parseInt(formData.duration);
+                    return (
+                      <div key={room.RoomNo} className="room-item">
+                        <div className="room-header">
+                          <div>
+                            <h4 className="room-number">Room {room.RoomNo}</h4>
+                            <p className="room-type">{room.RType} - {room.RClass}</p>
+                            <p className="room-rate">${roomPrice.toFixed(2)} per night</p>
+                          </div>
+                          <div className="room-price">
+                            <p className="room-total">${totalPrice.toFixed(2)}</p>
+                            <p className="room-rate">{formData.duration} nights</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-green-700">${totalPrice.toFixed(2)}</p>
-                        <p className="text-xs text-gray-500">{formData.duration} nights</p>
-                      </div>
+                    );
+                  })}
+                  <div className="total-charges">
+                    <div className="total-charges-label">Total Room Charges:</div>
+                    <div className="total-charges-amount">
+                      ${calculateTotalRoomCharges().toFixed(2)}
                     </div>
                   </div>
-                );
-              })}
-              <div className="bg-green-200 p-3 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-green-800">Total Room Charges:</span>
-                  <span className="text-xl font-bold text-green-800">
-                    ${calculateTotalRoomCharges().toFixed(2)}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <Bed className="empty-icon" />
+                  <p className="empty-title">No room details available</p>
+                  <p className="empty-description">
+                    Selected rooms: {mockSelectedReservation?.selectedRooms?.join(', ') || 'None'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Enhanced Payment Summary */}
+          <div className="details-grid full-width">
+            <div className="section-card payment-card slide-up">
+              <h3 className="section-header">
+                <DollarSign />
+                Payment Summary
+              </h3>
+              <div className="payment-summary-grid">
+                <div className="payment-summary-item total">
+                  <div className="payment-summary-label">Total Bill</div>
+                  <div className="payment-summary-value neutral">${getTotalAmount().toFixed(2)}</div>
+                </div>
+                
+                <div className="payment-summary-item paid">
+                  <div className="payment-summary-label">Total Paid</div>
+                  <div className="payment-summary-value positive">${getTotalPaid().toFixed(2)}</div>
+                </div>
+                
+                <div className="payment-summary-item due">
+                  <div className="payment-summary-label">Balance Due</div>
+                  <div className={`payment-summary-value ${
+                    getBalanceDue() > 0 ? 'negative' : 
+                    getBalanceDue() < 0 ? 'overpaid' : 
+                    'positive'
+                  }`}>
+                    ${Math.abs(getBalanceDue()).toFixed(2)}
+                  </div>
+                </div>
+                
+                <div className="payment-summary-item status">
+                  <div className="payment-summary-label">Status</div>
+                  <span className={`payment-status-badge ${getPaymentStatusClass()}`}>
+                    {getPaymentStatus()}
                   </span>
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <Bed className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="text-gray-500 mt-2">No room details available</p>
-              <p className="text-xs text-gray-400 mt-1">
-                Selected rooms: {mockSelectedReservation?.selectedRooms?.join(', ') || 'None'}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Enhanced Payment Summary */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg border-2 border-purple-200 lg:col-span-2">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-purple-800">
-            <DollarSign className="h-5 w-5" />
-            Payment Summary
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-lg border border-purple-200">
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-1">Total Bill</p>
-                <p className="text-2xl font-bold text-purple-600">${getTotalAmount().toFixed(2)}</p>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg border border-purple-200">
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-1">Total Paid</p>
-                <p className="text-2xl font-bold text-green-600">${getTotalPaid().toFixed(2)}</p>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg border border-purple-200">
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-1">Balance Due</p>
-                <p className={`text-2xl font-bold ${
-                  getBalanceDue() > 0 ? 'text-red-600' : 
-                  getBalanceDue() < 0 ? 'text-blue-600' : 
-                  'text-green-600'
-                }`}>
-                  ${Math.abs(getBalanceDue()).toFixed(2)}
-                </p>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg border border-purple-200">
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-1">Status</p>
-                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getPaymentStatusColor()}`}>
-                  {getPaymentStatus()}
-                </span>
-              </div>
-            </div>
           </div>
-        </div>
 
-        {/* Payment History */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Receipt className="h-5 w-5" />
-            Payment History
-          </h3>
-          {paymentHistory.length > 0 ? (
-            <div className="space-y-3">
-              {paymentHistory.map((payment, index) => (
-                <div key={index} className="bg-white p-4 rounded-lg border">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-semibold text-gray-900">${payment.amount.toFixed(2)}</p>
-                      <p className="text-sm text-gray-600">{new Date(payment.date).toLocaleDateString()}</p>
+          <div className="details-grid">
+            {/* Payment History */}
+            <div className="section-card slide-up">
+              <h3 className="section-header">
+                <Receipt />
+                Payment History
+              </h3>
+              {paymentHistory.length > 0 ? (
+                <div>
+                  {paymentHistory.map((payment, index) => (
+                    <div key={index} className="payment-history-item">
+                      <div className="payment-history-header">
+                        <div>
+                          <p className="payment-amount">${payment.amount.toFixed(2)}</p>
+                          <p className="payment-date">{new Date(payment.date).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                          <span className="payment-method-badge">
+                            {payment.method}
+                          </span>
+                        </div>
+                      </div>
+                      {payment.method === 'Cash' && payment.cashReceived > payment.amount && (
+                        <div className="cash-details">
+                          <p className="cash-details-text">
+                            Cash Received: ${payment.cashReceived.toFixed(2)} | 
+                            Change Given: ${payment.change.toFixed(2)}
+                          </p>
+                        </div>
+                      )}
+                      {payment.notes && (
+                        <p className="payment-notes">{payment.notes}</p>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                        {payment.method}
-                      </span>
-                    </div>
-                  </div>
-                  {payment.method === 'Cash' && payment.cashReceived > payment.amount && (
-                    <div className="bg-green-50 p-2 rounded text-sm">
-                      <p className="text-green-800">
-                        Cash Received: ${payment.cashReceived.toFixed(2)} | 
-                        Change Given: ${payment.change.toFixed(2)}
-                      </p>
-                    </div>
-                  )}
-                  {payment.notes && (
-                    <p className="text-sm text-gray-600 mt-1">{payment.notes}</p>
-                  )}
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Receipt className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="text-gray-500 mt-2">No payment history available</p>
-            </div>
-          )}
-        </div>
-
-        {/* Enhanced Record Payment */}
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-lg border border-orange-200">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-orange-800">
-            <CreditCard className="h-5 w-5" />
-            Record Payment
-          </h3>
-          
-          {getBalanceDue() > 0 && (
-            <div className="mb-4 p-3 bg-orange-100 rounded-lg">
-              <p className="text-orange-800 font-medium">
-                Amount Due: ${getBalanceDue().toFixed(2)}
-              </p>
-              <button
-                onClick={quickPayFull}
-                className="mt-2 px-3 py-1 bg-orange-600 text-white rounded text-sm hover:bg-orange-700"
-              >
-                Pay Full Amount
-              </button>
-            </div>
-          )}
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payment Amount ($)
-              </label>
-              <input
-                type="number"
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                min="0.01"
-                step="0.01"
-                placeholder={`Max: $${getBalanceDue().toFixed(2)}`}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payment Method
-              </label>
-              <select
-                value={paymentMethod}
-                onChange={(e) => {
-                  setPaymentMethod(e.target.value);
-                  setShowCashCalculator(e.target.value === "Cash");
-                }}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              >
-                <option value="Cash">Cash</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Debit Card">Debit Card</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Other">Other</option>
-              </select>
+              ) : (
+                <div className="empty-state">
+                  <Receipt className="empty-icon" />
+                  <p className="empty-title">No payment history available</p>
+                </div>
+              )}
             </div>
 
-            {/* Cash Calculator */}
-            {(paymentMethod === "Cash" || showCashCalculator) && (
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
-                  <Calculator className="h-4 w-4" />
-                  Cash Calculator
-                </h4>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Cash Received from Guest ($)
-                    </label>
-                    <input
-                      type="number"
-                      value={cashReceived}
-                      onChange={(e) => setCashReceived(e.target.value)}
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                      min="0.01"
-                      step="0.01"
-                      placeholder="e.g., 500 (for $500 bill)"
-                    />
-                  </div>
-                  {cashReceived && paymentAmount && (
-                    <div className="bg-white p-3 rounded border">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Change to Give:</span>
-                        <span className={`font-bold ${
-                          calculateChange() >= 0 ? 'text-green-600' : 'text-red-600'
+            {/* Enhanced Record Payment */}
+            <div className="section-card slide-up">
+              <h3 className="section-header">
+                <CreditCard />
+                Record Payment
+              </h3>
+              
+              {getBalanceDue() > 0 && (
+                <div className="quick-pay-section">
+                  <p className="quick-pay-text">
+                    Amount Due: ${getBalanceDue().toFixed(2)}
+                  </p>
+                  <button onClick={quickPayFull} className="quick-pay-button">
+                    Pay Full Amount
+                  </button>
+                </div>
+              )}
+              
+              <div className="payment-form">
+                <div className="payment-form-field">
+                  <label className="payment-form-label">
+                    Payment Amount ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                    className="payment-form-input"
+                    min="0.01"
+                    step="0.01"
+                    placeholder={`Max: ${getBalanceDue().toFixed(2)}`}
+                  />
+                </div>
+                
+                <div className="payment-form-field">
+                  <label className="payment-form-label">
+                    Payment Method
+                  </label>
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => {
+                      setPaymentMethod(e.target.value);
+                      setShowCashCalculator(e.target.value === "Cash");
+                    }}
+                    className="payment-form-select"
+                  >
+                    <option value="Cash">Cash</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {/* Cash Calculator */}
+                {(paymentMethod === "Cash" || showCashCalculator) && (
+                  <div className="cash-calculator">
+                    <h4 className="cash-calculator-header">
+                      <Calculator />
+                      Cash Calculator
+                    </h4>
+                    <div className="payment-form-field">
+                      <label className="payment-form-label">
+                        Cash Received from Guest ($)
+                      </label>
+                      <input
+                        type="number"
+                        value={cashReceived}
+                        onChange={(e) => setCashReceived(e.target.value)}
+                        className="payment-form-input"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="e.g., 500 (for $500 bill)"
+                      />
+                    </div>
+                    {cashReceived && paymentAmount && (
+                      <div className="change-display">
+                        <span className="change-label">Change to Give:</span>
+                        <span className={`change-amount ${
+                          calculateChange() >= 0 ? 'positive' : 'negative'
                         }`}>
                           ${Math.abs(calculateChange()).toFixed(2)}
                           {calculateChange() < 0 && ' (Insufficient Cash)'}
                         </span>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                )}
+                
+                <div className="payment-form-field">
+                  <label className="payment-form-label">
+                    Notes
+                  </label>
+                  <textarea
+                    value={paymentNotes}
+                    onChange={(e) => setPaymentNotes(e.target.value)}
+                    className="payment-form-textarea"
+                    placeholder="Optional notes"
+                  />
                 </div>
+                
+                <button
+                  onClick={handlePayment}
+                  className="btn btn-secondary btn-full-width"
+                  disabled={!paymentAmount || parseFloat(paymentAmount) <= 0 || 
+                            (paymentMethod === "Cash" && parseFloat(cashReceived) < parseFloat(paymentAmount))}
+                >
+                  <DollarSign />
+                  Record Payment
+                </button>
+                
+                {paymentMethod === "Cash" && cashReceived && paymentAmount && calculateChange() > 0 && (
+                  <div className="alert warning mt-3">
+                    💡 Remember to give ${calculateChange().toFixed(2)} change to the guest!
+                  </div>
+                )}
+                
+                {getBalanceDue() <= 0 && (
+                  <div className="alert success mt-3">
+                    <CheckCircle />
+                    {getBalanceDue() < 0 ? 
+                      `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
+                      'Payment is complete - Ready for checkout!'
+                    }
+                  </div>
+                )}
               </div>
-            )}
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notes
-              </label>
-              <textarea
-                value={paymentNotes}
-                onChange={(e) => setPaymentNotes(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                rows="2"
-                placeholder="Optional notes"
-              />
             </div>
-            
-            <button
-              onClick={handlePayment}
-              className="w-full px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:bg-gray-400 flex items-center justify-center gap-2"
-              disabled={!paymentAmount || parseFloat(paymentAmount) <= 0 || 
-                        (paymentMethod === "Cash" && parseFloat(cashReceived) < parseFloat(paymentAmount))}
-            >
-              <DollarSign className="h-4 w-4" />
-              Record Payment
-            </button>
-            
-            {paymentMethod === "Cash" && cashReceived && paymentAmount && calculateChange() > 0 && (
-              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                <p className="text-yellow-800 text-sm font-medium">
-                  💡 Remember to give ${calculateChange().toFixed(2)} change to the guest!
+          </div>
+
+          {/* Bill Generation Section */}
+          <div className="bill-section">
+            <div className="section-card bill-card slide-up">
+              <h3 className="section-header">
+                <FileText />
+                Generate Bill
+              </h3>
+              <p className="bill-description">
+                Download a detailed receipt for this reservation
+              </p>
+              <button onClick={generateBill} className="btn btn-info">
+                <Download />
+                Download Receipt
+              </button>
+            </div>
+          </div>
+
+          {/* Checkout Section */}
+          <div className="mt-6">
+            {getBalanceDue() > 0 ? (
+              <div className="status-card payment-required">
+                <div className="status-icon warning">
+                  <AlertCircle />
+                </div>
+                <h3 className="status-title warning">
+                  Payment Required Before Checkout
+                </h3>
+                <p className="status-description">
+                  Outstanding Balance: 
                 </p>
+                <div className="status-amount">${getBalanceDue().toFixed(2)}</div>
+                <button
+                  onClick={() => {
+                    document.querySelector('.payment-form-input')?.focus();
+                  }}
+                  className="btn btn-warning"
+                >
+                  <DollarSign />
+                  Complete Payment (${getBalanceDue().toFixed(2)} Due)
+                </button>
               </div>
-            )}
-            
-            {getBalanceDue() <= 0 && (
-              <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                <p className="text-green-800 text-sm font-medium flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
+            ) : (
+              <div className="status-card ready-checkout">
+                <div className="status-icon success">
+                  <CheckCircle />
+                </div>
+                <h3 className="status-title success">
                   {getBalanceDue() < 0 ? 
-                    `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
-                    'Payment is complete - Ready for checkout!'
+                    `Guest Overpaid - Credit: ${Math.abs(getBalanceDue()).toFixed(2)}` :
+                    'Payment Complete - Ready for Checkout'
+                  }
+                </h3>
+                <p className="status-description">
+                  {getBalanceDue() < 0 ? 
+                    'Consider refunding the excess amount to the guest' :
+                    'All payments have been received'
                   }
                 </p>
+                <button onClick={handleCheckout} className="btn btn-success">
+                  <LogOut />
+                  Proceed to Checkout
+                </button>
               </div>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Bill Generation Section */}
-      <div className="mt-6">
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-lg border border-indigo-200">
-          <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-indigo-800">
-            <FileText className="h-5 w-5" />
-            Generate Bill
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Download a detailed receipt for this reservation
-          </p>
-          <button
-            onClick={generateBill}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Download Receipt
-          </button>
-        </div>
-      </div>
-
-      {/* Checkout Section */}
-      <div className="mt-6">
-        {getBalanceDue() > 0 ? (
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-lg border border-yellow-200">
-            <div className="text-center">
-              <AlertCircle className="mx-auto h-12 w-12 text-yellow-600 mb-3" />
-              <h3 className="text-lg font-semibold text-yellow-800 mb-2">
-                Payment Required Before Checkout
-              </h3>
-              <p className="text-yellow-700 mb-4">
-                Outstanding Balance: <span className="font-bold text-xl">${getBalanceDue().toFixed(2)}</span>
-              </p>
-              <button
-                onClick={() => {
-                  document.querySelector('input[type="number"]')?.focus();
-                }}
-                className="px-6 py-3 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium flex items-center gap-2 mx-auto"
-              >
-                <DollarSign className="h-5 w-5" />
-                Complete Payment (${getBalanceDue().toFixed(2)} Due)
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border border-green-200">
-            <div className="text-center">
-              <CheckCircle className="mx-auto h-12 w-12 text-green-600 mb-3" />
-              <h3 className="text-lg font-semibold text-green-800 mb-2">
-                {getBalanceDue() < 0 ? 
-                  `Guest Overpaid - Credit: ${Math.abs(getBalanceDue()).toFixed(2)}` :
-                  'Payment Complete - Ready for Checkout'
-                }
-              </h3>
-              <p className="text-green-700 mb-4">
-                {getBalanceDue() < 0 ? 
-                  'Consider refunding the excess amount to the guest' :
-                  'All payments have been received'
-                }
-              </p>
-              <button
-                onClick={handleCheckout}
-                className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium flex items-center gap-2 mx-auto"
-              >
-                <LogOut className="h-5 w-5" />
-                Proceed to Checkout
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Checkout Confirmation Dialog */}
-      {showCheckoutDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <LogOut className="h-5 w-5" />
-              Checkout Confirmation
-            </h3>
-            
-            <div className="space-y-4">
-              <p className="text-gray-700">
-                Are you sure you want to checkout <strong>{formData.firstName} {formData.surname}</strong>?
-              </p>
-              
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm text-gray-600 mb-2">This will:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Mark all booked rooms as vacant</li>
-                  <li>• Complete the reservation</li>
-                  <li>• Update room availability</li>
-                </ul>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="wantBill"
-                  checked={wantBill}
-                  onChange={(e) => setWantBill(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="wantBill" className="text-sm text-gray-700">
-                  Generate and download receipt for guest
-                </label>
-              </div>
-              
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={() => setShowCheckoutDialog(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmCheckout}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  Confirm Checkout
-                </button>
+          {/* Checkout Confirmation Dialog */}
+          {showCheckoutDialog && (
+            <div className="modal-overlay">
+              <div className="modal-content slide-up">
+                <div className="modal-header">
+                  <LogOut />
+                  <h3 className="modal-title">Checkout Confirmation</h3>
+                </div>
+                
+                <div className="modal-body">
+                  <p>
+                    Are you sure you want to checkout <strong>{formData.firstName} {formData.surname}</strong>?
+                  </p>
+                  
+                  <div className="checkout-details">
+                    <h4>This will:</h4>
+                    <ul>
+                      <li>Mark all booked rooms as vacant</li>
+                      <li>Complete the reservation</li>
+                      <li>Update room availability</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="checkbox-container">
+                    <input
+                      type="checkbox"
+                      id="wantBill"
+                      checked={wantBill}
+                      onChange={(e) => setWantBill(e.target.checked)}
+                      className="checkbox-input"
+                    />
+                    <label htmlFor="wantBill" className="checkbox-label">
+                      Generate and download receipt for guest
+                    </label>
+                  </div>
+                </div>
+                
+                <div className="modal-footer">
+                  <button
+                    onClick={() => setShowCheckoutDialog(false)}
+                    className="btn btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmCheckout}
+                    className="btn btn-primary"
+                  >
+                    <CheckCircle />
+                    Confirm Checkout
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
