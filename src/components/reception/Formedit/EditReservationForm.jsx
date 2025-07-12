@@ -5,7 +5,7 @@ import GuestInformationForm from "./GuestInformationForm";
 import IdCardForm from "./IdCardForm";
 import OtherPersonsForm from "./OtherPersonsForm";
 import RoomSelectionForm from "./RoomSelectionForm";
-// Assuming you have a CSS file for styling
+import "./EditReservationForm.css"; // Import the scoped CSS file
 
 const EditReservationForm = ({
   selectedReservation,
@@ -272,117 +272,112 @@ const EditReservationForm = ({
   const getTextColor = (value) => (value ? "#000000" : "#718096");
 
   return (
-    <>
-      <form className="checkinform-form-container" onSubmit={handleSubmit}>
-        <CheckInForm 
-          formData={formData}
-          handleFormChange={handleFormChange}
-          getTextColor={getTextColor}
-        />
-
-        <GuestInformationForm
-          formData={formData}
-          handleFormChange={handleFormChange}
-          inputColor={inputColor}
-          emailError={emailError}
-          selectedCountry={selectedCountry}
-          setSelectedCountry={setSelectedCountry}
-        />
-
-        <IdCardForm
-          formData={formData}
-          handleFormChange={handleFormChange}
-          selectedFiles={selectedFiles}
-          handleFileChange={handleFileChange}
-          existingFiles={existingFiles}
-        />
-
-        <OtherPersonsForm
-          persons={persons}
-          setPersons={setPersons}
-          getTextColor={getTextColor}
-        />
-
-        <RoomSelectionForm
-          selectedReservation={selectedReservation}
-          selectedRooms={selectedRooms}
-          setSelectedRooms={setSelectedRooms}
-        />
-
-        <div className="form-actions">
-          <button 
-            type="button" 
-            className="delete-button" 
-            onClick={onDeleteReservation}
-            disabled={isSubmitting}
-          >
-            Delete Reservation
-          </button>
-          <button 
-            type="submit" 
-            className="submit-button"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Updating..." : "Update Reservation"}
-          </button>
+    <div className="edit-reservation-form-scope">
+      <div className="main-form-container">
+        
+        {/* Check-in Information Section */}
+        <div className="form-section checkin-section">
+          
+          <CheckInForm 
+            formData={formData}
+            handleFormChange={handleFormChange}
+            getTextColor={getTextColor}
+          />
         </div>
-      </form>
+
+        {/* Guest Information Section */}
+        <div className="form-section guest-section">
+          
+          <GuestInformationForm
+            formData={formData}
+            handleFormChange={handleFormChange}
+            inputColor={inputColor}
+            emailError={emailError}
+            selectedCountry={selectedCountry}
+            setSelectedCountry={setSelectedCountry}
+          />
+        </div>
+
+        {/* ID Card Information Section */}
+        <div className="form-section id-section">
+          
+          <IdCardForm
+            formData={formData}
+            handleFormChange={handleFormChange}
+            selectedFiles={selectedFiles}
+            handleFileChange={handleFileChange}
+            existingFiles={existingFiles}
+          />
+        </div>
+
+        {/* Other Persons Section */}
+        <div className="form-section persons-section">
+          
+          <OtherPersonsForm
+            persons={persons}
+            setPersons={setPersons}
+            getTextColor={getTextColor}
+          />
+        </div>
+
+        {/* Room Selection Section */}
+        <div className="form-section rooms-section">
+          
+          <RoomSelectionForm
+            selectedReservation={selectedReservation}
+            selectedRooms={selectedRooms}
+            setSelectedRooms={setSelectedRooms}
+          />
+        </div>
+
+        {/* Form Actions Section */}
+        <div className="form-actions-container">
+          <h2 className="section-title">Actions</h2>
+          <div className="form-actions">
+            <button 
+              type="button" 
+              className="delete-button" 
+              onClick={onDeleteReservation}
+              disabled={isSubmitting}
+            >
+              Delete Reservation
+            </button>
+            <button 
+              type="submit" 
+              className="submit-button"
+              disabled={isSubmitting}
+              onClick={handleSubmit}
+            >
+              {isSubmitting ? "Updating..." : "Update Reservation"}
+            </button>
+          </div>
+        </div>
+
+      </div>
 
       {/* Success Popup */}
       {showSuccessPopup && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000
-          }}
-        >
-          <div 
-            style={{
-              background: 'white',
-              padding: '2rem',
-              borderRadius: '12px',
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-              textAlign: 'center',
-              maxWidth: '400px',
-              width: '90%'
-            }}
-          >
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+        <div className="success-popup-overlay">
+          <div className="success-popup-content">
+            <div className="success-popup-icon">
               ✅
             </div>
-            <h3 style={{ margin: '0 0 1rem 0', color: '#2d3748', fontSize: '1.5rem' }}>
+            <h3 className="success-popup-title">
               Success!
             </h3>
-            <p style={{ margin: '0 0 1.5rem 0', color: '#4a5568', fontSize: '1rem' }}>
+            <p className="success-popup-message">
               Reservation updated successfully!
             </p>
             <button 
               onClick={handlePopupOk}
-              style={{
-                backgroundColor: '#48bb78',
-                color: 'white',
-                border: 'none',
-                padding: '0.75rem 2rem',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
+              className="success-popup-button"
             >
               OK
             </button>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
