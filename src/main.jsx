@@ -27,6 +27,7 @@ import Reservation1 from './pages/Departments/Reception/DNReservations/Reservati
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
 import GuestRes from './components/reception/Formedit/GuestRes.jsx';
 import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
+import EditReservation1 from './pages/Departments/Reception/DNReservations/EditReservation1.jsx'; // Import the EditReservation1 component
 
 
 
@@ -73,6 +74,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/rooms" element={<Rooms/>} />
         <Route path="/guest" element={<GuestRes />} />
         <Route path="/dashboard" element={<Fulldashboard />} />
+        <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
 
         {/* Redirect to home if no match */}
 

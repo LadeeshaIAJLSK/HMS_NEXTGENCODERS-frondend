@@ -5,7 +5,7 @@ import GuestInformationForm from "./GuestInformationForm";
 import IdCardForm from "./IdCardForm";
 import OtherPersonsForm from "./OtherPersonsForm";
 import RoomSelectionForm from "./RoomSelectionForm";
-
+// Assuming you have a CSS file for styling
 
 const EditReservationForm = ({
   selectedReservation,
@@ -74,7 +74,6 @@ const EditReservationForm = ({
 
   const handlePopupOk = () => {
     setShowSuccessPopup(false);
-    // Reload the page
     window.location.reload();
   };
 
@@ -87,54 +86,108 @@ const EditReservationForm = ({
     }
 
     if (isSubmitting) {
-      return; // Prevent double submission
-    }
-
-    // Validate required fields
-    if (!formData.firstName || !formData.mobile || !formData.checkIn || !formData.checkOut) {
-      onError("Please fill in all required fields");
       return;
     }
 
-    // Validate email if provided
+    // Enhanced validation
+    const validationErrors = [];
+    
+    if (!formData.firstName?.trim()) validationErrors.push("First name is required");
+    if (!formData.mobile?.trim()) validationErrors.push("Mobile number is required");
+    if (!formData.checkIn) validationErrors.push("Check-in date is required");
+    if (!formData.checkOut) validationErrors.push("Check-out date is required");
+    
+    // Date validation
+    if (formData.checkIn && formData.checkOut) {
+      const checkInDate = new Date(formData.checkIn);
+      const checkOutDate = new Date(formData.checkOut);
+      
+      if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+        validationErrors.push("Invalid date format");
+      } else if (checkInDate >= checkOutDate) {
+        validationErrors.push("Check-out date must be after check-in date");
+      }
+    }
+
     if (formData.email && emailError) {
-      onError("Please enter a valid email address");
+      validationErrors.push("Please enter a valid email address");
+    }
+
+    if (validationErrors.length > 0) {
+      onError(validationErrors.join(", "));
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // Prepare the update data - ensure all fields are properly formatted
+      // Prepare the update data to match backend expectations and schema requirements
       const updateData = {
-        firstName: formData.firstName.trim(),
-        middleName: formData.middleName ? formData.middleName.trim() : "",
-        surname: formData.surname ? formData.surname.trim() : "",
-        mobile: formData.mobile.trim(),
-        email: formData.email ? formData.email.trim() : "",
+        firstName: formData.firstName?.trim() || "",
+        middleName: formData.middleName?.trim() || "",
+        surname: formData.surname?.trim() || "",
+        mobile: formData.mobile?.trim() || "",
+        email: formData.email?.trim() || "",
         dob: formData.dob || "",
-        address: formData.address ? formData.address.trim() : "",
-        city: formData.city ? formData.city.trim() : "",
-        gender: formData.gender || "",
-        idType: formData.idType || "",
-        idNumber: formData.idNumber ? formData.idNumber.trim() : "",
+        address: formData.address?.trim() || "Not provided", // Address is required in schema
+        city: formData.city?.trim() || "",
+        idType: formData.idType || "Passport", // idType is required in schema
+        idNumber: formData.idNumber?.trim() || "",
         checkIn: formData.checkIn,
         checkOut: formData.checkOut,
         duration: parseInt(formData.duration) || 1,
         adults: parseInt(formData.adults) || 1,
         kids: parseInt(formData.kids) || 0,
-        otherPersons: persons.filter(person => person.name.trim() !== ""), // Filter out empty persons
-        selectedRooms: selectedRooms || []
+        // Ensure otherPersons is properly formatted
+        otherPersons: Array.isArray(persons) ? 
+          persons.filter(person => person && person.name && person.name.trim() !== "") : 
+          [],
+        // Ensure selectedRooms is properly formatted
+        selectedRooms: Array.isArray(selectedRooms) ? selectedRooms : [],
+        // Add country fields if available
+        country: selectedCountry?.label || "",
+        countryCode: selectedCountry?.value || ""
       };
 
-      // Add country information if available
-      if (selectedCountry) {
-        updateData.country = selectedCountry.label;
-        updateData.countryCode = selectedCountry.value;
+      // Handle gender enum (only include if it's a valid value)
+      if (formData.gender && ['Male', 'Female', 'Other'].includes(formData.gender)) {
+        updateData.gender = formData.gender;
       }
 
-      console.log('Sending update data:', updateData);
+      // Only add payment fields if they have valid values
+      if (formData.totalAmount !== undefined && formData.totalAmount !== null) {
+        updateData.totalAmount = parseFloat(formData.totalAmount) || 0;
+      }
+      
+      if (formData.paidAmount !== undefined && formData.paidAmount !== null) {
+        updateData.paidAmount = parseFloat(formData.paidAmount) || 0;
+      }
+      
+      // Only add paymentMethod if it's a valid enum value
+      const validPaymentMethods = ['Cash', 'Credit Card', 'Debit Card', 'Bank Transfer', 'UPI', 'Other'];
+      if (formData.paymentMethod && validPaymentMethods.includes(formData.paymentMethod)) {
+        updateData.paymentMethod = formData.paymentMethod;
+      }
+      
+      // Only add paymentNotes if it has content
+      if (formData.paymentNotes && formData.paymentNotes.trim() !== "") {
+        updateData.paymentNotes = formData.paymentNotes.trim();
+      }
+
+      // Debug logging - this will help us see exactly what's being sent
+      console.log('=== DEBUG INFO ===');
       console.log('Reservation ID:', selectedReservation._id);
+      console.log('Form Data Raw:', formData);
+      console.log('Persons Raw:', persons);
+      console.log('Selected Rooms Raw:', selectedRooms);
+      console.log('Selected Country Raw:', selectedCountry);
+      console.log('Update Data Being Sent:', JSON.stringify(updateData, null, 2));
+      console.log('================');
+
+      // Validate that we have essential data
+      if (!updateData.firstName || !updateData.mobile || !updateData.checkIn || !updateData.checkOut) {
+        throw new Error("Missing required fields after processing");
+      }
 
       // Make the API call
       const response = await axios.put(
@@ -144,41 +197,73 @@ const EditReservationForm = ({
           headers: {
             'Content-Type': 'application/json'
           },
-          timeout: 10000 // 10 second timeout
+          timeout: 15000,
         }
       );
       
-      console.log('Update response:', response.data);
+      console.log('=== RESPONSE INFO ===');
+      console.log('Response Status:', response.status);
+      console.log('Response Data:', response.data);
+      console.log('===================');
       
-      // Show success popup instead of calling onSuccess directly
-      setShowSuccessPopup(true);
-      
-      // Call the callback with the updated reservation
-      if (onReservationUpdate && response.data) {
-        const updatedReservation = response.data.updatedReservation || response.data;
-        onReservationUpdate(updatedReservation);
+      // Check for success
+      if (response.status >= 200 && response.status < 300) {
+        setShowSuccessPopup(true);
+        
+        if (onReservationUpdate && response.data) {
+          // Handle different response formats
+          const updatedReservation = response.data.reservation || 
+                                   response.data.updatedReservation || 
+                                   response.data;
+          onReservationUpdate(updatedReservation);
+        }
+      } else {
+        throw new Error(`Unexpected response status: ${response.status}`);
       }
       
     } catch (error) {
-      console.error("Error updating reservation:", error);
+      console.error("=== ERROR INFO ===");
+      console.error("Full Error Object:", error);
       
-      // More detailed error handling
       if (error.response) {
-        console.error("Error response:", error.response.data);
-        const errorMessage = error.response.data.msg || 
-                           error.response.data.message || 
-                           error.response.data.error ||
-                           `Server error: ${error.response.status}`;
-        onError(`Error updating reservation: ${errorMessage}`);
+        console.error("Error Response Status:", error.response.status);
+        console.error("Error Response Headers:");
+        console.table(error.response.headers);
+        console.error("Error Response Data:");
+        console.log(error.response.data);
+        console.error("Error Response Data (stringified):");
+        try {
+          console.error(JSON.stringify(error.response.data, null, 2));
+        } catch (e) {
+          console.error("Could not stringify error data:", e);
+          console.error("Raw error data:", error.response.data);
+        }
+        
+        // Extract error message from response
+        let errorMessage = "Error updating reservation";
+        
+        if (error.response.data) {
+          // Try different possible error message fields
+          errorMessage = error.response.data.message || 
+                        error.response.data.msg || 
+                        error.response.data.error ||
+                        (error.response.data.errors && Array.isArray(error.response.data.errors) 
+                          ? error.response.data.errors.join(', ') 
+                          : errorMessage);
+        }
+        
+        // Add status code for context
+        errorMessage = `${errorMessage} (Status: ${error.response.status})`;
+        onError(errorMessage);
+        
       } else if (error.request) {
-        console.error("Network error:", error.request);
+        console.error("Network Error - Request made but no response:", error.request);
         onError("Network error. Please check your connection and try again.");
-      } else if (error.code === 'ECONNABORTED') {
-        onError("Request timeout. Please try again.");
       } else {
-        console.error("Unknown error:", error.message);
-        onError("Error updating reservation. Please try again.");
+        console.error("Error Message:", error.message);
+        onError(`Error: ${error.message}`);
       }
+      console.error("================");
     } finally {
       setIsSubmitting(false);
     }
