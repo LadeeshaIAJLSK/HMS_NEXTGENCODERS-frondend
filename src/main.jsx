@@ -7,18 +7,15 @@ import App from './App.jsx';
 import ResCategories from "./pages/Departments/Restaurant/Categories/ResCategories.jsx";
 import Products from "./pages/Departments/Restaurant/Products/Products";
 
-import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
-import CreateRooms from "./pages/Departments/Owner/OwnRooms/CreateRooms";
-import EditRooms from "./pages/Departments/Owner/OwnRooms/EditRooms";
-import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails"; 
 import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
-import "./pages/Departments/Owner/OwnRooms/OwnRooms.css";
 
+import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
 import SettingsPage from "./pages/Departments/Owner/OwnSettings/OwnSettings.jsx";
-import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx";
+import TransactionReport from "./pages/Departments/Owner/OwnReports/TransactionReports.jsx";
+import StockReport from "./pages/Departments/Owner/OwnReports/StockRepo.jsx";
+import CheckoutPage from "./pages/Departments/Owner/OwnReports/Checkout.jsx";
+import OwnerDashboard from "./pages/Departments/Owner/OwnDashboard/OwnDashboard.jsx"
 
-
-// import SettingsPage from "../Pages/Setting";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -32,12 +29,12 @@ createRoot(document.getElementById('root')).render(
 
         {/* Corrected Room Management Routes */}
         <Route path="/rooms/home" element={<RoomHome />} />
-        <Route path="/rooms/add" element={<CreateRooms />} />
-        <Route path="/rooms/edit/:id" element={<EditRooms />} />
-        <Route path="/rooms/:id" element={<RoomDetails />} />
-        
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/reports" element={<TransactionReport />} />
+        <Route path="/Transactionreports" element={<TransactionReport />} />
+        <Route path="/Stockreports" element={<StockReport />} />
+        <Route path="/Checkout" element={<CheckoutPage />} />
+        <Route path="/dashboard" element={<OwnerDashboard />} />
+
       </Routes>
     </Router>
   </StrictMode>
