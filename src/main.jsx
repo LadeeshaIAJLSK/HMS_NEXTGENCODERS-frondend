@@ -27,7 +27,15 @@ import Reservation1 from './pages/Departments/Reception/DNReservations/Reservati
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
 import GuestRes from './components/reception/Formedit/GuestRes.jsx';
 import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
-import EditReservation1 from './pages/Departments/Reception/DNReservations/EditReservation1.jsx'; // Import the EditReservation1 component
+import EditReservation1 from './pages/Departments/Reception/DNReservations/EditReservation1.jsx';
+
+
+
+import CreatePackages from './components/reception/Dayout/CreatePackages.jsx';
+import DeletePackages from './components/reception/Dayout/DeletePackages.jsx';
+import EditPackages from './components/reception/Dayout/EditPackages.jsx';
+import PackageHome from './components/reception/Dayout/PackageHome.jsx';
+import HotelDash from './components/reception/Dashboard/HotelDash.jsx';
 
 
 
@@ -68,6 +76,15 @@ createRoot(document.getElementById('root')).render(
         <Route path="/reports" element={<TransactionReport />} />
 
 
+
+
+        {/* Package Management Routes */}
+                <Route path="/packages" element={<PackageHome />} />
+                <Route path="/packages/add" element={<CreatePackages />} />
+                <Route path="/packages/edit/:id" element={<EditPackages />} />
+                <Route path="/packages/delete/:id" element={<DeletePackages />} />
+
+
         {/* Reception Routes */}
         <Route path="/reception" element={<FormSection />} />
         <Route path="/page1"  element={<Reservation1 />} />
@@ -75,6 +92,11 @@ createRoot(document.getElementById('root')).render(
         <Route path="/guest" element={<GuestRes />} />
         <Route path="/dashboard" element={<Fulldashboard />} />
         <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
+        <Route path="/hdash" element={<HotelDash />} />
+        
+        
+
+        {/* Add more routes as needed */}
 
         {/* Redirect to home if no match */}
 

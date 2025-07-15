@@ -40,6 +40,10 @@ function App() {
       <br/><br/>
       <Link to="/dashboard">Go to Reception Dashboard</Link>
       <Link to="/edit-reservation">Go to Edit Reservation</Link>
+      <br/><br/>
+      <Link to="packages">Go to Package Management Home</Link>
+      <br />
+      <Link to="hdash">Go to new Hotel Dashboard</Link>
       
       
 

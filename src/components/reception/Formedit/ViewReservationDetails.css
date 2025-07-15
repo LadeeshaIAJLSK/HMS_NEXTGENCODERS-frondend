@@ -1331,3 +1331,338 @@
 .view-reservation-scope .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
 .view-reservation-scope .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
 .view-reservation-scope .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+
+/* ViewReservationDetails.css - Add these styles for checkout status */
+
+/* Status Badge Styles */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid;
+  margin-left: 16px;
+}
+
+.status-badge-checkedout {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border-color: #dee2e6;
+}
+
+.status-badge-confirmed {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.status-badge-checkedin {
+  background-color: #cce5ff;
+  color: #004085;
+  border-color: #80bdff;
+}
+
+.status-badge-pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffeaa7;
+}
+
+.status-badge-default {
+  background-color: #e2e3e5;
+  color: #495057;
+  border-color: #ced4da;
+}
+
+/* Header Updates for Checkout Status */
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reservation-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.checkout-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #6c757d;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkout-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+/* Checked Out Card Styling */
+.checked-out-card {
+  border: 2px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.checked-out-card .section-card {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+}
+
+/* Disabled Payment Section */
+.disabled-section {
+  opacity: 0.7;
+  pointer-events: none;
+  position: relative;
+}
+
+.disabled-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.disabled-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.disabled-label {
+  color: #6c757d;
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+/* Checkout Complete Status Card */
+.checkout-complete {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 2px solid #28a745;
+  color: #155724;
+}
+
+.status-icon.complete {
+  background-color: #28a745;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.status-title.complete {
+  color: #155724;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.checkout-summary {
+  width: 100%;
+}
+
+.checkout-details-summary {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #c3e6cb;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .amount {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.payment-status.fully-paid {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.payment-status.partially-paid {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.payment-status.overpaid {
+  color: #17a2b8;
+  font-weight: bold;
+}
+
+.payment-status.not-paid {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.post-checkout-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reservation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header-left {
+    width: 100%;
+  }
+  
+  .status-badge {
+    align-self: flex-start;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+  
+  .checkout-indicator {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+/* Enhanced Status Cards */
+.status-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid;
+  margin-top: 24px;
+}
+
+.status-card.payment-required {
+  border-color: #ffc107;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+}
+
+.status-card.ready-checkout {
+  border-color: #28a745;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+}
+
+/* Animation for status changes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state for checked out reservations */
+.checked-out-card .loading-container {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+}
+
+/* Update existing styles for better checkout display */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e9ecef;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Ensure proper spacing in checked out state */
+.checked-out-card .info-value,
+.checked-out-card .room-number,
+.checked-out-card .payment-amount {
+  color: #6c757d;
+}
+
+.checked-out-card .section-header {
+  color: #6c757d;
+}
+
+/* Print-friendly styles for receipts */
+@media print {
+  .checked-out-card {
+    background-color: white !important;
+    border: none !important;
+  }
+  
+  .status-badge,
+  .checkout-indicator,
+  .post-checkout-actions {
+    display: none !important;
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios'; // Add this import
 import { Calculator, Receipt, CreditCard, DollarSign, AlertCircle, CheckCircle, Clock, User, MapPin, Calendar, Users, Bed, FileText, Download, LogOut } from "lucide-react";
-import "./ViewReservationDetails.css"; // Assuming you have a CSS file for styling
+import "./ViewReservationDetails.css";
 
 const ViewReservationDetails = ({ 
   selectedReservation, 
@@ -12,13 +13,16 @@ const ViewReservationDetails = ({
   const [roomDetails, setRoomDetails] = useState([]);
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [paymentAmount, setPaymentAmount] = useState("");
-  const [cashReceived, setCashReceived] = useState(""); // New: Cash actually received
+  const [cashReceived, setCashReceived] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [paymentNotes, setPaymentNotes] = useState("");
   const [loading, setLoading] = useState(true);
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [wantBill, setWantBill] = useState(true);
   const [showCashCalculator, setShowCashCalculator] = useState(false);
+  
+  // Add state for tracking total paid amount
+  const [totalPaidAmount, setTotalPaidAmount] = useState(0);
 
   const [formData, setFormData] = useState({
     checkIn: "",
@@ -47,7 +51,7 @@ const ViewReservationDetails = ({
       try {
         console.log("Fetching details for reservation:", selectedReservation._id);
         
-        // Simulate fetching rooms data (replace with your actual API call)
+        // TODO: Replace with actual API call
         const roomsData = [
           { RoomNo: "101", RType: "Standard", RClass: "Economy", RPrice: 50 },
           { RoomNo: "102", RType: "Deluxe", RClass: "Business", RPrice: 75 },
@@ -61,7 +65,7 @@ const ViewReservationDetails = ({
         
         setRoomDetails(bookedRooms);
         
-        // Simulate payment history
+        // Initialize payment history from reservation data
         const payments = [];
         if (selectedReservation.paidAmount > 0) {
           payments.push({
@@ -75,6 +79,7 @@ const ViewReservationDetails = ({
         }
         
         setPaymentHistory(payments);
+        setTotalPaidAmount(selectedReservation.paidAmount || 0);
         
       } catch (err) {
         console.error("Error fetching details:", err);
@@ -88,43 +93,28 @@ const ViewReservationDetails = ({
     
     fetchDetails();
     
-    // Set form data
+    // Set form data with fallbacks
     if (selectedReservation) {
       setFormData({
-        checkIn: selectedReservation.checkIn ? selectedReservation.checkIn.split('T')[0] : "2024-01-15",
-        checkOut: selectedReservation.checkOut ? selectedReservation.checkOut.split('T')[0] : "2024-01-18",
-        duration: selectedReservation.duration || "3",
-        adults: selectedReservation.adults || "2",
-        kids: selectedReservation.kids || "1",
-        firstName: selectedReservation.firstName || "John",
-        mobile: selectedReservation.mobile || "+1234567890",
-        email: selectedReservation.email || "john@example.com",
-        middleName: selectedReservation.middleName || "David",
-        surname: selectedReservation.surname || "Smith",
-        dob: selectedReservation.dob ? selectedReservation.dob.split('T')[0] : "1990-05-15",
-        address: selectedReservation.address || "123 Main St",
-        city: selectedReservation.city || "New York",
-        gender: selectedReservation.gender || "Male",
-        idType: selectedReservation.idType || "Passport",
-        idNumber: selectedReservation.idNumber || "A1234567",
+        checkIn: selectedReservation.checkIn ? selectedReservation.checkIn.split('T')[0] : "",
+        checkOut: selectedReservation.checkOut ? selectedReservation.checkOut.split('T')[0] : "",
+        duration: selectedReservation.duration || "",
+        adults: selectedReservation.adults || "1",
+        kids: selectedReservation.kids || "0",
+        firstName: selectedReservation.firstName || "",
+        mobile: selectedReservation.mobile || "",
+        email: selectedReservation.email || "",
+        middleName: selectedReservation.middleName || "",
+        surname: selectedReservation.surname || "",
+        dob: selectedReservation.dob ? selectedReservation.dob.split('T')[0] : "",
+        address: selectedReservation.address || "",
+        city: selectedReservation.city || "",
+        gender: selectedReservation.gender || "",
+        idType: selectedReservation.idType || "",
+        idNumber: selectedReservation.idNumber || "",
       });
     }
   }, [selectedReservation]);
-
-  // Mock data for demonstration
-  const mockSelectedReservation = {
-    _id: "RES123456",
-    selectedRooms: ["101", "102"],
-    totalAmount: 375, // 3 nights * (50 + 75) = 375
-    paidAmount: 100,
-    ...selectedReservation
-  };
-
-  const calculateTotalDue = () => {
-    const totalAmount = mockSelectedReservation.totalAmount || 0;
-    const paidAmount = mockSelectedReservation.paidAmount || 0;
-    return totalAmount - paidAmount;
-  };
 
   const calculateTotalRoomCharges = () => {
     if (!roomDetails.length || !formData.duration) return 0;
@@ -155,7 +145,7 @@ const ViewReservationDetails = ({
       return;
     }
     
-    const totalDue = calculateTotalDue();
+    const totalDue = getBalanceDue();
     if (amount > totalDue) {
       onError("Payment amount cannot exceed the amount due");
       return;
@@ -164,8 +154,9 @@ const ViewReservationDetails = ({
     try {
       const change = paymentMethod === "Cash" ? received - amount : 0;
       
-      // Simulate API call
+      // TODO: Replace with actual API call
       console.log("Recording payment:", { 
+        reservationId: selectedReservation._id,
         amount, 
         paymentMethod, 
         paymentNotes,
@@ -184,12 +175,10 @@ const ViewReservationDetails = ({
       };
       
       setPaymentHistory(prev => [...prev, newPayment]);
-      
-      // Update total paid amount
-      mockSelectedReservation.paidAmount = (mockSelectedReservation.paidAmount || 0) + amount;
+      setTotalPaidAmount(prev => prev + amount);
       
       if (change > 0) {
-        onSuccess(`Payment recorded! Please give ${change.toFixed(2)} change to the guest.`);
+        onSuccess(`Payment recorded! Please give $${change.toFixed(2)} change to the guest.`);
       } else {
         onSuccess("Payment recorded successfully!");
       }
@@ -214,17 +203,29 @@ const ViewReservationDetails = ({
     setShowCheckoutDialog(true);
   };
 
+  // Single confirmCheckout function with API integration
   const confirmCheckout = async () => {
     try {
-      // Simulate API call
-      console.log("Checking out guest...");
-      
+      const balance = getBalanceDue();
+      const paymentStatus = balance <= 0 ? 'Captured' : 'Pending';
+
+      // API call to update checkout with payment status
+      const response = await axios.put(
+        `http://localhost:8000/api/reservations/${selectedReservation._id}/checkout`,
+        {
+          paymentStatus: paymentStatus,
+          paidAmount: getTotalPaid(),
+          totalAmount: getTotalAmount()
+        }
+      );
+
       if (wantBill) {
         generateBill();
       }
       
       onSuccess("Guest checked out successfully! Rooms are now vacant.");
       if (onCheckoutComplete) onCheckoutComplete();
+      setShowCheckoutDialog(false);
       onBackToEdit();
       
     } catch (err) {
@@ -234,11 +235,11 @@ const ViewReservationDetails = ({
   };
 
   const getTotalPaid = () => {
-    return paymentHistory.reduce((total, payment) => total + payment.amount, 0);
+    return totalPaidAmount;
   };
 
   const getTotalAmount = () => {
-    return mockSelectedReservation?.totalAmount || 0;
+    return selectedReservation?.totalAmount || calculateTotalRoomCharges();
   };
 
   const getBalanceDue = () => {
@@ -253,15 +254,6 @@ const ViewReservationDetails = ({
     return "Not Paid";
   };
 
-  const getPaymentStatusColor = () => {
-    const balance = getBalanceDue();
-    if (balance < 0) return "text-blue-600 bg-blue-100";
-    if (balance === 0) return "text-green-600 bg-green-100";
-    if (getTotalPaid() > 0) return "text-yellow-600 bg-yellow-100";
-    return "text-red-600 bg-red-100";
-  };
-
-  // Add the missing function
   const getPaymentStatusClass = () => {
     const balance = getBalanceDue();
     if (balance < 0) return "overpaid";
@@ -272,7 +264,7 @@ const ViewReservationDetails = ({
 
   const generateBill = () => {
     const bill = {
-      reservationId: mockSelectedReservation._id,
+      reservationId: selectedReservation._id,
       guestName: `${formData.firstName} ${formData.middleName} ${formData.surname}`.trim(),
       checkIn: formData.checkIn,
       checkOut: formData.checkOut,
@@ -291,7 +283,6 @@ const ViewReservationDetails = ({
       generatedAt: new Date().toLocaleString()
     };
 
-    // Enhanced bill content with cash handling details
     const billContent = `
 ═══════════════════════════════════════════════════════════
                     GRAND HOTEL RECEIPT
@@ -373,17 +364,77 @@ Thank you for staying with us!
     );
   }
 
+  // Check if reservation is checked out
+  const isCheckedOut = selectedReservation?.status === 'CheckedOut';
+  
+  // Get status badge component
+  const getStatusBadge = () => {
+    const status = selectedReservation?.status;
+    let badgeClass = '';
+    let icon = null;
+    let label = '';
+    
+    switch (status) {
+      case 'CheckedOut':
+        badgeClass = 'status-badge-checkedout';
+        icon = <LogOut className="w-4 h-4" />;
+        label = 'Checked Out';
+        break;
+      case 'Confirmed':
+        badgeClass = 'status-badge-confirmed';
+        icon = <CheckCircle className="w-4 h-4" />;
+        label = 'Confirmed';
+        break;
+      case 'CheckedIn':
+        badgeClass = 'status-badge-checkedin';
+        icon = <User className="w-4 h-4" />;
+        label = 'Checked In';
+        break;
+      case 'Pending':
+        badgeClass = 'status-badge-pending';
+        icon = <Clock className="w-4 h-4" />;
+        label = 'Pending';
+        break;
+      default:
+        badgeClass = 'status-badge-default';
+        icon = <AlertCircle className="w-4 h-4" />;
+        label = status || 'Unknown';
+    }
+    
+    return (
+      <span className={`status-badge ${badgeClass}`}>
+        {icon}
+        {label}
+      </span>
+    );
+  };
+
   return (
     <div className="view-reservation-scope">
       <div className="reservation-details-container">
-        <div className="reservation-card fade-in">
+        <div className={`reservation-card fade-in ${isCheckedOut ? 'checked-out-card' : ''}`}>
           <div className="reservation-header">
-            <h2>
-              <User />
-              Reservation Details
-            </h2>
+            <div className="header-left">
+              <h2>
+                <User />
+                
+                {isCheckedOut && (
+                  <span className="checkout-indicator">
+                    
+                    COMPLETED
+                  </span>
+                )}
+              </h2>
+              {getStatusBadge()}
+              {isCheckedOut && selectedReservation.checkoutDate && (
+                <div className="checkout-info">
+                  <Clock className="w-4 h-4" />
+                  Checked out on: {new Date(selectedReservation.checkoutDate).toLocaleDateString()}
+                </div>
+              )}
+            </div>
             <button onClick={onBackToEdit} className="back-button">
-              ← Back to Edit
+              ← Back to {isCheckedOut ? 'List' : 'Edit'}
             </button>
           </div>
 
@@ -410,22 +461,22 @@ Thank you for staying with us!
                   <span className="info-value">{formData.email || "N/A"}</span>
                 </div>
                 <div className="info-item">
-                  
+                  <span className="info-label">Check-In:</span>
+                  <span className="info-value">{formData.checkIn}</span>
+                </div>
+                <div className="info-item">
                   <span className="info-label">Check-Out:</span>
                   <span className="info-value">{formData.checkOut}</span>
                 </div>
                 <div className="info-item">
-                  
                   <span className="info-label">Duration:</span>
                   <span className="info-value">{formData.duration} nights</span>
                 </div>
                 <div className="info-item">
-                  
                   <span className="info-label">Guests:</span>
                   <span className="info-value">{formData.adults} Adults, {formData.kids} Kids</span>
                 </div>
                 <div className="info-item">
-                  
                   <span className="info-label">ID:</span>
                   <span className="info-value">{formData.idType}: {formData.idNumber}</span>
                 </div>
@@ -442,7 +493,7 @@ Thank you for staying with us!
                 <div>
                   {roomDetails.map(room => {
                     const roomPrice = room.RPrice || room.Price || 0;
-                    const totalPrice = roomPrice * parseInt(formData.duration);
+                    const totalPrice = roomPrice * parseInt(formData.duration || 1);
                     return (
                       <div key={room.RoomNo} className="room-item">
                         <div className="room-header">
@@ -471,7 +522,7 @@ Thank you for staying with us!
                   <Bed className="empty-icon" />
                   <p className="empty-title">No room details available</p>
                   <p className="empty-description">
-                    Selected rooms: {mockSelectedReservation?.selectedRooms?.join(', ') || 'None'}
+                    Selected rooms: {selectedReservation?.selectedRooms?.join(', ') || 'None'}
                   </p>
                 </div>
               )}
@@ -561,133 +612,148 @@ Thank you for staying with us!
               )}
             </div>
 
-            {/* Enhanced Record Payment */}
-            <div className="section-card slide-up">
+            {/* Enhanced Record Payment - Disabled if checked out */}
+            <div className={`section-card slide-up ${isCheckedOut ? 'disabled-section' : ''}`}>
               <h3 className="section-header">
                 <CreditCard />
                 Record Payment
+                {isCheckedOut && <span className="disabled-label">(Reservation Completed)</span>}
               </h3>
               
-              {getBalanceDue() > 0 && (
-                <div className="quick-pay-section">
-                  <p className="quick-pay-text">
-                    Amount Due: ${getBalanceDue().toFixed(2)}
+              {isCheckedOut ? (
+                <div className="disabled-message">
+                  <LogOut className="w-8 h-8 text-gray-400" />
+                  <p className="text-gray-600">
+                    This reservation has been checked out. No further payments can be recorded.
                   </p>
-                  <button onClick={quickPayFull} className="quick-pay-button">
-                    Pay Full Amount
-                  </button>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Final Status: {getPaymentStatus()}
+                  </p>
                 </div>
-              )}
-              
-              <div className="payment-form">
-                <div className="payment-form-field">
-                  <label className="payment-form-label">
-                    Payment Amount ($)
-                  </label>
-                  <input
-                    type="number"
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="payment-form-input"
-                    min="0.01"
-                    step="0.01"
-                    placeholder={`Max: ${getBalanceDue().toFixed(2)}`}
-                  />
-                </div>
-                
-                <div className="payment-form-field">
-                  <label className="payment-form-label">
-                    Payment Method
-                  </label>
-                  <select
-                    value={paymentMethod}
-                    onChange={(e) => {
-                      setPaymentMethod(e.target.value);
-                      setShowCashCalculator(e.target.value === "Cash");
-                    }}
-                    className="payment-form-select"
-                  >
-                    <option value="Cash">Cash</option>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Debit Card">Debit Card</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                {/* Cash Calculator */}
-                {(paymentMethod === "Cash" || showCashCalculator) && (
-                  <div className="cash-calculator">
-                    <h4 className="cash-calculator-header">
-                      <Calculator />
-                      Cash Calculator
-                    </h4>
+              ) : (
+                <>
+                  {getBalanceDue() > 0 && (
+                    <div className="quick-pay-section">
+                      <p className="quick-pay-text">
+                        Amount Due: ${getBalanceDue().toFixed(2)}
+                      </p>
+                      <button onClick={quickPayFull} className="quick-pay-button">
+                        Pay Full Amount
+                      </button>
+                    </div>
+                  )}
+                  
+                  <div className="payment-form">
                     <div className="payment-form-field">
                       <label className="payment-form-label">
-                        Cash Received from Guest ($)
+                        Payment Amount ($)
                       </label>
                       <input
                         type="number"
-                        value={cashReceived}
-                        onChange={(e) => setCashReceived(e.target.value)}
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
                         className="payment-form-input"
                         min="0.01"
                         step="0.01"
-                        placeholder="e.g., 500 (for $500 bill)"
+                        placeholder={`Max: ${getBalanceDue().toFixed(2)}`}
                       />
                     </div>
-                    {cashReceived && paymentAmount && (
-                      <div className="change-display">
-                        <span className="change-label">Change to Give:</span>
-                        <span className={`change-amount ${
-                          calculateChange() >= 0 ? 'positive' : 'negative'
-                        }`}>
-                          ${Math.abs(calculateChange()).toFixed(2)}
-                          {calculateChange() < 0 && ' (Insufficient Cash)'}
-                        </span>
+                    
+                    <div className="payment-form-field">
+                      <label className="payment-form-label">
+                        Payment Method
+                      </label>
+                      <select
+                        value={paymentMethod}
+                        onChange={(e) => {
+                          setPaymentMethod(e.target.value);
+                          setShowCashCalculator(e.target.value === "Cash");
+                        }}
+                        className="payment-form-select"
+                      >
+                        <option value="Cash">Cash</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    {/* Cash Calculator */}
+                    {(paymentMethod === "Cash" || showCashCalculator) && (
+                      <div className="cash-calculator">
+                        <h4 className="cash-calculator-header">
+                          <Calculator />
+                          Cash Calculator
+                        </h4>
+                        <div className="payment-form-field">
+                          <label className="payment-form-label">
+                            Cash Received from Guest ($)
+                          </label>
+                          <input
+                            type="number"
+                            value={cashReceived}
+                            onChange={(e) => setCashReceived(e.target.value)}
+                            className="payment-form-input"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="e.g., 500 (for $500 bill)"
+                          />
+                        </div>
+                        {cashReceived && paymentAmount && (
+                          <div className="change-display">
+                            <span className="change-label">Change to Give:</span>
+                            <span className={`change-amount ${
+                              calculateChange() >= 0 ? 'positive' : 'negative'
+                            }`}>
+                              ${Math.abs(calculateChange()).toFixed(2)}
+                              {calculateChange() < 0 && ' (Insufficient Cash)'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    <div className="payment-form-field">
+                      <label className="payment-form-label">
+                        Notes
+                      </label>
+                      <textarea
+                        value={paymentNotes}
+                        onChange={(e) => setPaymentNotes(e.target.value)}
+                        className="payment-form-textarea"
+                        placeholder="Optional notes"
+                      />
+                    </div>
+                    
+                    <button
+                      onClick={handlePayment}
+                      className="btn btn-secondary btn-full-width"
+                      disabled={!paymentAmount || parseFloat(paymentAmount) <= 0 || 
+                                (paymentMethod === "Cash" && parseFloat(cashReceived) < parseFloat(paymentAmount))}
+                    >
+                      <DollarSign />
+                      Record Payment
+                    </button>
+                    
+                    {paymentMethod === "Cash" && cashReceived && paymentAmount && calculateChange() > 0 && (
+                      <div className="alert warning mt-3">
+                        💡 Remember to give ${calculateChange().toFixed(2)} change to the guest!
+                      </div>
+                    )}
+                    
+                    {getBalanceDue() <= 0 && (
+                      <div className="alert success mt-3">
+                        <CheckCircle />
+                        {getBalanceDue() < 0 ? 
+                          `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
+                          'Payment is complete - Ready for checkout!'
+                        }
                       </div>
                     )}
                   </div>
-                )}
-                
-                <div className="payment-form-field">
-                  <label className="payment-form-label">
-                    Notes
-                  </label>
-                  <textarea
-                    value={paymentNotes}
-                    onChange={(e) => setPaymentNotes(e.target.value)}
-                    className="payment-form-textarea"
-                    placeholder="Optional notes"
-                  />
-                </div>
-                
-                <button
-                  onClick={handlePayment}
-                  className="btn btn-secondary btn-full-width"
-                  disabled={!paymentAmount || parseFloat(paymentAmount) <= 0 || 
-                            (paymentMethod === "Cash" && parseFloat(cashReceived) < parseFloat(paymentAmount))}
-                >
-                  <DollarSign />
-                  Record Payment
-                </button>
-                
-                {paymentMethod === "Cash" && cashReceived && paymentAmount && calculateChange() > 0 && (
-                  <div className="alert warning mt-3">
-                    💡 Remember to give ${calculateChange().toFixed(2)} change to the guest!
-                  </div>
-                )}
-                
-                {getBalanceDue() <= 0 && (
-                  <div className="alert success mt-3">
-                    <CheckCircle />
-                    {getBalanceDue() < 0 ? 
-                      `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
-                      'Payment is complete - Ready for checkout!'
-                    }
-                  </div>
-                )}
-              </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -708,52 +774,99 @@ Thank you for staying with us!
             </div>
           </div>
 
-          {/* Checkout Section */}
+          {/* Checkout Section - Modified for checked out reservations */}
           <div className="mt-6">
-            {getBalanceDue() > 0 ? (
-              <div className="status-card payment-required">
-                <div className="status-icon warning">
-                  <AlertCircle />
-                </div>
-                <h3 className="status-title warning">
-                  Payment Required Before Checkout
-                </h3>
-                <p className="status-description">
-                  Outstanding Balance: 
-                </p>
-                <div className="status-amount">${getBalanceDue().toFixed(2)}</div>
-                <button
-                  onClick={() => {
-                    document.querySelector('.payment-form-input')?.focus();
-                  }}
-                  className="btn btn-warning"
-                >
-                  <DollarSign />
-                  Complete Payment (${getBalanceDue().toFixed(2)} Due)
-                </button>
-              </div>
-            ) : (
-              <div className="status-card ready-checkout">
-                <div className="status-icon success">
+            {isCheckedOut ? (
+              <div className="status-card checkout-complete">
+                <div className="status-icon complete">
                   <CheckCircle />
                 </div>
-                <h3 className="status-title success">
-                  {getBalanceDue() < 0 ? 
-                    `Guest Overpaid - Credit: ${Math.abs(getBalanceDue()).toFixed(2)}` :
-                    'Payment Complete - Ready for Checkout'
-                  }
+                <h3 className="status-title complete">
+                  ✅ Checkout Complete
                 </h3>
-                <p className="status-description">
-                  {getBalanceDue() < 0 ? 
-                    'Consider refunding the excess amount to the guest' :
-                    'All payments have been received'
-                  }
-                </p>
-                <button onClick={handleCheckout} className="btn btn-success">
-                  <LogOut />
-                  Proceed to Checkout
-                </button>
+                <div className="checkout-summary">
+                  <p className="status-description">
+                    This guest has been successfully checked out.
+                  </p>
+                  <div className="checkout-details-summary">
+                    <div className="detail-row">
+                      <span>Final Bill Amount:</span>
+                      <span className="amount">${getTotalAmount().toFixed(2)}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span>Total Paid:</span>
+                      <span className="amount">${getTotalPaid().toFixed(2)}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span>Final Status:</span>
+                      <span className={`payment-status ${getPaymentStatusClass()}`}>
+                        {getPaymentStatus()}
+                      </span>
+                    </div>
+                    {selectedReservation.checkoutDate && (
+                      <div className="detail-row">
+                        <span>Checkout Date:</span>
+                        <span>{new Date(selectedReservation.checkoutDate).toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="post-checkout-actions">
+                    <button onClick={generateBill} className="btn btn-info">
+                      <Download />
+                      Download Final Receipt
+                    </button>
+                  </div>
+                </div>
               </div>
+            ) : (
+              <>
+                {getBalanceDue() > 0 ? (
+                  <div className="status-card payment-required">
+                    <div className="status-icon warning">
+                      <AlertCircle />
+                    </div>
+                    <h3 className="status-title warning">
+                      Payment Required Before Checkout
+                    </h3>
+                    <p className="status-description">
+                      Outstanding Balance: 
+                    </p>
+                    <div className="status-amount">${getBalanceDue().toFixed(2)}</div>
+                    <button
+                      onClick={() => {
+                        document.querySelector('.payment-form-input')?.focus();
+                      }}
+                      className="btn btn-warning"
+                    >
+                      <DollarSign />
+                      Complete Payment (${getBalanceDue().toFixed(2)} Due)
+                    </button>
+                  </div>
+                ) : (
+                  <div className="status-card ready-checkout">
+                    <div className="status-icon success">
+                      <CheckCircle />
+                    </div>
+                    <h3 className="status-title success">
+                      {getBalanceDue() < 0 ? 
+                        `Guest Overpaid - Credit: ${Math.abs(getBalanceDue()).toFixed(2)}` :
+                        'Payment Complete - Ready for Checkout'
+                      }
+                    </h3>
+                    <p className="status-description">
+                      {getBalanceDue() < 0 ? 
+                        'Consider refunding the excess amount to the guest' :
+                        'All payments have been received'
+                      }
+                    </p>
+                    <button onClick={handleCheckout} className="btn btn-success">
+                      <LogOut />
+                      Proceed to Checkout
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
