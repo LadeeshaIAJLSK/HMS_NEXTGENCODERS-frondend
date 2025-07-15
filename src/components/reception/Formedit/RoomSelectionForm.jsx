@@ -18,11 +18,17 @@ const RoomSelectionForm = ({
       try {
         const response = await axios.get("http://localhost:8000/api/posts/rooms");
         const roomsData = response.data.rooms || response.data;
-        setRooms(roomsData);
         
-        // Extract unique types and classes
-        const types = [...new Set(roomsData.map(room => room.RType))];
-        const classes = [...new Set(roomsData.map(room => room.RClass))];
+        // Filter to show only vacant rooms
+        const vacantRooms = roomsData.filter(room => 
+          room.RStatus && room.RStatus.toLowerCase() === 'vacant'
+        );
+        
+        setRooms(vacantRooms);
+        
+        // Extract unique types and classes from vacant rooms only
+        const types = [...new Set(vacantRooms.map(room => room.RType))];
+        const classes = [...new Set(vacantRooms.map(room => room.RClass))];
         setUniqueTypes(types);
         setUniqueClasses(classes);
       } catch (error) {
@@ -53,6 +59,20 @@ const RoomSelectionForm = ({
 
     return typeMatch && classMatch && searchMatch;
   });
+
+  // Calculate total price for selected rooms
+  const calculateTotalPrice = () => {
+    return selectedRooms.reduce((total, roomNo) => {
+      const room = rooms.find(r => r.RoomNo === roomNo);
+      return total + (room?.RPrice || 0);
+    }, 0);
+  };
+
+  // Format price for display
+  const formatPrice = (price) => {
+    if (!price || price === 0) return "N/A";
+    return `${price.toLocaleString()}`;
+  };
 
   return (
     <div className="checkinform-form-container">
@@ -105,7 +125,7 @@ const RoomSelectionForm = ({
                 <th>Room No.</th>
                 <th>Type</th>
                 <th>Class</th>
-                <th>Status</th>
+                <th>Price</th>
               </tr>
             </thead>
             <tbody>
@@ -122,12 +142,12 @@ const RoomSelectionForm = ({
                     <td>{room.RoomNo}</td>
                     <td>{room.RType}</td>
                     <td>{room.RClass}</td>
-                    <td>{room.RStatus}</td>
+                    <td className="price-cell">{formatPrice(room.RPrice)}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="no-rooms">No rooms match your filters</td>
+                  <td colSpan="5" className="no-rooms">No vacant rooms match your filters</td>
                 </tr>
               )}
             </tbody>
@@ -137,6 +157,9 @@ const RoomSelectionForm = ({
         {selectedRooms.length > 0 && (
           <div className="selected-rooms">
             <h3>Selected Rooms: {selectedRooms.join(", ")}</h3>
+            <div className="total-price">
+              <strong>Total Price: {formatPrice(calculateTotalPrice())}</strong>
+            </div>
           </div>
         )}
       </div>

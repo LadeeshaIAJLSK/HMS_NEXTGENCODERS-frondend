@@ -22,10 +22,10 @@ const OtherPersonsForm = ({
   };
 
   return (
-    <div className="reservation3-container">
-      <h2 className="form-heading">Information of Other Person</h2>
-      <div className="table-responsive">
-        <table className="person-table">
+    <div className="editform-container">
+      <h2 className="editform-form-heading">Information of Other Person</h2>
+      <div className="editperson-table-responsive">
+        <table className="editperson-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -47,7 +47,7 @@ const OtherPersonsForm = ({
                     onChange={(e) => handlePersonChange(index, 'name', e.target.value)}
                     placeholder="Enter Name"
                     style={{ color: getTextColor(person.name) }}
-                    className="table-input"
+                    className="edit-table-input"
                   />
                 </td>
                 <td>
@@ -55,7 +55,7 @@ const OtherPersonsForm = ({
                     value={person.gender}
                     onChange={(e) => handlePersonChange(index, 'gender', e.target.value)}
                     style={{ color: getTextColor(person.gender) }}
-                    className="table-select"
+                    className="edit-table-select"
                   >
                     <option value="">--Select--</option>
                     <option value="Male">Male</option>
@@ -70,7 +70,7 @@ const OtherPersonsForm = ({
                     onChange={(e) => handlePersonChange(index, 'age', e.target.value)}
                     placeholder="Enter Age"
                     style={{ color: getTextColor(person.age) }}
-                    className="person-table-input"
+                    className="edit-table-input"
                   />
                 </td>
                 <td>
@@ -80,7 +80,7 @@ const OtherPersonsForm = ({
                     onChange={(e) => handlePersonChange(index, 'address', e.target.value)}
                     placeholder="Enter Address"
                     style={{ color: getTextColor(person.address) }}
-                    className="person-table-input"
+                    className="edit-table-input"
                   />
                 </td>
                 <td>
@@ -88,7 +88,7 @@ const OtherPersonsForm = ({
                     value={person.idType}
                     onChange={(e) => handlePersonChange(index, 'idType', e.target.value)}
                     style={{ color: getTextColor(person.idType) }}
-                    className="person-table-select"
+                    className="edit-table-select"
                   >
                     <option value="">--Select--</option>
                     <option value="Passport">Passport</option>
@@ -103,7 +103,7 @@ const OtherPersonsForm = ({
                     onChange={(e) => handlePersonChange(index, 'idNo', e.target.value)}
                     placeholder="Enter ID No."
                     style={{ color: getTextColor(person.idNo) }}
-                    className="person-table-input"
+                    className="edit-table-input"
                   />
                 </td>
                 <td>

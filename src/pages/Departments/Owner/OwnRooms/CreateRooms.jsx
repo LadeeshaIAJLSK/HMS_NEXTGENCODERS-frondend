@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
-import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+
 
 export default class CreateRooms extends Component {
     constructor(props) {
@@ -46,7 +46,7 @@ export default class CreateRooms extends Component {
         }
         return (
             <div className="content">
-                <Ownsidebar/>
+                
                 <h1 className="h3 mb-3 font-weight-normal">Add a New Room</h1>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
