@@ -126,7 +126,7 @@ const TransactionReport = () => {
       <Ownsidebar />
       <div className="transaction-report-container">
         <div className="transaction-filter-section">
-          <h3>Filter Transaction History</h3>
+          <h2>Filter Transaction History</h2>
           <div className="transaction-filter-grid">
             <div className="transaction-form-group">
               <label>Department</label>
@@ -188,6 +188,7 @@ const TransactionReport = () => {
           <div>
             Show
             <select className="transaction-entries-select" value={entriesPerPage} onChange={handleEntriesChange}>
+              <option value="10">6</option>
               <option value="10">10</option>
               <option value="25">25</option>
               <option value="50">50</option>
@@ -220,7 +221,7 @@ const TransactionReport = () => {
                   <td>{transaction.transactionType}</td>
                   <td>{transaction.paymentMode}</td>
                   <td>{new Date(transaction.date).toLocaleDateString()}</td>
-                  <td>₹{transaction.totalAmount.toFixed(2)}</td>
+                  <td>{transaction.totalAmount.toFixed(2)}</td>
                 </tr>
               ))}
            </tbody>

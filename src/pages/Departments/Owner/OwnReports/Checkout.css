@@ -1,4 +1,4 @@
-/* Main page layout */
+/* Wrapper around the whole checkout report page */
 .checkout-report-wrapper {
   max-width: auto;
   margin: 1rem auto;
@@ -7,16 +7,19 @@
   border: 1px solid #ddd;
   border-radius: 8px;
 }
-.checkout-page-container {
-  margin: 40px; /* or match Ownsidebar width */
+
+/* Main content container centered with max width */
+.checkout-report-container {
+  margin-left: 100px; /* Matches the sidebar width */
+  padding: 20px;
   background-color: #f5f5f5;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-/*  Filter Section Styling */
+/* Filter section styling with box shadow and spacing */
 .checkout-filter-section {
- background: #ffffff;
+  background: #ffffff;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -24,12 +27,11 @@
 }
 
 .checkout-filter-section h2 {
-  margin-bottom: 15px;
+   margin-bottom: 15px;
   font-size: 22px;
   color: #333;
 }
 
-/* Filter fields grid layout */
 .checkout-filter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -37,54 +39,62 @@
   margin-bottom: 15px;
 }
 
+/* Each input/select with label */
 .checkout-form-group {
   display: flex;
-  flex-direction: column;
-}
+  flex-direction: column;}
 
-/* Label styling */
 .checkout-form-group label {
   margin-bottom: 5px;
   font-weight: 500;
-  color: #333;}
-
-/* Select and date input styling */
-.checkout-form-group select,
-.checkout-form-group input[type="date"] {
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  color: #333;
 }
 
-/* Search button style */
-.checkout-search-button {
+.checkout-form-group input,
+.checkout-form-group select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Search and Export button styles */
+.checkout-filter-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.checkout-filter-buttons button {
    padding: 8px 18px;
   font-size: 14px;
   font-weight: bold;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+/* Search button color */
+.checkout-search-btn {
   background-color: #008080;
-  color: #fff;
+  color:white;
 }
 
-
-/* Table Section Styling */
-.checkout-table-section {
-  background: #ffffff;
-  padding:20px;
-  margin-left: 220px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Export button color */
+.checkout-export-btn {
+  background-color: #4169e1;
+  color: #fbf9f9;
 }
 
-/* Header above the table (entry selection) */
-.checkout-table-header {
+/* Controls for entries per page */
+.checkout-table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
-/* Dropdown for selecting number of entries */
+/* Styling for dropdown select */
 .checkout-entries-select {
   margin: 0 10px;
   padding: 5px 8px;
@@ -92,42 +102,65 @@
   border: 1px solid #ccc;
 }
 
-/* Table Layout */
+/* Table container */
+.checkout-table-section {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table structure */
 .checkout-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-bottom: 5px;
 }
 
-/* Table header background */
-.checkout-table thead {
-  background-color: #e8e8e8;
-}
-
-/*  Table cell styling */
 .checkout-table th,
 .checkout-table td {
-  padding: 12px 15px;
   text-align: left;
+  padding: 12px 15px;
   font-size: 14px;
   border-bottom: 1px solid #ddd;
 }
 
-/* Row hover effect */
-.checkout-table tbody tr:hover {
-  background-color: #f9f9f9;
+/* Header background */
+.checkout-table th {
+  background-color: #e0f7fa;
+  color: #333;
 }
 
-/* View button inside table */
-.checkout-view-button {
-  background-color: #3498db;
-  color: white;
+/* Row hover effect */
+.checkout-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Pagination wrapper */
+.checkout-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Pagination buttons */
+.checkout-pagination-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.checkout-pagination-buttons button {
   padding: 6px 12px;
-  border: none;
+  border: 1px solid #ccc;
+  background: #3f5df3;
+  color:rgb(248, 247, 247);
   border-radius: 4px;
   cursor: pointer;
 }
 
-.checkout-view-button:hover {
-  background-color: #2980b9;
+/* Active page highlight */
+.checkout-pagination-buttons .active {
+  background-color: teal;
+  color: rgb(255, 254, 254);
+  border: 1px solid teal;
 }

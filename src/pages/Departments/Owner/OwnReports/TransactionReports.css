@@ -26,7 +26,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.transaction-filter-section h3 {
+.transaction-filter-section h2 {
   margin-bottom: 15px;
   font-size: 22px;
   color: #333;
@@ -154,7 +154,7 @@
   padding: 6px 12px;
   border: 1px solid #ccc;
   background: #3f5df3;
-  color:black;
+  color:rgb(251, 247, 247);
   border-radius: 4px;
   cursor: pointer;
 }
