@@ -35,7 +35,7 @@ const Cart = () => {
       
       const success = await purchasePackages();
       if (success) {
-        alert('Payment successful! Your packages have been purchased.');
+        // alert('Payment successful! Your packages have been purchased.');
         // Navigate to package management page after successful purchase
         navigate('/package-management');
       } else {
