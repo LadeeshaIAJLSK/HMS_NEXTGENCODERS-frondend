@@ -3,6 +3,11 @@
 
   
 
+
+
+
+  
+
 import { useState } from 'react'
 import './App.css'
 import {Link} from 'react-router'
@@ -12,17 +17,22 @@ function App() {
 
   return (
     <div>
-      <Link to='/restaurant/categories'>click here to go to category page</Link>
-      <br></br>
-      <Link to='/restaurant/products'>click here to go to products page</Link>
-      <br/><br/>
 
+      <Link to="/dashboardowner">Owner Dashboard</Link>
+      <br/>
       <Link to="/rooms/home">Go to Room Management Home</Link>
       <br />  
-      <Link to="/rooms/add">Add a New Room</Link>
-      <br />
-      <Link to="/rooms/edit/:id">Edit Room Details</Link>
+      <Link to="/settings">Settings</Link>
+      <br/>
+      <Link to="/Transactionreports">TransactionReports</Link>
+      <br/>
+      <Link to="/Stockreports">StockReports</Link>
+      <br/>
+      <Link to="/Checkout">Checkout Details</Link>
+      <br/><br/>
+      
 
+    
       
       <br /><br />
 
@@ -38,7 +48,7 @@ function App() {
       <br/><br/>
       <Link to="/guest">Go to Reservation Management</Link>
       <br/><br/>
-      <Link to="/dashboard">Go to Reception Dashboard</Link>
+      <Link to="/dashboardreception">Go to Reception Dashboard</Link>
       <Link to="/edit-reservation">Go to Edit Reservation</Link>
       <br/><br/>
       <Link to="packages">Go to Package Management Home</Link>
@@ -58,7 +68,6 @@ function App() {
 }
 
 export default App;
-
 
 
 

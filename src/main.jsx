@@ -9,20 +9,19 @@ import App from './App.jsx';
 import ResCategories from "./pages/Departments/Restaurant/Categories/ResCategories.jsx";
 import Products from "./pages/Departments/Restaurant/Products/Products";
 
+
+//owner goes here
 import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
-import CreateRooms from "./pages/Departments/Owner/OwnRooms/CreateRooms";
-import EditRooms from "./pages/Departments/Owner/OwnRooms/EditRooms";
-import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails"; 
-import FormSection from './components/reception/Formsection1.jsx';
-
-
-
-
-
-
 import SettingsPage from "./pages/Departments/Owner/OwnSettings/OwnSettings.jsx";
-import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx";
+import TransactionReport from "./pages/Departments/Owner/OwnReports/TransactionReports.jsx";
+import StockReport from "./pages/Departments/Owner/OwnReports/StockRepo.jsx";
+import CheckoutPage from "./pages/Departments/Owner/OwnReports/Checkout.jsx";
+import OwnerDashboard from "./pages/Departments/Owner/OwnDashboard/OwnDashboard.jsx"
+
+
+
 //reception goes here
+import FormSection from './components/reception/Formsection1.jsx';
 import Reservation1 from './pages/Departments/Reception/DNReservations/Reservation1.jsx';
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
 import GuestRes from './components/reception/Formedit/GuestRes.jsx';
@@ -40,46 +39,29 @@ import HotelDash from './components/reception/Dashboard/HotelDash.jsx';
 
 
 
-//RECEPTION
 
 
-
-// import SettingsPage from "../Pages/Setting";
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+   <StrictMode>
     <Router>
       <Routes>
         <Route path="/" element={<App />} />
-
-      
-
-        {/* Restaurant Management Routes */}
-       
         
 
-        <Route path="/restaurant/categories" element={<ResCategories />} />
-        <Route path="/restaurant/products" element={<Products />} />
-
-        
-
-        {/* Corrected Room Management Routes */}
+        {/*owner Routes */}
         <Route path="/rooms/home" element={<RoomHome />} />
-        <Route path="/rooms/add" element={<CreateRooms />} />
-        <Route path="/rooms/edit/:id" element={<EditRooms />} />
-        <Route path="/rooms/:id" element={<RoomDetails />} />
-
-
-
-        
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/reports" element={<TransactionReport />} />
+        <Route path="/Transactionreports" element={<TransactionReport />} />
+        <Route path="/Stockreports" element={<StockReport />} />
+        <Route path="/Checkout" element={<CheckoutPage />} />
+        <Route path="/dashboardowner" element={<OwnerDashboard />} />
 
 
+           {/* Reception Routes */}
 
-
-        {/* Package Management Routes */}
+            {/* Package Management Routes */}
                 <Route path="/packages" element={<PackageHome />} />
                 <Route path="/packages/add" element={<CreatePackages />} />
                 <Route path="/packages/edit/:id" element={<EditPackages />} />
@@ -91,18 +73,16 @@ createRoot(document.getElementById('root')).render(
         <Route path="/page1"  element={<Reservation1 />} />
         <Route path="/rooms" element={<Rooms/>} />
         <Route path="/guest" element={<GuestRes />} />
-        <Route path="/dashboard" element={<Fulldashboard />} />
+        <Route path="/dashboardreception" element={<Fulldashboard />} />
         <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
         <Route path="/hdash" element={<HotelDash />} />
         
-        
-
-        {/* Add more routes as needed */}
-
-        {/* Redirect to home if no match */}
-
 
       </Routes>
     </Router>
   </StrictMode>
 );
+
+
+
+
