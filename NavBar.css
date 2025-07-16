@@ -1,0 +1,33 @@
+/* NavBar.css */
+.navbar {
+    background-color: #88e083;
+    padding: 1rem;
+    position: fixed; /* Fixes the navbar to the top of the page */
+    top: 0; /* Positions the navbar at the top */
+    left: 0; /* Ensures it stretches across the full width */
+    width: 100%; /* Ensures full-width */
+    z-index: 1000; /* Ensures the navbar is on top of other elements */
+  }
+  
+  .navbar-list {
+    list-style-type: none;
+    padding: 10;
+    margin: 10;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .navbar-item {
+    margin: 0;
+  }
+  
+  .navbar-link {
+    color: #212b2b;
+    text-decoration: none;
+    font-size: 20px;
+  }
+  
+  .navbar-link:hover {
+    text-decoration: none;
+  }
+  
