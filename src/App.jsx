@@ -45,6 +45,7 @@ function App() {
       <br />
       <Link to="hdash">Go to new Hotel Dashboard</Link>
       <br />
+      <Link to="/day-out">Go to Day Out Reservation</Link>
       
       
 
