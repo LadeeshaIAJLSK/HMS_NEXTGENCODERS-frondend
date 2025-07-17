@@ -1,23 +1,23 @@
 /* Wrapper around the whole checkout report page */
 .checkout-report-wrapper {
-  max-width: auto;
-  margin: 1rem auto;
-  padding:10px;
+  width: 85%;
+  margin-left: 15%; /* Aligns beside the 18% sidebar */
+  padding: 10px;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
+  box-sizing: border-box;
 }
 
-/* Main content container centered with max width */
+/* Main content container */
 .checkout-report-container {
-  margin-left: 100px; /* Matches the sidebar width */
-  padding: 20px;
+  padding: 10px;
   background-color: #f5f5f5;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-/* Filter section styling with box shadow and spacing */
+/* Filter section styling */
 .checkout-filter-section {
   background: #ffffff;
   padding: 10px;
@@ -27,7 +27,7 @@
 }
 
 .checkout-filter-section h2 {
-   margin-bottom: 15px;
+  margin-bottom: 15px;
   font-size: 22px;
   color: #333;
 }
@@ -39,10 +39,11 @@
   margin-bottom: 15px;
 }
 
-/* Each input/select with label */
+/* Form groups inside filter section */
 .checkout-form-group {
   display: flex;
-  flex-direction: column;}
+  flex-direction: column;
+}
 
 .checkout-form-group label {
   margin-bottom: 5px;
@@ -58,7 +59,7 @@
   font-size: 14px;
 }
 
-/* Search and Export button styles */
+/* Buttons (Search + Export) */
 .checkout-filter-buttons {
   display: flex;
   justify-content: flex-end;
@@ -66,7 +67,7 @@
 }
 
 .checkout-filter-buttons button {
-   padding: 8px 18px;
+  padding: 8px 18px;
   font-size: 14px;
   font-weight: bold;
   border: none;
@@ -74,19 +75,17 @@
   cursor: pointer;
 }
 
-/* Search button color */
 .checkout-search-btn {
   background-color: #008080;
-  color:white;
+  color: white;
 }
 
-/* Export button color */
 .checkout-export-btn {
   background-color: #4169e1;
   color: #fbf9f9;
 }
 
-/* Controls for entries per page */
+/* Top controls for pagination and entries */
 .checkout-table-controls {
   display: flex;
   justify-content: space-between;
@@ -94,7 +93,6 @@
   margin-bottom: 10px;
 }
 
-/* Styling for dropdown select */
 .checkout-entries-select {
   margin: 0 10px;
   padding: 5px 8px;
@@ -102,7 +100,7 @@
   border: 1px solid #ccc;
 }
 
-/* Table container */
+/* Table styles */
 .checkout-table-section {
   background: #ffffff;
   padding: 20px;
@@ -110,7 +108,6 @@
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Table structure */
 .checkout-table {
   width: 100%;
   border-collapse: collapse;
@@ -125,25 +122,22 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* Header background */
 .checkout-table th {
   background-color: #e0f7fa;
   color: #333;
 }
 
-/* Row hover effect */
 .checkout-table tbody tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Pagination wrapper */
+/* Pagination */
 .checkout-pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Pagination buttons */
 .checkout-pagination-buttons {
   display: flex;
   gap: 5px;
@@ -153,14 +147,14 @@
   padding: 6px 12px;
   border: 1px solid #ccc;
   background: #3f5df3;
-  color:rgb(248, 247, 247);
+  color: rgb(248, 247, 247);
   border-radius: 4px;
   cursor: pointer;
 }
 
-/* Active page highlight */
 .checkout-pagination-buttons .active {
   background-color: teal;
   color: rgb(255, 254, 254);
   border: 1px solid teal;
 }
+

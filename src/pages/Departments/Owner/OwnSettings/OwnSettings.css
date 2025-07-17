@@ -1,25 +1,28 @@
 /* Main container for the settings page */
-.Ownsettings-container { 
-  padding: 30px;
-  background-color: #f7f8fa;
+.Ownsettings-container {
+  width: 85%;                /* Takes the remaining space after 15% sidebar */
+  margin-left: 15%;          /* Matches the sidebar width */
   min-height: 100vh;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
 }
 
 /* Form wrapper styling */
 .Ownsettings-form {
   background: #fff;
-  padding: 20px;
-  margin-left: 220px;
+  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Section titles like "GST Settings", "Currency Settings" */
 .setting-section-title {
-  font-size: 32px;
-  font-weight: normal;
+  font-size: 28px;
+  font-weight: 600;
   margin-bottom: 20px;
   margin-top: 30px;
+  color: #333;
 }
 
 /* Divider between sections */
@@ -46,6 +49,7 @@ label {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 6px;
+  color: #444;
 }
 
 /* Input and select fields */
@@ -66,14 +70,17 @@ input[type="file"] {
 
 /* Save button styling */
 .setting-save-button {
-  margin-left: 70%;
-  padding: 10px 20px;
+  margin-left: auto;
+  display: block;
+  margin-top: 20px;
+  padding: 10px 24px;
   background-color: #007bff;
   border: none;
   color: white;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 /* Hover effect for save button */
@@ -144,6 +151,7 @@ input[type="file"] {
   border-radius: 6px;
   font-size: 14px;
 }
+
 
 
 

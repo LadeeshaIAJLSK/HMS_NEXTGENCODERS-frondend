@@ -1,127 +1,87 @@
-/* Sidebar container styling */
 .Ownsidebar {
   height: 100vh;
-  width: 200px;
+  width: 15%;
   background-color: #018A97;
   color: white;
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
-  padding-top: 0px;
+  padding-top: 0;
   overflow-y: auto;
   z-index: 1000;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.Ownsidebar-main-content {
-  margin-left: 200px;
-  padding: 2rem;
-  flex-grow: 1;
-}
-
-
-/* Header styling */
 .Ownsidebar h2 {
-  margin-bottom: 20px;
   text-align: center;
   padding-top: 10px;
+  font-size: 26px;
 }
 
-/* Profile section */
 .Ownsidebar-profile {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 25px;
+  font-size: 22px;
   font-weight: bold;
 }
 
-/* Icon styling */
-.Ownsidebar-icon {
-  font-size: 30px;
-  display: block;
-}
-
-/* Navigation list styling */
 .Ownsidebar-nav {
   list-style: none;
   padding: 0;
-  width: 100%;
-  display: block;
+  margin: 0;
 }
 
-/* Navigation item styling */
 .Ownsidebar-nav li {
-  padding: 15px 20px;
+  padding: 12px 20px;
 }
 
-/* Navigation link styling */
-.Ownsidebar-nav li a {
+.Ownsidebar-nav li a,
+.Ownsidebar-report-toggle {
   text-decoration: none;
   color: white;
   font-size: 18px;
-  display: block;
-  transition: background 0.3s;
-}
-
-/* Hover effect for navigation links */
-.Ownsidebar-nav li a:hover {
-  background: rgb(131, 197, 190);
-  border-radius: 5px;
-}
-
-/* Active navigation link */
-.Ownsidebar-nav .active {
-  color: #fff;
-  background-color: rgb(131, 197, 190);
-}
-
-/* Content area beside sidebar */
-.Ownsidebar-main-content {
-  margin-left: 200px;
-  padding: 20px;
-  flex-grow:1;
-}
-
-/* Reports menu toggle */
-.Ownsidebar-reports-menu {
-  cursor: pointer;
-  padding: 15px 20px;
-  font-size: 18px;
-}
-
-/* Style for submenu wrapper */
-.Ownsidebar-report-link {
-  font-size: 18px;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 12px 0;
 }
 
-/* Submenu list */
+.Ownsidebar-nav li a:hover,
+.Ownsidebar-report-toggle:hover {
+  background: rgb(131, 197, 190);
+  border-radius: 5px;
+  padding-left: 10px;
+}
+
+.Ownsidebar-nav .active {
+  background-color: rgb(131, 197, 190);
+  border-radius: 5px;
+}
+
 .Ownsidebar-sub-menu {
   list-style: none;
-  padding-left: 10px;
-  margin-top: 2px;
+  padding-left: 20px;
+  margin: 0;
 }
 
-/* Submenu list items */
 .Ownsidebar-sub-menu li {
-  margin: 4px 0;
+  margin: 6px 0;
 }
 
-/* Submenu links */
 .Ownsidebar-sub-menu a {
-  font-size: 14px;
   color: #ddd;
+  font-size: 16px;
   text-decoration: none;
   display: block;
-  padding: 5px 0;
 }
 
-/* Active submenu link */
 .Ownsidebar-sub-menu a.active {
-  font-weight: lighter;
   color: white;
 }
 

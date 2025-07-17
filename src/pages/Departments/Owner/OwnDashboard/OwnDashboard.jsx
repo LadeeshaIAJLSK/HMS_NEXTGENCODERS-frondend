@@ -84,8 +84,8 @@ const OwnerDashboard = () => {
   };
 
   return (
-    <div className="Owndashboard-container">
-      <Ownsidebar/>
+<div className="Owndashboard-container">
+     <Ownsidebar/>
       {/* Display metrics */}
       {/* Metrics row (top) */}
 <div className="dash-metrics-row">
