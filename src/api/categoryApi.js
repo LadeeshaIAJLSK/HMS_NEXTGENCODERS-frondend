@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5003/categories";
+const BASE_URL = "http://localhost:8000/categories";
 
 export const fetchCategories = async () => {
   const res = await fetch(BASE_URL);

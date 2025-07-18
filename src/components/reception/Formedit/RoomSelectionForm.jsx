@@ -16,7 +16,7 @@ const RoomSelectionForm = ({
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/posts/rooms");
+        const response = await axios.get("http://localhost:8000/api/rooms");
         const roomsData = response.data.rooms || response.data;
         
         // Filter to show only vacant rooms

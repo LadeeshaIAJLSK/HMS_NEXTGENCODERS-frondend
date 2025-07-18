@@ -18,7 +18,7 @@ export default function ReceptionRooms() {
 
   const fetchRooms = () => {
     setLoading(true);
-    axios.get("http://localhost:8000/api/posts/rooms")
+    axios.get("http://localhost:8000/api/rooms")
       .then(res => {
         if (res.data.success) {
           const grouped = {};
@@ -61,7 +61,7 @@ export default function ReceptionRooms() {
   };
   
   const handleStatusChange = (roomId, newStatus) => {
-    axios.put(`http://localhost:8000/api/posts/rooms/${roomId}/status`, { status: newStatus })
+    axios.put(`http://localhost:8000/api/rooms/${roomId}/status`, { status: newStatus })
       .then(res => {
         if (res.data.success) {
           fetchRooms();

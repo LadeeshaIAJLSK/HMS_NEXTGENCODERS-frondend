@@ -47,7 +47,7 @@ const useCheckInForm = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/posts/rooms");
+      const res = await axios.get("http://localhost:8000/api/rooms");
       const vacantRooms = res.data.rooms.filter(r => r.RStatus === "Vacant");
       setRooms(vacantRooms);
       setUniqueTypes([...new Set(vacantRooms.map(room => room.RType))]);

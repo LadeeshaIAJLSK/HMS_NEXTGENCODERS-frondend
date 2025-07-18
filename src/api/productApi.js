@@ -1,5 +1,5 @@
 
-const BASE_URL = "http://localhost:5003/products";
+const BASE_URL = "http://localhost:8000/products";
 
 export const fetchProducts = async () => {
   const res = await fetch(BASE_URL);
