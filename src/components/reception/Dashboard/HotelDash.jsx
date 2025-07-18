@@ -8,22 +8,139 @@ const HotelDash = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  // Fetch dashboard data
-  const fetchDashboardData = async (date = null) => {
+  // Enhanced dummy data generator
+  const generateDummyData = () => {
+    const roomTypes = ['Deluxe', 'Standard', 'Suite', 'Executive', 'Family'];
+    const firstNames = ['John', 'Emma', 'Michael', 'Sophia', 'William', 'Olivia', 'James', 'Ava'];
+    const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis'];
+    const paymentMethods = ['Credit Card', 'Debit Card', 'Cash', 'Bank Transfer'];
+    
+    // Generate detailed check-ins (5-10)
+    const checkInCount = Math.floor(Math.random() * 6) + 5;
+    const checkIns = Array.from({ length: checkInCount }, (_, i) => {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const roomCount = Math.floor(Math.random() * 3) + 1;
+      const rooms = Array.from({ length: roomCount }, () => {
+        const roomType = roomTypes[Math.floor(Math.random() * roomTypes.length)];
+        const roomNumber = Math.floor(Math.random() * 100) + 100;
+        return `${roomType} ${roomNumber}`;
+      });
+      
+      const baseAmount = roomCount * (Math.random() * 150 + 50);
+      const taxes = baseAmount * 0.12;
+      const totalAmount = parseFloat((baseAmount + taxes).toFixed(2));
+      
+      return {
+        id: `checkin-${i}-${Date.now()}`,
+        guestName: `${firstName} ${lastName}`,
+        rooms,
+        checkInTime: new Date(new Date().setHours(8 + i, Math.floor(Math.random() * 60))),
+        duration: Math.floor(Math.random() * 7) + 1,
+        baseAmount: parseFloat(baseAmount.toFixed(2)),
+        taxes: parseFloat(taxes.toFixed(2)),
+        totalAmount,
+        paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+        status: ['Confirmed', 'Paid', 'Pending'][Math.floor(Math.random() * 3)]
+      };
+    });
+    
+    // Generate detailed check-outs (4-8)
+    const checkOutCount = Math.floor(Math.random() * 5) + 4;
+    const checkOuts = Array.from({ length: checkOutCount }, (_, i) => {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const roomCount = Math.floor(Math.random() * 2) + 1;
+      const rooms = Array.from({ length: roomCount }, () => {
+        const roomType = roomTypes[Math.floor(Math.random() * roomTypes.length)];
+        const roomNumber = Math.floor(Math.random() * 100) + 200;
+        return `${roomType} ${roomNumber}`;
+      });
+      
+      const baseAmount = roomCount * (Math.random() * 200 + 80) * (Math.floor(Math.random() * 7) + 1);
+      const extraCharges = Math.random() > 0.7 ? Math.random() * 100 : 0;
+      const taxes = (baseAmount + extraCharges) * 0.12;
+      const totalAmount = parseFloat((baseAmount + extraCharges + taxes).toFixed(2));
+      
+      return {
+        id: `checkout-${i}-${Date.now()}`,
+        guestName: `${firstName} ${lastName}`,
+        rooms,
+        checkOutTime: new Date(new Date().setHours(10 + i, Math.floor(Math.random() * 60))),
+        duration: Math.floor(Math.random() * 7) + 1,
+        baseAmount: parseFloat(baseAmount.toFixed(2)),
+        extraCharges: parseFloat(extraCharges.toFixed(2)),
+        taxes: parseFloat(taxes.toFixed(2)),
+        totalAmount,
+        paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+        status: ['Completed', 'Paid', 'Pending Payment'][Math.floor(Math.random() * 3)]
+      };
+    });
+    
+    // Calculate revenue breakdown
+    const checkInRevenue = checkIns.reduce((sum, checkin) => sum + checkin.totalAmount, 0);
+    const checkOutRevenue = checkOuts.reduce((sum, checkout) => sum + checkout.totalAmount, 0);
+    const totalRevenue = checkInRevenue + checkOutRevenue;
+    
+    // Payment method breakdown
+    const paymentBreakdown = {
+      cash: checkIns.concat(checkOuts)
+        .filter(t => t.paymentMethod === 'Cash')
+        .reduce((sum, t) => sum + t.totalAmount, 0),
+      cards: checkIns.concat(checkOuts)
+        .filter(t => t.paymentMethod.includes('Card'))
+        .reduce((sum, t) => sum + t.totalAmount, 0),
+      bankTransfer: checkIns.concat(checkOuts)
+        .filter(t => t.paymentMethod === 'Bank Transfer')
+        .reduce((sum, t) => sum + t.totalAmount, 0)
+    };
+    
+    // Room occupancy
+    const totalRooms = 120;
+    const occupiedRooms = Math.floor(Math.random() * 40) + 80; // 80-120 rooms occupied
+    const occupancyRate = Math.round((occupiedRooms / totalRooms) * 100);
+    
+    return {
+      success: true,
+      totalRevenue,
+      totalCheckIns: checkIns.length,
+      totalCheckOuts: checkOuts.length,
+      occupancyRate,
+      rooms: {
+        total: totalRooms,
+        occupied: occupiedRooms,
+        available: totalRooms - occupiedRooms
+      },
+      revenue: {
+        checkIns: checkInRevenue,
+        checkOuts: checkOutRevenue,
+        cash: paymentBreakdown.cash,
+        cards: paymentBreakdown.cards,
+        bankTransfer: paymentBreakdown.bankTransfer,
+        other: 0
+      },
+      checkIns,
+      checkOuts,
+      dailyTrend: {
+        labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
+        checkIns: Array.from({ length: 6 }, () => Math.floor(Math.random() * 5)),
+        checkOuts: Array.from({ length: 6 }, () => Math.floor(Math.random() * 4))
+      }
+    };
+  };
+
+  // Fetch dashboard data - using dummy data
+  const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const targetDate = date || selectedDate;
-      const response = await fetch(`/api/daily-data?date=${targetDate}`);
-      const data = await response.json();
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      if (data.success) {
-        setDashboardData(data);
-        setLastUpdated(new Date());
-      } else {
-        console.error('Error fetching dashboard data:', data.message);
-      }
+      const data = generateDummyData();
+      setDashboardData(data);
+      setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('Error generating dummy data:', error);
     } finally {
       setLoading(false);
     }
@@ -116,8 +233,8 @@ const HotelDash = () => {
             <div className="hdb-metric-footer">
               <TrendingUp className="hdb-trend-icon" />
               <span className="hdb-trend-text">
-                {dashboardData?.revenue?.checkouts > dashboardData?.revenue?.bookings ? 
-                  'Checkout heavy day' : 'Booking heavy day'
+                {dashboardData?.revenue?.checkOuts > dashboardData?.revenue?.checkIns ? 
+                  'Checkout heavy day' : 'Check-in heavy day'
                 }
               </span>
             </div>
@@ -127,9 +244,9 @@ const HotelDash = () => {
           <div className="hdb-metric-card hdb-checkin-card">
             <div className="hdb-metric-content">
               <div className="hdb-metric-info">
-                <p className="hdb-metric-label">Today's Bookings</p>
+                <p className="hdb-metric-label">Today's Check-ins</p>
                 <p className="hdb-metric-value hdb-checkin">
-                  {dashboardData?.totalBookings || 0}
+                  {dashboardData?.totalCheckIns || 0}
                 </p>
               </div>
               <div className="hdb-metric-icon hdb-checkin-icon">
@@ -138,7 +255,7 @@ const HotelDash = () => {
             </div>
             <div className="hdb-metric-footer">
               <span className="hdb-revenue-text">
-                Revenue: ${dashboardData?.revenue?.bookings?.toFixed(2) || '0.00'}
+                Revenue: ${dashboardData?.revenue?.checkIns?.toFixed(2) || '0.00'}
               </span>
             </div>
           </div>
@@ -147,9 +264,9 @@ const HotelDash = () => {
           <div className="hdb-metric-card hdb-checkout-card">
             <div className="hdb-metric-content">
               <div className="hdb-metric-info">
-                <p className="hdb-metric-label">Today's Checkouts</p>
+                <p className="hdb-metric-label">Today's Check-outs</p>
                 <p className="hdb-metric-value hdb-checkout">
-                  {dashboardData?.totalCheckouts || 0}
+                  {dashboardData?.totalCheckOuts || 0}
                 </p>
               </div>
               <div className="hdb-metric-icon hdb-checkout-icon">
@@ -158,7 +275,7 @@ const HotelDash = () => {
             </div>
             <div className="hdb-metric-footer">
               <span className="hdb-revenue-text">
-                Revenue: ${dashboardData?.revenue?.checkouts?.toFixed(2) || '0.00'}
+                Revenue: ${dashboardData?.revenue?.checkOuts?.toFixed(2) || '0.00'}
               </span>
             </div>
           </div>
@@ -193,20 +310,20 @@ const HotelDash = () => {
               <div className="hdb-breakdown-item hdb-checkin-item">
                 <div className="hdb-breakdown-info">
                   <LogIn className="hdb-breakdown-icon" />
-                  <span className="hdb-breakdown-label">New Bookings</span>
+                  <span className="hdb-breakdown-label">Check-ins</span>
                 </div>
                 <span className="hdb-breakdown-value hdb-checkin">
-                  ${dashboardData?.revenue?.bookings?.toFixed(2) || '0.00'}
+                  ${dashboardData?.revenue?.checkIns?.toFixed(2) || '0.00'}
                 </span>
               </div>
               
               <div className="hdb-breakdown-item hdb-checkout-item">
                 <div className="hdb-breakdown-info">
                   <LogOut className="hdb-breakdown-icon" />
-                  <span className="hdb-breakdown-label">Checkouts</span>
+                  <span className="hdb-breakdown-label">Check-outs</span>
                 </div>
                 <span className="hdb-breakdown-value hdb-checkout">
-                  ${dashboardData?.revenue?.checkouts?.toFixed(2) || '0.00'}
+                  ${dashboardData?.revenue?.checkOuts?.toFixed(2) || '0.00'}
                 </span>
               </div>
             </div>
@@ -236,14 +353,14 @@ const HotelDash = () => {
                 </span>
               </div>
               
-              {dashboardData?.revenue?.other > 0 && (
-                <div className="hdb-breakdown-item hdb-other-item">
+              {dashboardData?.revenue?.bankTransfer > 0 && (
+                <div className="hdb-breakdown-item hdb-transfer-item">
                   <div className="hdb-breakdown-info">
-                    <Users className="hdb-breakdown-icon" />
-                    <span className="hdb-breakdown-label">Other</span>
+                    <CreditCard className="hdb-breakdown-icon" />
+                    <span className="hdb-breakdown-label">Bank Transfer</span>
                   </div>
-                  <span className="hdb-breakdown-value hdb-other">
-                    ${dashboardData?.revenue?.other?.toFixed(2) || '0.00'}
+                  <span className="hdb-breakdown-value hdb-transfer">
+                    ${dashboardData?.revenue?.bankTransfer?.toFixed(2) || '0.00'}
                   </span>
                 </div>
               )}
@@ -253,55 +370,57 @@ const HotelDash = () => {
 
         {/* Guest Activity */}
         <div className="hdb-activity-grid">
-          {/* Today's Bookings */}
+          {/* Today's Check-ins */}
           <div className="hdb-activity-card">
             <h3 className="hdb-activity-title">
-              Today's New Bookings ({dashboardData?.bookings?.length || 0})
+              Today's Check-ins ({dashboardData?.checkIns?.length || 0})
             </h3>
             <div className="hdb-activity-list">
-              {dashboardData?.bookings?.length > 0 ? (
-                dashboardData.bookings.map((booking, index) => (
-                  <div key={booking.id || index} className="hdb-activity-item hdb-checkin-activity">
+              {dashboardData?.checkIns?.length > 0 ? (
+                dashboardData.checkIns.map((checkin, index) => (
+                  <div key={checkin.id || index} className="hdb-activity-item hdb-checkin-activity">
                     <div className="hdb-activity-details">
-                      <p className="hdb-guest-name">{booking.guestName}</p>
-                      <p className="hdb-room-info">Rooms: {booking.rooms?.join(', ')}</p>
+                      <p className="hdb-guest-name">{checkin.guestName}</p>
+                      <p className="hdb-room-info">Rooms: {checkin.rooms?.join(', ')}</p>
                       <p className="hdb-time-info">
-                        {new Date(booking.bookingTime).toLocaleTimeString()}
+                        {new Date(checkin.checkInTime).toLocaleTimeString()} | {checkin.duration} night(s)
                       </p>
+                      <p className="hdb-status-info">Status: {checkin.status}</p>
                     </div>
                     <div className="hdb-activity-amount">
-                      <p className="hdb-amount hdb-checkin">${booking.amount?.toFixed(2)}</p>
-                      <p className="hdb-payment-method">{booking.paymentMethod}</p>
+                      <p className="hdb-amount hdb-checkin">${checkin.totalAmount?.toFixed(2)}</p>
+                      <p className="hdb-payment-method">{checkin.paymentMethod}</p>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="hdb-empty-state">
                   <LogIn className="hdb-empty-icon" />
-                  <p>No new bookings today</p>
+                  <p>No check-ins today</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Today's Checkouts */}
+          {/* Today's Check-outs */}
           <div className="hdb-activity-card">
             <h3 className="hdb-activity-title">
-              Today's Checkouts ({dashboardData?.checkouts?.length || 0})
+              Today's Check-outs ({dashboardData?.checkOuts?.length || 0})
             </h3>
             <div className="hdb-activity-list">
-              {dashboardData?.checkouts?.length > 0 ? (
-                dashboardData.checkouts.map((checkout, index) => (
+              {dashboardData?.checkOuts?.length > 0 ? (
+                dashboardData.checkOuts.map((checkout, index) => (
                   <div key={checkout.id || index} className="hdb-activity-item hdb-checkout-activity">
                     <div className="hdb-activity-details">
                       <p className="hdb-guest-name">{checkout.guestName}</p>
                       <p className="hdb-room-info">Rooms: {checkout.rooms?.join(', ')}</p>
                       <p className="hdb-time-info">
-                        {new Date(checkout.checkoutTime).toLocaleTimeString()}
+                        {new Date(checkout.checkOutTime).toLocaleTimeString()} | Stayed {checkout.duration} night(s)
                       </p>
+                      <p className="hdb-status-info">Status: {checkout.status}</p>
                     </div>
                     <div className="hdb-activity-amount">
-                      <p className="hdb-amount hdb-checkout">${checkout.amount?.toFixed(2)}</p>
+                      <p className="hdb-amount hdb-checkout">${checkout.totalAmount?.toFixed(2)}</p>
                       <p className="hdb-payment-method">{checkout.paymentMethod}</p>
                     </div>
                   </div>
@@ -309,7 +428,7 @@ const HotelDash = () => {
               ) : (
                 <div className="hdb-empty-state">
                   <LogOut className="hdb-empty-icon" />
-                  <p>No checkouts today</p>
+                  <p>No check-outs today</p>
                 </div>
               )}
             </div>

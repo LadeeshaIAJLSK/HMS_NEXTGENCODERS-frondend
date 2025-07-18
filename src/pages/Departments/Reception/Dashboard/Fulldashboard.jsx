@@ -1,8 +1,8 @@
 import React from "react";
 import Sidebar2 from "../../../../components/reception/recSidebar/Recsidebar";
-import DashboardStats from  "../../../../components/reception/Dashboard/DashboardStats"// Adjust the path to your CheckInForm component
+import HotelDash from "../../../../components/reception/Dashboard/HotelDash";
 
-const Fulldashboard = () => {
+const Newdashboard = () => {
   return (
     <div style={{ 
       display: 'grid',
@@ -13,11 +13,11 @@ const Fulldashboard = () => {
         <Sidebar2/>
       </div>
       <div style={{ padding: '20px' }}>
-        <DashboardStats />
+        <HotelDash />
         
       </div>
     </div>
   );
 };
 
-export default Fulldashboard;
+export default Newdashboard;

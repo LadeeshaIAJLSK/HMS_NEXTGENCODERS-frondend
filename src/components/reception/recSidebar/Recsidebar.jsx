@@ -14,7 +14,7 @@ const Ressidebar = () => {
       </div>
       <ul>
         <li>
-          <Link to="/dashboard">📊 Dashboard</Link>
+          <Link to="/newdashboard">📊 Dashboard</Link>
         </li>
         <li>
           <Link to="/page1">📝 Create Reservation</Link>

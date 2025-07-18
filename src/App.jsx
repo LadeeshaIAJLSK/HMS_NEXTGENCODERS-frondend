@@ -43,7 +43,7 @@ function App() {
       <br/><br/>
       <Link to="packages">Go to Package Management Home</Link>
       <br />
-      <Link to="hdash">Go to new Hotel Dashboard</Link>
+      <Link to="newdashboard">Go to new Hotel Dashboard</Link>
       <br />
       
       
