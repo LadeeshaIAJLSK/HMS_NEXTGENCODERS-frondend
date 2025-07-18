@@ -1,6 +1,6 @@
 /* Wrapper around the whole stock report page */
 .transaction-report-wrapper {
-  width: 85%;
+  width:90%;
   margin-left: 15%; /* Aligns beside the 18% sidebar */
   padding: 10px;
   background-color: #f9f9f9;

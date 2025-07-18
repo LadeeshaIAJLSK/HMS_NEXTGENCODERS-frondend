@@ -1,10 +1,21 @@
+.Owndashboard-wrapper {
+  width: 15%;
+  background-color: #018A97;
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 1000;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 .Owndashboard-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin-left: 15%; /* Matches sidebar width */
-  padding: 1rem;
+  margin-left: 15%; /* matches sidebar width */
+  padding: 1.5rem;
   background-color: #f8f9fa;
+  min-height: 100vh;
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -13,25 +24,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  justify-content: flex-start;
-  align-items: stretch;
   margin-bottom: 2rem;
 }
-
-.chart-table-row {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-
-.chart-column {
-  flex: 1 1 48%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 
 .dash-metric-box {
   flex: 1 1 220px;
@@ -60,7 +54,7 @@
   border-radius: 10px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   width: 100%;
-  overflow-x: auto;
+  margin-bottom: 2rem;
 }
 
 .dash-chart-header {
@@ -70,6 +64,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.chart-table-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.chart-column {
+  flex: 1 1 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dash-update-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .dash-update-label {
@@ -87,13 +101,6 @@
   background-color: #c47e1f;
 }
 
-.dash-update-button-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  width: 100%;
-}
-
 .dash-chart-row {
   display: flex;
   flex-direction: column;
@@ -106,5 +113,3 @@ select {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-
-  
