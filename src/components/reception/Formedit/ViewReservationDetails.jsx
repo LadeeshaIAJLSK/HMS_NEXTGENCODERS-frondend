@@ -51,17 +51,42 @@ const ViewReservationDetails = ({
       try {
         console.log("Fetching details for reservation:", selectedReservation._id);
         
-        // TODO: Replace with actual API call
-        const roomsData = [
-          { RoomNo: "101", RType: "Standard", RClass: "Economy", RPrice: 50 },
-          { RoomNo: "102", RType: "Deluxe", RClass: "Business", RPrice: 75 },
-          { RoomNo: "201", RType: "Suite", RClass: "Premium", RPrice: 120 },
-        ];
+        // Fetch actual room details from API
+        let bookedRooms = [];
         
-        // Filter booked rooms
-        const bookedRooms = roomsData.filter(room => 
-          selectedReservation.selectedRooms?.includes(room.RoomNo)
-        );
+        if (selectedReservation.selectedRooms && selectedReservation.selectedRooms.length > 0) {
+          try {
+            // Method 1: Fetch all rooms and filter by selected room numbers
+            const roomsResponse = await axios.get('http://localhost:8000/api/rooms');
+            const allRooms = roomsResponse.data;
+            
+            bookedRooms = allRooms.filter(room => 
+              selectedReservation.selectedRooms.includes(room.RoomNo || room.roomNumber || room.number)
+            );
+            
+            // Alternative Method 2: If you have an endpoint to fetch specific rooms
+            // const roomPromises = selectedReservation.selectedRooms.map(roomNo => 
+            //   axios.get(`http://localhost:8000/api/rooms/${roomNo}`)
+            // );
+            // const roomResponses = await Promise.all(roomPromises);
+            // bookedRooms = roomResponses.map(response => response.data);
+            
+          } catch (roomError) {
+            console.error("Error fetching room details:", roomError);
+            // Fallback: create basic room objects with data from reservation
+            bookedRooms = selectedReservation.selectedRooms.map(roomNo => ({
+              RoomNo: roomNo,
+              RType: selectedReservation.roomType || "Standard",
+              RClass: selectedReservation.roomClass || "Economy", 
+              RPrice: selectedReservation.roomPrice || selectedReservation.totalAmount / (selectedReservation.selectedRooms.length * parseInt(selectedReservation.duration || 1)) || 0
+            }));
+          }
+        }
+        
+        // If no rooms found but reservation has room data, use reservation data
+        if (bookedRooms.length === 0 && selectedReservation.rooms) {
+          bookedRooms = selectedReservation.rooms;
+        }
         
         setRoomDetails(bookedRooms);
         
@@ -178,7 +203,7 @@ const ViewReservationDetails = ({
       setTotalPaidAmount(prev => prev + amount);
       
       if (change > 0) {
-        onSuccess(`Payment recorded! Please give $${change.toFixed(2)} change to the guest.`);
+        onSuccess(`Payment recorded! Please give Rs.${change.toFixed(2)} change to the guest.`);
       } else {
         onSuccess("Payment recorded successfully!");
       }
@@ -270,11 +295,11 @@ const ViewReservationDetails = ({
       checkOut: formData.checkOut,
       duration: formData.duration,
       rooms: roomDetails.map(room => ({
-        roomNo: room.RoomNo,
-        type: room.RType,
-        class: room.RClass,
-        pricePerNight: room.RPrice || room.Price || 0,
-        total: (room.RPrice || room.Price || 0) * parseInt(formData.duration)
+        roomNo: room.RoomNo || room.roomNumber || room.number || room.roomNo,
+        type: room.RType || room.roomType || room.type || "Standard",
+        class: room.RClass || room.roomClass || room.class || "Economy",
+        pricePerNight: room.RPrice || room.price || room.roomPrice || room.pricePerNight || 0,
+        total: (room.RPrice || room.price || room.roomPrice || room.pricePerNight || 0) * parseInt(formData.duration)
       })),
       totalAmount: getTotalAmount(),
       totalPaid: getTotalPaid(),
@@ -302,23 +327,23 @@ ROOM DETAILS
 ─────────────────────────────────────────────────────────
 ${bill.rooms.map(room => 
   `Room ${room.roomNo} (${room.type} - ${room.class})\n` +
-  `  Rate: $${room.pricePerNight.toFixed(2)} × ${formData.duration} nights = $${room.total.toFixed(2)}`
+  `  Rate: Rs.${room.pricePerNight.toFixed(2)} × ${formData.duration} nights = Rs.${room.total.toFixed(2)}`
 ).join('\n')}
 
 PAYMENT SUMMARY
 ─────────────────────────────────────────────────────────
-Total Bill Amount: $${bill.totalAmount.toFixed(2)}
-Total Paid: $${bill.totalPaid.toFixed(2)}
-${bill.balance > 0 ? `Balance Due: $${bill.balance.toFixed(2)}` : 
-  bill.balance < 0 ? `Credit Balance: $${Math.abs(bill.balance).toFixed(2)}` : 
+Total Bill Amount: Rs.${bill.totalAmount.toFixed(2)}
+Total Paid: Rs.${bill.totalPaid.toFixed(2)}
+${bill.balance > 0 ? `Balance Due: Rs.${bill.balance.toFixed(2)}` : 
+  bill.balance < 0 ? `Credit Balance: Rs.${Math.abs(bill.balance).toFixed(2)}` : 
   'Status: ✓ PAID IN FULL'}
 
 PAYMENT DETAILS
 ─────────────────────────────────────────────────────────
 ${bill.paymentHistory.map(payment => {
-  let line = `${new Date(payment.date).toLocaleDateString()} - $${payment.amount.toFixed(2)} (${payment.method})`;
+  let line = `${new Date(payment.date).toLocaleDateString()} - Rs.${payment.amount.toFixed(2)} (${payment.method})`;
   if (payment.method === 'Cash' && payment.cashReceived > payment.amount) {
-    line += `\n  Cash Received: $${payment.cashReceived.toFixed(2)} | Change Given: $${payment.change.toFixed(2)}`;
+    line += `\n  Cash Received: Rs.${payment.cashReceived.toFixed(2)} | Change Given: Rs.${payment.change.toFixed(2)}`;
   }
   if (payment.notes) line += `\n  Notes: ${payment.notes}`;
   return line;
@@ -491,19 +516,24 @@ Thank you for staying with us!
               </h3>
               {roomDetails.length > 0 ? (
                 <div>
-                  {roomDetails.map(room => {
-                    const roomPrice = room.RPrice || room.Price || 0;
+                  {roomDetails.map((room, index) => {
+                    // Handle different possible field names from API
+                    const roomNumber = room.RoomNo || room.roomNumber || room.number || room.roomNo;
+                    const roomType = room.RType || room.roomType || room.type || "Standard";
+                    const roomClass = room.RClass || room.roomClass || room.class || "Economy";
+                    const roomPrice = room.RPrice || room.price || room.roomPrice || room.pricePerNight || 0;
                     const totalPrice = roomPrice * parseInt(formData.duration || 1);
+                    
                     return (
-                      <div key={room.RoomNo} className="room-item">
+                      <div key={roomNumber || index} className="room-item">
                         <div className="room-header">
                           <div>
-                            <h4 className="room-number">Room {room.RoomNo}</h4>
-                            <p className="room-type">{room.RType} - {room.RClass}</p>
-                            <p className="room-rate">${roomPrice.toFixed(2)} per night</p>
+                            <h4 className="room-number">Room {roomNumber}</h4>
+                            <p className="room-type">{roomType} - {roomClass}</p>
+                            <p className="room-rate">Rs.{roomPrice.toFixed(2)} per night</p>
                           </div>
                           <div className="room-price">
-                            <p className="room-total">${totalPrice.toFixed(2)}</p>
+                            <p className="room-total">Rs.{totalPrice.toFixed(2)}</p>
                             <p className="room-rate">{formData.duration} nights</p>
                           </div>
                         </div>
@@ -513,7 +543,7 @@ Thank you for staying with us!
                   <div className="total-charges">
                     <div className="total-charges-label">Total Room Charges:</div>
                     <div className="total-charges-amount">
-                      ${calculateTotalRoomCharges().toFixed(2)}
+                      Rs.{calculateTotalRoomCharges().toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -539,12 +569,12 @@ Thank you for staying with us!
               <div className="payment-summary-grid">
                 <div className="payment-summary-item total">
                   <div className="payment-summary-label">Total Bill</div>
-                  <div className="payment-summary-value neutral">${getTotalAmount().toFixed(2)}</div>
+                  <div className="payment-summary-value neutral">Rs.{getTotalAmount().toFixed(2)}</div>
                 </div>
                 
                 <div className="payment-summary-item paid">
                   <div className="payment-summary-label">Total Paid</div>
-                  <div className="payment-summary-value positive">${getTotalPaid().toFixed(2)}</div>
+                  <div className="payment-summary-value positive">Rs.{getTotalPaid().toFixed(2)}</div>
                 </div>
                 
                 <div className="payment-summary-item due">
@@ -554,7 +584,7 @@ Thank you for staying with us!
                     getBalanceDue() < 0 ? 'overpaid' : 
                     'positive'
                   }`}>
-                    ${Math.abs(getBalanceDue()).toFixed(2)}
+                    Rs.{Math.abs(getBalanceDue()).toFixed(2)}
                   </div>
                 </div>
                 
@@ -581,7 +611,7 @@ Thank you for staying with us!
                     <div key={index} className="payment-history-item">
                       <div className="payment-history-header">
                         <div>
-                          <p className="payment-amount">${payment.amount.toFixed(2)}</p>
+                          <p className="payment-amount">Rs.{payment.amount.toFixed(2)}</p>
                           <p className="payment-date">{new Date(payment.date).toLocaleDateString()}</p>
                         </div>
                         <div>
@@ -593,8 +623,8 @@ Thank you for staying with us!
                       {payment.method === 'Cash' && payment.cashReceived > payment.amount && (
                         <div className="cash-details">
                           <p className="cash-details-text">
-                            Cash Received: ${payment.cashReceived.toFixed(2)} | 
-                            Change Given: ${payment.change.toFixed(2)}
+                            Cash Received: Rs.{payment.cashReceived.toFixed(2)} | 
+                            Change Given: Rs.{payment.change.toFixed(2)}
                           </p>
                         </div>
                       )}
@@ -635,7 +665,7 @@ Thank you for staying with us!
                   {getBalanceDue() > 0 && (
                     <div className="quick-pay-section">
                       <p className="quick-pay-text">
-                        Amount Due: ${getBalanceDue().toFixed(2)}
+                        Amount Due: Rs.{getBalanceDue().toFixed(2)}
                       </p>
                       <button onClick={quickPayFull} className="quick-pay-button">
                         Pay Full Amount
@@ -646,7 +676,7 @@ Thank you for staying with us!
                   <div className="payment-form">
                     <div className="payment-form-field">
                       <label className="payment-form-label">
-                        Payment Amount ($)
+                        Payment Amount (Rs.)
                       </label>
                       <input
                         type="number"
@@ -688,7 +718,7 @@ Thank you for staying with us!
                         </h4>
                         <div className="payment-form-field">
                           <label className="payment-form-label">
-                            Cash Received from Guest ($)
+                            Cash Received from Guest (Rs.)
                           </label>
                           <input
                             type="number"
@@ -697,7 +727,7 @@ Thank you for staying with us!
                             className="payment-form-input"
                             min="0.01"
                             step="0.01"
-                            placeholder="e.g., 500 (for $500 bill)"
+                            placeholder="e.g., 5000 (for Rs.5000 bill)"
                           />
                         </div>
                         {cashReceived && paymentAmount && (
@@ -706,7 +736,7 @@ Thank you for staying with us!
                             <span className={`change-amount ${
                               calculateChange() >= 0 ? 'positive' : 'negative'
                             }`}>
-                              ${Math.abs(calculateChange()).toFixed(2)}
+                              Rs.{Math.abs(calculateChange()).toFixed(2)}
                               {calculateChange() < 0 && ' (Insufficient Cash)'}
                             </span>
                           </div>
@@ -738,7 +768,7 @@ Thank you for staying with us!
                     
                     {paymentMethod === "Cash" && cashReceived && paymentAmount && calculateChange() > 0 && (
                       <div className="alert warning mt-3">
-                        💡 Remember to give ${calculateChange().toFixed(2)} change to the guest!
+                        💡 Remember to give Rs.{calculateChange().toFixed(2)} change to the guest!
                       </div>
                     )}
                     
@@ -746,7 +776,7 @@ Thank you for staying with us!
                       <div className="alert success mt-3">
                         <CheckCircle />
                         {getBalanceDue() < 0 ? 
-                          `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
+                          `Guest has overpaid by Rs.${Math.abs(getBalanceDue()).toFixed(2)}` : 
                           'Payment is complete - Ready for checkout!'
                         }
                       </div>
@@ -791,11 +821,11 @@ Thank you for staying with us!
                   <div className="checkout-details-summary">
                     <div className="detail-row">
                       <span>Final Bill Amount:</span>
-                      <span className="amount">${getTotalAmount().toFixed(2)}</span>
+                      <span className="amount">Rs.{getTotalAmount().toFixed(2)}</span>
                     </div>
                     <div className="detail-row">
                       <span>Total Paid:</span>
-                      <span className="amount">${getTotalPaid().toFixed(2)}</span>
+                      <span className="amount">Rs.{getTotalPaid().toFixed(2)}</span>
                     </div>
                     <div className="detail-row">
                       <span>Final Status:</span>
@@ -832,7 +862,7 @@ Thank you for staying with us!
                     <p className="status-description">
                       Outstanding Balance: 
                     </p>
-                    <div className="status-amount">${getBalanceDue().toFixed(2)}</div>
+                    <div className="status-amount">Rs.{getBalanceDue().toFixed(2)}</div>
                     <button
                       onClick={() => {
                         document.querySelector('.payment-form-input')?.focus();
@@ -840,7 +870,7 @@ Thank you for staying with us!
                       className="btn btn-warning"
                     >
                       <DollarSign />
-                      Complete Payment (${getBalanceDue().toFixed(2)} Due)
+                      Complete Payment (Rs.{getBalanceDue().toFixed(2)} Due)
                     </button>
                   </div>
                 ) : (
@@ -850,7 +880,7 @@ Thank you for staying with us!
                     </div>
                     <h3 className="status-title success">
                       {getBalanceDue() < 0 ? 
-                        `Guest Overpaid - Credit: ${Math.abs(getBalanceDue()).toFixed(2)}` :
+                        `Guest Overpaid - Credit: Rs.${Math.abs(getBalanceDue()).toFixed(2)}` :
                         'Payment Complete - Ready for Checkout'
                       }
                     </h3>
