@@ -16,31 +16,34 @@ import Info1 from "./pages/Departments/Reception/DOReservations/info1/Info1";
 import "./pages/Departments/Owner/OwnRooms/OwnRooms.css";
 import Login from "./components/restaurant/Login.jsx";
 import { AuthProvider } from './context/AuthContext.jsx';
+import { NotificationProvider } from './context/NotificationContext.jsx';
 import RestaurantPOS from './components/restaurant/RestaurantPOS';
 import Dashboard from './pages/Departments/Restaurant/Dashboard/Dashboard.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/restaurant/login" element={<Login />} />
-          <Route path="/restaurant/categories" element={<ResCategories />} />
-          <Route path="/restaurant/products" element={<Products />} />
-          <Route path="/restaurant/create-order" element={<RestaurantPOS />} />
-          <Route path="/restaurant/dashboard" element={<Dashboard />} />
-          <Route path="/restaurant/analytics" element={<Analytics />} />
+      <NotificationProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/restaurant/login" element={<Login />} />
+            <Route path="/restaurant/categories" element={<ResCategories />} />
+            <Route path="/restaurant/products" element={<Products />} />
+            <Route path="/restaurant/create-order" element={<RestaurantPOS />} />
+            <Route path="/restaurant/dashboard" element={<Dashboard />} />
+            <Route path="/restaurant/analytics" element={<Analytics />} />
 
-          <Route path="/info1" element={<Info1 />} />
+            <Route path="/info1" element={<Info1 />} />
 
-          {/* Corrected Room Management Routes */}
-          <Route path="/rooms/home" element={<RoomHome />} />
-          <Route path="/rooms/add" element={<CreateRooms />} />
-          <Route path="/rooms/edit/:id" element={<EditRooms />} />
-          <Route path="/rooms/:id" element={<RoomDetails />} />
-        </Routes>
-      </Router>
+            {/* Corrected Room Management Routes */}
+            <Route path="/rooms/home" element={<RoomHome />} />
+            <Route path="/rooms/add" element={<CreateRooms />} />
+            <Route path="/rooms/edit/:id" element={<EditRooms />} />
+            <Route path="/rooms/:id" element={<RoomDetails />} />
+          </Routes>
+        </Router>
+      </NotificationProvider>
     </AuthProvider>
   </StrictMode>
 );

@@ -241,6 +241,40 @@ tr:hover {
   gap: 5px;
 }
 
+/* Low stock styles */
+.low-stock-row {
+  background-color: #fff3cd !important;
+  border-left: 4px solid #ffc107;
+}
+
+.low-stock-row:hover {
+  background-color: #ffeaa7 !important;
+}
+
+.stock-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.stock-info.low-stock {
+  color: #d63384;
+  font-weight: 600;
+}
+
+.stock-quantity {
+  font-size: 1rem;
+}
+
+.stock-limit {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.stock-info.low-stock .stock-limit {
+  color: #d63384;
+}
 
 /* Loading indicator */
 .loading {

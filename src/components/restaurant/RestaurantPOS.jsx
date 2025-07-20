@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Ressidebar from "./resSidebar/Ressidebar";
 import styles from "./RestaurantPOS.module.css";
 import { fetchCategories } from "../../api/categoryApi";
-import { fetchProductsByCategory } from "../../api/productApi";
+import { fetchProductsByCategory, updateMultipleProductStock } from "../../api/productApi";
 import { createOrder } from "../../api/orderApi";
+import LowStockAlert from "./LowStockAlert";
 
 const RestaurantPOS = () => {
   // State for categories, subcategories, products, selection
@@ -144,6 +145,22 @@ const RestaurantPOS = () => {
       
       // Create order in backend
       const order = await createOrder(orderData);
+      
+      // Update product stock after successful order creation
+      if (order && order.status === "completed") {
+        try {
+          const stockUpdates = billItems.map(item => ({
+            productId: item._id,
+            quantity: -item.quantity // Negative to reduce stock
+          }));
+          
+          await updateMultipleProductStock(stockUpdates);
+          console.log("Stock updated successfully");
+        } catch (stockError) {
+          console.error("Error updating stock:", stockError);
+          // Don't fail the order if stock update fails
+        }
+      }
       
       // Store created order and show success popup
       setCreatedOrder(order);
@@ -727,6 +744,9 @@ const RestaurantPOS = () => {
         </div>
       </div>
     )}
+    
+    {/* Low Stock Alert */}
+    <LowStockAlert />
   </div>
   );
 };

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./ResDashboard.css";
 import Navbar from '../../../../components/restaurant/resSidebar/Ressidebar';
 import { getOrders, updateOrderStatus, deleteOrder } from '../../../../api/orderApi';
+import { updateMultipleProductStock } from '../../../../api/productApi';
 import CheckoutPopup from './CheckoutPopup';
 import ViewBillPopup from './ViewBillPopup';
+import LowStockAlert from '../../../../components/restaurant/LowStockAlert';
 
 export default function Dashboard() {
   const [orders, setOrders] = useState([]);
@@ -99,7 +101,28 @@ export default function Dashboard() {
 
   const handlePaymentComplete = async (orderId) => {
     try {
+      // Find the order to get its items
+      const order = allOrders.find(o => o._id === orderId);
+      
+      // Update order status
       await updateOrderStatus(orderId, "completed");
+      
+      // Update product stock if order has items
+      if (order && order.items && order.items.length > 0) {
+        try {
+          const stockUpdates = order.items.map(item => ({
+            productId: item.productId || item._id,
+            quantity: -item.quantity // Negative to reduce stock
+          }));
+          
+          await updateMultipleProductStock(stockUpdates);
+          console.log("Stock updated successfully for order:", orderId);
+        } catch (stockError) {
+          console.error("Error updating stock for order:", orderId, stockError);
+          // Don't fail the order completion if stock update fails
+        }
+      }
+      
       await fetchOrders();
     } catch (err) {
       console.error("Error updating order status:", err);
@@ -363,6 +386,9 @@ export default function Dashboard() {
           onClose={closeBill}
         />
       )}
+      
+      {/* Low Stock Alert */}
+      <LowStockAlert />
     </div>
   );
 }

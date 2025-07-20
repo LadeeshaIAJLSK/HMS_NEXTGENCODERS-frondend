@@ -8,6 +8,7 @@ import {
 import { fetchCategories } from "../../../../api/categoryApi";
 import "./Products.css";
 import Ressidebar from "../../../../components/restaurant/resSidebar/Ressidebar";
+import LowStockAlert from "../../../../components/restaurant/LowStockAlert";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -143,63 +144,49 @@ export default function Products() {
     return category ? category.name : "Unknown";
   };
 
-  const getCategoryFullName = (category) => {
-    if (!category) return "Unknown";
+  const getCategoryFullName = (product) => {
+    if (!product) return "Unknown";
 
-    if (category.parentId) {
-      const parentCategory = categories.find(cat =>
-        cat._id === (typeof category.parentId === 'object' ? category.parentId._id : category.parentId)
-      );
-
-      if (parentCategory) {
-        return `${parentCategory.name} > ${category.name}`;
+    let categoryPath = "";
+    
+    // Handle main category
+    if (product.category) {
+      if (typeof product.category === 'object') {
+        if (product.category.parentId) {
+          const parentCategory = categories.find(cat =>
+            cat._id === (typeof product.category.parentId === 'object' ? product.category.parentId._id : product.category.parentId)
+          );
+          if (parentCategory) {
+            categoryPath = `${parentCategory.name} > ${product.category.name}`;
+          } else {
+            categoryPath = product.category.name;
+          }
+        } else {
+          categoryPath = product.category.name;
+        }
+      } else {
+        categoryPath = getCategoryName(product.category);
       }
     }
 
-    return category.name;
+    // Handle subcategory if it exists
+    if (product.subCategory) {
+      if (typeof product.subCategory === 'object') {
+        categoryPath += ` > ${product.subCategory.name}`;
+      } else {
+        const subCategoryName = getCategoryName(product.subCategory);
+        if (subCategoryName !== "Unknown") {
+          categoryPath += ` > ${subCategoryName}`;
+        }
+      }
+    }
+
+    return categoryPath || "Unknown";
   };
 
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "0.00";
     return typeof price === 'number' ? price.toFixed(2) : "0.00";
-  };
-
-  const renderCategoryOptions = () => {
-    const topLevelCategories = categories.filter(cat => !cat.parentId);
-
-    return (
-      <>
-        <option value="">Select a Category</option>
-
-        {topLevelCategories.map(category => (
-          <React.Fragment key={category._id}>
-            <option value={category._id}>
-              {category.name}
-            </option>
-
-            {renderSubcategoryOptions(category._id)}
-          </React.Fragment>
-        ))}
-      </>
-    );
-  };
-
-  const renderSubcategoryOptions = (parentId) => {
-    const subcategories = categories.filter(cat => {
-      if (!cat.parentId) return false;
-
-      const catParentId = typeof cat.parentId === 'object'
-        ? cat.parentId._id
-        : cat.parentId;
-
-      return catParentId === parentId;
-    });
-
-    return subcategories.map(subcat => (
-      <option key={subcat._id} value={subcat._id}>
-        &nbsp;&nbsp;&nbsp;└─ {subcat.name}
-      </option>
-    ));
   };
 
   return (
@@ -235,6 +222,7 @@ export default function Products() {
                   <th>No</th>
                   <th>Name</th>
                   <th>Price</th>
+                  <th>Stock</th>
                   <th>Category</th>
                   <th>IsActive</th>
                   <th>Actions</th>
@@ -243,58 +231,67 @@ export default function Products() {
               <tbody>
                 {products.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center" }}>No products found</td>
+                    <td colSpan="7" style={{ textAlign: "center" }}>No products found</td>
                   </tr>
                 ) : (
-                  products.map((product, index) => (
-                    <tr key={product._id}>
-                      <td>{index + 1}</td>
-                      <td>{product.name}</td>
-                      <td>Rs {formatPrice(product.price)}</td>
-                      <td>
-                        {product.category && typeof product.category === 'object'
-                          ? getCategoryFullName(product.category)
-                          : getCategoryName(product.category)}
-                      </td>
-                      <td>
-                        <span className={product.active ? "active-status" : "inactive-status"}>
-                          {product.active ? "Active" : "Not Active"}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button
-                            onClick={() => {
-                              setEditingProduct(product);
-                              setNewProduct({
-                                name: product.name,
-                                price: product.price,
-                                quantity: product.quantity || "",
-                                limit: product.limit || "",
-                                category: product.category && typeof product.category === 'object'
-                                  ? product.category._id
-                                  : product.category,
-                                subCategory: product.subCategory && typeof product.subCategory === 'object'
-                                  ? product.subCategory._id
-                                  : product.subCategory || "",
-                                active: product.active !== undefined ? product.active : true,
-                              });
-                              setShowPopup(true);
-                            }}
-                            className="edit-button"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product._id)}
-                            className="delete-button"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                  products.map((product, index) => {
+                    const isLowStock = product.limit && product.quantity <= product.limit;
+                    return (
+                      <tr key={product._id} className={isLowStock ? "low-stock-row" : ""}>
+                        <td>{index + 1}</td>
+                        <td>{product.name}</td>
+                        <td>Rs {formatPrice(product.price)}</td>
+                        <td>
+                          <div className={`stock-info ${isLowStock ? 'low-stock' : ''}`}>
+                            <span className="stock-quantity">{product.quantity || 0}</span>
+                            {product.limit && (
+                              <span className="stock-limit">/ {product.limit}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          {getCategoryFullName(product)}
+                        </td>
+                        <td>
+                          <span className={product.active ? "active-status" : "inactive-status"}>
+                            {product.active ? "Active" : "Not Active"}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              onClick={() => {
+                                setEditingProduct(product);
+                                setNewProduct({
+                                  name: product.name,
+                                  price: product.price,
+                                  quantity: product.quantity || "",
+                                  limit: product.limit || "",
+                                  category: product.category && typeof product.category === 'object'
+                                    ? product.category._id
+                                    : product.category,
+                                  subCategory: product.subCategory && typeof product.subCategory === 'object'
+                                    ? product.subCategory._id
+                                    : product.subCategory || "",
+                                  active: product.active !== undefined ? product.active : true,
+                                });
+                                setShowPopup(true);
+                              }}
+                              className="edit-button"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product._id)}
+                              className="delete-button"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -478,6 +475,9 @@ export default function Products() {
             </div>
           </div>
         )}
+        
+        {/* Low Stock Alert */}
+        <LowStockAlert />
       </div>
     </div>
   );
