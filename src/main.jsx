@@ -6,6 +6,7 @@ import './index.css';
 import App from './App.jsx';
 import ResCategories from "./pages/Departments/Restaurant/Categories/ResCategories.jsx";
 import Products from "./pages/Departments/Restaurant/Products/Products";
+import Analytics from "./pages/Departments/Restaurant/Analytics/Analytics.jsx";
 
 import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
 import CreateRooms from "./pages/Departments/Owner/OwnRooms/CreateRooms";
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/restaurant/products" element={<Products />} />
           <Route path="/restaurant/create-order" element={<RestaurantPOS />} />
           <Route path="/restaurant/dashboard" element={<Dashboard />} />
+          <Route path="/restaurant/analytics" element={<Analytics />} />
 
           <Route path="/info1" element={<Info1 />} />
 

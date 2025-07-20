@@ -96,3 +96,57 @@ export const deleteOrder = async (id) => {
     throw error;
   }
 };
+
+// Analytics API functions
+export const getDailyRevenue = async (date, orderType) => {
+  try {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    if (orderType) params.append('orderType', orderType);
+    
+    const res = await fetch(`${BASE_URL}/analytics/daily-revenue?${params}`);
+    if (!res.ok) {
+      throw new Error(`Error fetching daily revenue: ${res.status}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error("Failed to fetch daily revenue:", error);
+    throw error;
+  }
+};
+
+export const getBestSellingItems = async (date, orderType) => {
+  try {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    if (orderType) params.append('orderType', orderType);
+    
+    const res = await fetch(`${BASE_URL}/analytics/best-selling?${params}`);
+    if (!res.ok) {
+      throw new Error(`Error fetching best-selling items: ${res.status}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error("Failed to fetch best-selling items:", error);
+    throw error;
+  }
+};
+
+export const getSalesBreakdown = async (date, orderType, filterBy, page = 1) => {
+  try {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    if (orderType) params.append('orderType', orderType);
+    if (filterBy) params.append('filterBy', filterBy);
+    params.append('page', page);
+    
+    const res = await fetch(`${BASE_URL}/analytics/sales-breakdown?${params}`);
+    if (!res.ok) {
+      throw new Error(`Error fetching sales breakdown: ${res.status}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error("Failed to fetch sales breakdown:", error);
+    throw error;
+  }
+};

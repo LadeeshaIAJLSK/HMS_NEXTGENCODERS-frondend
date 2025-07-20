@@ -13,6 +13,8 @@ function App() {
       <br></br>
       <Link to='/restaurant/products'>click here to go to products page</Link>
       <br></br>
+      <Link to='/restaurant/analytics'>click here to go to analytics page</Link>
+      <br></br>
 
       <Link to="/rooms/home">Go to Room Management Home</Link>
       <br /><br />  
