@@ -78,3 +78,21 @@ export const getOrdersByGuest = async (guestId) => {
     throw error;
   }
 };
+
+export const deleteOrder = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}`, {
+      method: "DELETE",
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `Error deleting order: ${res.status}`);
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error("Failed to delete order:", error);
+    throw error;
+  }
+};

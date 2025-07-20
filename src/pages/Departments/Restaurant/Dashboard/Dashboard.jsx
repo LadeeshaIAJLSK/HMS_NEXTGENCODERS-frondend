@@ -1,163 +1,186 @@
 import React, { useState, useEffect } from "react";
 import "./ResDashboard.css";
 import Navbar from '../../../../components/restaurant/resSidebar/Ressidebar';
+import { getOrders, updateOrderStatus, deleteOrder } from '../../../../api/orderApi';
+import CheckoutPopup from './CheckoutPopup';
+import ViewBillPopup from './ViewBillPopup';
 
 export default function Dashboard() {
-  // Sample data for the orders table
-  const allOrders = [
-    // First set of orders
-    
-    {
-      id: "01",
-      items: [
-        { name: "Chicken Bun", quantity: 2, price: 600.00 },
-        { name: "Garlic Bread", quantity: 1, price: 400.00 },
-        { name: "Lemon Juice", quantity: 2, price: 500.00 }
-      ],
-      total: 1500.00,
-      status: "Completed",
-      time: "11-07-2024",
-      timeDetail: "10:34 AM",
-      guest: "Kamal Perera",
-      room: "33"
-    },
-    {
-      id: "02",
-      items: [
-        { name: "Chicken Bun", quantity: 2, price: 600.00 },
-        { name: "Garlic Bread", quantity: 1, price: 400.00 },
-        { name: "Lemon Juice", quantity: 2, price: 500.00 }
-      ],
-      total: 1500.00,
-      status: "Preparing",
-      time: "11-07-2024",
-      timeDetail: "10:34 AM",
-      prepTime: "15 Min",
-      guest: "Kamal Perera",
-      room: "33"
-    },
-    {
-      id: "01",
-      items: [
-        { name: "Chicken Bun", quantity: 2, price: 600.00 },
-        { name: "Garlic Bread", quantity: 1, price: 400.00 },
-        { name: "Lemon Juice", quantity: 2, price: 500.00 }
-      ],
-      total: 1500.00,
-      status: "Completed",
-      time: "11-07-2024",
-      timeDetail: "10:34 AM",
-      guest: "Kamal Perera",
-      room: "33"
-    },
-    {
-      id: "02",
-      items: [
-        { name: "Chicken Bun", quantity: 2, price: 600.00 },
-        { name: "Garlic Bread", quantity: 1, price: 400.00 },
-        { name: "Lemon Juice", quantity: 2, price: 500.00 }
-      ],
-      total: 1500.00,
-      status: "Preparing",
-      time: "11-07-2024",
-      timeDetail: "10:34 AM",
-      prepTime: "15 Min",
-      guest: "Kamal Perera",
-      room: "33"
-    },
-    {
-      id: "01",
-      items: [
-        { name: "Chicken Bun", quantity: 2, price: 600.00 },
-        { name: "Garlic Bread", quantity: 1, price: 400.00 },
-        { name: "Lemon Juice", quantity: 2, price: 500.00 }
-      ],
-      total: 1500.00,
-      status: "Completed",
-      time: "11-07-2024",
-      timeDetail: "10:34 AM",
-      guest: "Kamal Perera",
-      room: "33"
-    },
-    {
-      id: "02",
-      items: [
-        { name: "Chicken Bun", quantity: 2, price: 600.00 },
-        { name: "Garlic Bread", quantity: 1, price: 400.00 },
-        { name: "Lemon Juice", quantity: 2, price: 500.00 }
-      ],
-      total: 1500.00,
-      status: "Preparing",
-      time: "11-07-2024",
-      timeDetail: "10:34 AM",
-      prepTime: "15 Min",
-      guest: "Kamal Perera",
-      room: "33"
-    }
-  ];
-
   const [orders, setOrders] = useState([]);
+  const [allOrders, setAllOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [orderTypeFilter, setOrderTypeFilter] = useState("All Orders");
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showBill, setShowBill] = useState(false);
+  const [billOrder, setBillOrder] = useState(null);
 
-  // Initialize pagination
   useEffect(() => {
-    // Calculate total pages
-    setTotalPages(Math.ceil(allOrders.length / ordersPerPage));
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const ordersData = await getOrders();
+      setAllOrders(ordersData);
+      setTotalPages(Math.ceil(ordersData.length / ordersPerPage));
+      setOrders(ordersData.slice(0, ordersPerPage));
+    } catch (err) {
+      setError("Failed to fetch orders. Please try again.");
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+  const filterOrders = () => {
+    let filtered = allOrders;
+
+    if (searchQuery.trim() !== "") {
+      filtered = filtered.filter(order => 
+        order.guestInfo?.guestName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.guestInfo?.roomNo?.toString().includes(searchQuery)
+      );
+    }
+
+    if (statusFilter !== "All") {
+      filtered = filtered.filter(order => 
+        order.status.toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
+
+    if (orderTypeFilter !== "All Orders") {
+      filtered = filtered.filter(order => 
+        order.orderType === orderTypeFilter
+      );
+    }
+
+    return filtered;
+  };
+
+  useEffect(() => {
+    const filteredOrders = filterOrders();
+    setTotalPages(Math.ceil(filteredOrders.length / ordersPerPage));
     
-    // Set initial orders to display
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-    setOrders(allOrders.slice(indexOfFirstOrder, indexOfLastOrder));
-  }, [currentPage, ordersPerPage]);
+    setOrders(filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder));
+  }, [allOrders, searchQuery, statusFilter, orderTypeFilter, currentPage, ordersPerPage]);
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1); // Reset to first page when searching
-    
-    if (e.target.value.trim() === "") {
-      // If search is cleared, show first page of all orders
-      setOrders(allOrders.slice(0, ordersPerPage));
-      setTotalPages(Math.ceil(allOrders.length / ordersPerPage));
-    } else {
-      // Filter orders based on search query
-      const filteredOrders = allOrders.filter(order => 
-        order.guest.toLowerCase().includes(e.target.value.toLowerCase()) ||
-        order.room.toString().includes(e.target.value)
-      );
-      setOrders(filteredOrders.slice(0, ordersPerPage));
-      setTotalPages(Math.ceil(filteredOrders.length / ordersPerPage));
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (e) => {
+    setStatusFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleOrderTypeFilterChange = (e) => {
+    setOrderTypeFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleAddPayment = (order) => {
+    setSelectedOrder(order);
+    setShowCheckout(true);
+  };
+
+  const handlePaymentComplete = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "completed");
+      await fetchOrders();
+    } catch (err) {
+      console.error("Error updating order status:", err);
     }
   };
 
-  // Handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    
-    // If there's a search query, paginate the filtered results
-    if (searchQuery.trim() !== "") {
-      const filteredOrders = allOrders.filter(order => 
-        order.guest.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.room.toString().includes(searchQuery)
-      );
-      const indexOfLastOrder = pageNumber * ordersPerPage;
-      const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-      setOrders(filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder));
-    } else {
-      // Otherwise paginate all orders
-      const indexOfLastOrder = pageNumber * ordersPerPage;
-      const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-      setOrders(allOrders.slice(indexOfFirstOrder, indexOfLastOrder));
+  const closeCheckout = () => {
+    setShowCheckout(false);
+    setSelectedOrder(null);
+  };
+
+  const handleViewBill = (order) => {
+    setBillOrder(order);
+    setShowBill(true);
+  };
+
+  const closeBill = () => {
+    setShowBill(false);
+    setBillOrder(null);
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+      try {
+        await deleteOrder(orderId);
+        await fetchOrders();
+      } catch (err) {
+        console.error("Error deleting order:", err);
+        alert("Failed to delete order. Please try again.");
+      }
     }
   };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
   
-  // Generate page numbers for pagination
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="restaurant-dashboard">
+        <Navbar />
+        <div className="dashboard-content">
+          <div className="loading-container">
+            <h2>Loading orders...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="restaurant-dashboard">
+        <Navbar />
+        <div className="dashboard-content">
+          <div className="error-container">
+            <h2>Error: {error}</h2>
+            <button onClick={fetchOrders}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -185,10 +208,10 @@ export default function Dashboard() {
           <div className="filter-container">
             <h4>Select Orders</h4>
             <div className="select-dropdown">
-              <select>
+              <select value={orderTypeFilter} onChange={handleOrderTypeFilterChange}>
                 <option>All Orders</option>
-                <option>Room Service</option>
-                <option>Restaurant</option>
+                <option>Take Away</option>
+                <option>Dine In</option>
               </select>
             </div>
           </div>
@@ -198,11 +221,11 @@ export default function Dashboard() {
           <div className="filter-container">
             <h4>Select Order Status</h4>
             <div className="select-dropdown">
-              <select>
+              <select value={statusFilter} onChange={handleStatusFilterChange}>
                 <option>All</option>
                 <option>Completed</option>
                 <option>Preparing</option>
-                <option>Cancelled</option>
+                <option>Payment Pending</option>
               </select>
             </div>
           </div>
@@ -225,7 +248,7 @@ export default function Dashboard() {
           <table className="orders-table">
             <thead>
               <tr>
-                <th>No</th>
+                <th>Order No</th>
                 <th>Items and Prices</th>
                 <th>Total</th>
                 <th>Status</th>
@@ -236,35 +259,54 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
-                <tr key={index} className={order.status === "Preparing" ? "preparing-row" : ""}>
-                  <td>{order.id}</td>
+              {orders.map((order) => (
+                <tr key={order._id} className={order.status === "preparing" ? "preparing-row" : ""}>
+                  <td>{order.orderNo}</td>
                   <td>
                     <div className="items-list">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="item-entry">
                           <span>{item.quantity} {item.name}</span>
-                          <span className="item-price">{item.price.toFixed(2)}</span>
+                          <span className="item-price">{item.amount.toFixed(2)}</span>
                         </div>
                       ))}
                     </div>
                   </td>
                   <td className="total-column">{order.total.toFixed(2)}</td>
-                  <td className={`status-column ${order.status.toLowerCase()}`}>
-                    {order.status}
-                    {order.status === "Preparing" && <div className="prep-time">{order.prepTime}</div>}
+                  <td className="status-column">
+                    <span className={`status-pill ${order.status.toLowerCase().replace(' ', '-')}`}>
+                      {order.status}
+                    </span>
+                    {order.status === "preparing" && <div className="prep-time">15 Min</div>}
                   </td>
                   <td className="time-column">
-                    <div>{order.time}</div>
-                    <div className="time-detail">{order.timeDetail}</div>
+                    <div>{formatDate(order.createdAt)}</div>
+                    <div className="time-detail">{formatTime(order.createdAt)}</div>
                   </td>
-                  <td>{order.guest}</td>
-                  <td>{order.room}</td>
+                  <td>{order.guestInfo?.guestName || "Walk-in Customer"}</td>
+                  <td>{order.guestInfo?.roomNo || "N/A"}</td>
                   <td>
                     <div className="res-dashboard-action-buttons">
-                      <button className="res-dashboard-action-btn res-dashboard-view-btn">View Bill</button>
-                      <button className="res-dashboard-action-btn res-dashboard-add-btn">Add Payment</button>
-                      <button className="res-dashboard-action-btn res-dashboard-delete-btn">Delete Record</button>
+                      <button 
+                        className="res-dashboard-action-btn res-dashboard-view-btn"
+                        onClick={() => handleViewBill(order)}
+                      >
+                        View Bill
+                      </button>
+                      {order.status === "payment pending" && (
+                        <button 
+                          className="res-dashboard-action-btn res-dashboard-add-btn"
+                          onClick={() => handleAddPayment(order)}
+                        >
+                          Add Payment
+                        </button>
+                      )}
+                      <button 
+                        className="res-dashboard-action-btn res-dashboard-delete-btn"
+                        onClick={() => handleDeleteOrder(order._id)}
+                      >
+                        Delete Record
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -306,6 +348,21 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      
+      {showCheckout && selectedOrder && (
+        <CheckoutPopup
+          order={selectedOrder}
+          onClose={closeCheckout}
+          onPaymentComplete={handlePaymentComplete}
+        />
+      )}
+      
+      {showBill && billOrder && (
+        <ViewBillPopup
+          order={billOrder}
+          onClose={closeBill}
+        />
+      )}
     </div>
   );
 }
