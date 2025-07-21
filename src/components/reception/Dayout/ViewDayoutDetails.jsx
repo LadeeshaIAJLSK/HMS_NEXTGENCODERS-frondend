@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ViewDayoutDetails.css';
 
 const ViewDayoutDetails = ({
   selectedReservation,
@@ -117,16 +118,16 @@ const ViewDayoutDetails = ({
   };
 
   return (
-    <div className="container-fluid px-4 py-3">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>🏖️ Day-Out Reservation Details</h2>
-        <div className="btn-group">
-          <button className="btn btn-outline-secondary" onClick={onBackToEdit}>
+    <div className="vdd-container-fluid">
+      <div className="vdd-header">
+        <h2 className="vdd-title">🏖️ Day-Out Reservation Details</h2>
+        <div className="vdd-btn-group">
+          <button className="vdd-btn vdd-btn-outline-secondary" onClick={onBackToEdit}>
             ✏️ Edit Reservation
           </button>
           {selectedReservation?.status !== 'Completed' && amountDue === 0 && (
             <button 
-              className="btn btn-success" 
+              className="vdd-btn vdd-btn-success" 
               onClick={handleCheckout}
               disabled={isProcessing}
             >
@@ -137,38 +138,29 @@ const ViewDayoutDetails = ({
       </div>
 
       {/* Reservation Status */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-3">
-                  <h6>Reservation Status</h6>
-                  <span className={`badge fs-6 ${
-                    selectedReservation?.status === 'Completed' ? 'bg-success' :
-                    selectedReservation?.status === 'Confirmed' ? 'bg-primary' :
-                    selectedReservation?.status === 'Pending' ? 'bg-warning' :
-                    selectedReservation?.status === 'Cancelled' ? 'bg-danger' : 'bg-secondary'
-                  }`}>
+      <div className="vdd-row vdd-mb-4">
+        <div className="vdd-col-12">
+          <div className="vdd-card">
+            <div className="vdd-card-body">
+              <div className="vdd-status-grid">
+                <div className="vdd-status-item">
+                  <h6 className="vdd-status-label">Reservation Status</h6>
+                  <span className={`vdd-badge vdd-status-${selectedReservation?.status?.toLowerCase() || 'unknown'}`}>
                     {selectedReservation?.status || 'Unknown'}
                   </span>
                 </div>
-                <div className="col-md-3">
-                  <h6>Payment Status</h6>
-                  <span className={`badge fs-6 ${
-                    selectedReservation?.paymentStatus === 'Fully Paid' ? 'bg-success' :
-                    selectedReservation?.paymentStatus === 'Partially Paid' ? 'bg-warning' :
-                    selectedReservation?.paymentStatus === 'Pending' ? 'bg-danger' : 'bg-secondary'
-                  }`}>
+                <div className="vdd-status-item">
+                  <h6 className="vdd-status-label">Payment Status</h6>
+                  <span className={`vdd-badge vdd-payment-${selectedReservation?.paymentStatus?.replace(' ', '-').toLowerCase() || 'unknown'}`}>
                     {selectedReservation?.paymentStatus || 'Unknown'}
                   </span>
                 </div>
-                <div className="col-md-3">
-                  <h6>Reservation ID</h6>
-                  <code>{selectedReservation?._id}</code>
+                <div className="vdd-status-item">
+                  <h6 className="vdd-status-label">Reservation ID</h6>
+                  <code className="vdd-code">{selectedReservation?._id}</code>
                 </div>
-                <div className="col-md-3">
-                  <h6>Created On</h6>
+                <div className="vdd-status-item">
+                  <h6 className="vdd-status-label">Created On</h6>
                   <span>{formatDate(selectedReservation?.createdAt)}</span>
                 </div>
               </div>
@@ -178,30 +170,30 @@ const ViewDayoutDetails = ({
       </div>
 
       {/* Visit Information */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h5>📅 Visit Information</h5>
+      <div className="vdd-row vdd-mb-4">
+        <div className="vdd-col-12">
+          <div className="vdd-card">
+            <div className="vdd-card-header">
+              <h5 className="vdd-card-title">📅 Visit Information</h5>
             </div>
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-4">
+            <div className="vdd-card-body">
+              <div className="vdd-info-grid">
+                <div className="vdd-info-item">
                   <strong>Visit Date:</strong> {formatDate(formData.checkIn)}
                 </div>
-                <div className="col-md-4">
+                <div className="vdd-info-item">
                   <strong>Time:</strong> {selectedReservation?.startTime} - {selectedReservation?.endTime}
                 </div>
-                <div className="col-md-4">
+                <div className="vdd-info-item">
                   <strong>Duration:</strong> {selectedReservation?.duration} hours
                 </div>
-                <div className="col-md-4 mt-2">
+                <div className="vdd-info-item">
                   <strong>Adults:</strong> {formData.adults}
                 </div>
-                <div className="col-md-4 mt-2">
+                <div className="vdd-info-item">
                   <strong>Kids:</strong> {formData.kids}
                 </div>
-                <div className="col-md-4 mt-2">
+                <div className="vdd-info-item">
                   <strong>Total Guests:</strong> {parseInt(formData.adults) + parseInt(formData.kids)}
                 </div>
               </div>
@@ -211,40 +203,42 @@ const ViewDayoutDetails = ({
       </div>
 
       {/* Guest Information */}
-      <div className="row mb-4">
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-header">
-              <h5>👤 Primary Guest Information</h5>
+      <div className="vdd-row vdd-mb-4">
+        <div className="vdd-col-md-6">
+          <div className="vdd-card">
+            <div className="vdd-card-header">
+              <h5 className="vdd-card-title">👤 Primary Guest Information</h5>
             </div>
-            <div className="card-body">
-              <p><strong>Name:</strong> {formData.firstName} {formData.middleName} {formData.surname}</p>
-              <p><strong>Mobile:</strong> {formData.mobile}</p>
-              <p><strong>Email:</strong> {formData.email || 'Not provided'}</p>
-              <p><strong>Date of Birth:</strong> {formatDate(formData.dob)}</p>
-              <p><strong>Gender:</strong> {formData.gender || 'Not specified'}</p>
-              <p><strong>Address:</strong> {formData.address}</p>
-              <p><strong>City:</strong> {formData.city || 'Not specified'}</p>
-              {formData.idType && (
-                <>
-                  <p><strong>ID Type:</strong> {formData.idType}</p>
-                  <p><strong>ID Number:</strong> {formData.idNumber}</p>
-                </>
-              )}
+            <div className="vdd-card-body">
+              <div className="vdd-guest-info">
+                <p><strong>Name:</strong> {formData.firstName} {formData.middleName} {formData.surname}</p>
+                <p><strong>Mobile:</strong> {formData.mobile}</p>
+                <p><strong>Email:</strong> {formData.email || 'Not provided'}</p>
+                <p><strong>Date of Birth:</strong> {formatDate(formData.dob)}</p>
+                <p><strong>Gender:</strong> {formData.gender || 'Not specified'}</p>
+                <p><strong>Address:</strong> {formData.address}</p>
+                <p><strong>City:</strong> {formData.city || 'Not specified'}</p>
+                {formData.idType && (
+                  <>
+                    <p><strong>ID Type:</strong> {formData.idType}</p>
+                    <p><strong>ID Number:</strong> {formData.idNumber}</p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Other Persons */}
         {selectedReservation?.otherPersons && selectedReservation.otherPersons.length > 0 && (
-          <div className="col-md-6">
-            <div className="card">
-              <div className="card-header">
-                <h5>👥 Other Persons</h5>
+          <div className="vdd-col-md-6">
+            <div className="vdd-card">
+              <div className="vdd-card-header">
+                <h5 className="vdd-card-title">👥 Other Persons</h5>
               </div>
-              <div className="card-body">
+              <div className="vdd-card-body">
                 {selectedReservation.otherPersons.map((person, index) => (
-                  <div key={index} className="mb-3 p-2 border rounded">
+                  <div key={index} className="vdd-person-card">
                     <p><strong>Name:</strong> {person.name || 'Not provided'}</p>
                     <p><strong>Gender:</strong> {person.gender || 'Not specified'}</p>
                     <p><strong>Age:</strong> {person.age || 'Not specified'}</p>
@@ -258,34 +252,32 @@ const ViewDayoutDetails = ({
       </div>
 
       {/* Package Details */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h5>📦 Selected Packages</h5>
+      <div className="vdd-row vdd-mb-4">
+        <div className="vdd-col-12">
+          <div className="vdd-card">
+            <div className="vdd-card-header">
+              <h5 className="vdd-card-title">📦 Selected Packages</h5>
             </div>
-            <div className="card-body">
+            <div className="vdd-card-body">
               {packageDetails && packageDetails.length > 0 ? (
-                <div className="row">
+                <div className="vdd-packages-grid">
                   {packageDetails.map((pkg, index) => (
-                    <div key={index} className="col-md-6 mb-3">
-                      <div className="card">
-                        <div className="card-body">
-                          <h6 className="card-title">{pkg.name}</h6>
-                          <p className="card-text">{pkg.description}</p>
-                          <p><strong>Category:</strong> {pkg.category}</p>
-                          <p><strong>Price:</strong> {formatCurrency(pkg.pricePerChild)} per person</p>
-                          {pkg.features && pkg.features.length > 0 && (
-                            <div>
-                              <strong>Features:</strong>
-                              <ul className="mt-1">
-                                {pkg.features.map((feature, fIndex) => (
-                                  <li key={fIndex}>{feature}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
+                    <div key={index} className="vdd-package-card">
+                      <div className="vdd-package-body">
+                        <h6 className="vdd-package-title">{pkg.name}</h6>
+                        <p className="vdd-package-description">{pkg.description}</p>
+                        <p><strong>Category:</strong> {pkg.category}</p>
+                        <p><strong>Price:</strong> {formatCurrency(pkg.pricePerChild)} per person</p>
+                        {pkg.features && pkg.features.length > 0 && (
+                          <div>
+                            <strong>Features:</strong>
+                            <ul className="vdd-features-list">
+                              {pkg.features.map((feature, fIndex) => (
+                                <li key={fIndex}>{feature}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -299,48 +291,47 @@ const ViewDayoutDetails = ({
       </div>
 
       {/* Payment Information */}
-      <div className="row mb-4">
-        <div className="col-md-8">
-          <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5>💳 Payment Information</h5>
+      <div className="vdd-row vdd-mb-4">
+        <div className="vdd-col-md-8">
+          <div className="vdd-card">
+            <div className="vdd-card-header vdd-payment-header">
+              <h5 className="vdd-card-title">💳 Payment Information</h5>
               {amountDue > 0 && (
                 <button 
-                  className="btn btn-primary btn-sm"
+                  className="vdd-btn vdd-btn-primary vdd-btn-sm"
                   onClick={() => setShowPaymentForm(!showPaymentForm)}
                 >
                   {showPaymentForm ? 'Cancel' : '💰 Record Payment'}
                 </button>
               )}
             </div>
-            <div className="card-body">
-              <div className="row mb-3">
-                <div className="col-md-4">
+            <div className="vdd-card-body">
+              <div className="vdd-payment-summary">
+                <div className="vdd-payment-item">
                   <strong>Total Amount:</strong>
-                  <div className="fs-5 text-primary">{formatCurrency(totalAmount)}</div>
+                  <div className="vdd-amount vdd-amount-total">{formatCurrency(totalAmount)}</div>
                 </div>
-                <div className="col-md-4">
+                <div className="vdd-payment-item">
                   <strong>Paid Amount:</strong>
-                  <div className="fs-5 text-success">{formatCurrency(paidAmount)}</div>
+                  <div className="vdd-amount vdd-amount-paid">{formatCurrency(paidAmount)}</div>
                 </div>
-                <div className="col-md-4">
+                <div className="vdd-payment-item">
                   <strong>Amount Due:</strong>
-                  <div className={`fs-5 ${amountDue > 0 ? 'text-danger' : 'text-success'}`}>
+                  <div className={`vdd-amount ${amountDue > 0 ? 'vdd-amount-due' : 'vdd-amount-paid'}`}>
                     {formatCurrency(amountDue)}
                   </div>
                 </div>
               </div>
 
               {/* Payment Progress Bar */}
-              <div className="mb-3">
-                <div className="d-flex justify-content-between mb-1">
+              <div className="vdd-progress-container">
+                <div className="vdd-progress-info">
                   <small>Payment Progress</small>
                   <small>{paymentProgress}%</small>
                 </div>
-                <div className="progress">
+                <div className="vdd-progress">
                   <div 
-                    className={`progress-bar ${paymentProgress === 100 ? 'bg-success' : 'bg-primary'}`}
-                    role="progressbar" 
+                    className={`vdd-progress-bar ${paymentProgress === 100 ? 'vdd-progress-complete' : 'vdd-progress-partial'}`}
                     style={{ width: `${paymentProgress}%` }}
                   ></div>
                 </div>
@@ -348,16 +339,16 @@ const ViewDayoutDetails = ({
 
               {/* Payment Form */}
               {showPaymentForm && (
-                <form onSubmit={handlePaymentSubmit} className="border-top pt-3">
-                  <h6>Record New Payment</h6>
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Amount *</label>
-                      <div className="input-group">
-                        <span className="input-group-text">Rs</span>
+                <form onSubmit={handlePaymentSubmit} className="vdd-payment-form">
+                  <h6 className="vdd-form-title">Record New Payment</h6>
+                  <div className="vdd-form-grid">
+                    <div className="vdd-form-group">
+                      <label className="vdd-form-label">Amount *</label>
+                      <div className="vdd-input-group">
+                        <span className="vdd-input-group-text">Rs</span>
                         <input
                           type="number"
-                          className="form-control"
+                          className="vdd-form-control"
                           value={paymentData.amount}
                           onChange={(e) => setPaymentData(prev => ({...prev, amount: e.target.value}))}
                           max={amountDue}
@@ -366,10 +357,10 @@ const ViewDayoutDetails = ({
                         />
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Payment Method *</label>
+                    <div className="vdd-form-group">
+                      <label className="vdd-form-label">Payment Method *</label>
                       <select
-                        className="form-control"
+                        className="vdd-form-control"
                         value={paymentData.method}
                         onChange={(e) => setPaymentData(prev => ({...prev, method: e.target.value}))}
                         required
@@ -383,46 +374,46 @@ const ViewDayoutDetails = ({
                       </select>
                     </div>
                     {paymentData.method === 'Cash' && (
-                      <div className="col-md-6">
-                        <label className="form-label">Cash Received</label>
-                        <div className="input-group">
-                          <span className="input-group-text">Rs</span>
+                      <div className="vdd-form-group">
+                        <label className="vdd-form-label">Cash Received</label>
+                        <div className="vdd-input-group">
+                          <span className="vdd-input-group-text">Rs</span>
                           <input
                             type="number"
-                            className="form-control"
+                            className="vdd-form-control"
                             value={paymentData.cashReceived}
                             onChange={(e) => setPaymentData(prev => ({...prev, cashReceived: e.target.value}))}
                             step="0.01"
                           />
                         </div>
                         {paymentData.cashReceived && paymentData.amount && (
-                          <small className="text-muted">
+                          <small className="vdd-text-muted">
                             Change: {formatCurrency(parseFloat(paymentData.cashReceived) - parseFloat(paymentData.amount))}
                           </small>
                         )}
                       </div>
                     )}
-                    <div className="col-md-12">
-                      <label className="form-label">Notes</label>
+                    <div className="vdd-form-group vdd-form-group-full">
+                      <label className="vdd-form-label">Notes</label>
                       <textarea
-                        className="form-control"
+                        className="vdd-form-control"
                         value={paymentData.notes}
                         onChange={(e) => setPaymentData(prev => ({...prev, notes: e.target.value}))}
                         rows="2"
                         placeholder="Payment notes (optional)"
                       />
                     </div>
-                    <div className="col-md-12">
+                    <div className="vdd-form-actions">
                       <button 
                         type="submit" 
-                        className="btn btn-primary me-2"
+                        className="vdd-btn vdd-btn-primary"
                         disabled={isProcessing}
                       >
                         {isProcessing ? 'Processing...' : 'Record Payment'}
                       </button>
                       <button 
                         type="button" 
-                        className="btn btn-secondary"
+                        className="vdd-btn vdd-btn-secondary"
                         onClick={() => setShowPaymentForm(false)}
                       >
                         Cancel
@@ -436,25 +427,25 @@ const ViewDayoutDetails = ({
         </div>
 
         {/* Payment History */}
-        <div className="col-md-4">
-          <div className="card">
-            <div className="card-header">
-              <h5>📜 Payment History</h5>
+        <div className="vdd-col-md-4">
+          <div className="vdd-card">
+            <div className="vdd-card-header">
+              <h5 className="vdd-card-title">📜 Payment History</h5>
             </div>
-            <div className="card-body">
+            <div className="vdd-card-body">
               {paymentHistory && paymentHistory.length > 0 ? (
-                <div className="timeline">
+                <div className="vdd-timeline">
                   {paymentHistory.map((payment, index) => (
-                    <div key={index} className="mb-3 p-2 border-start border-primary border-3 ps-3">
-                      <div className="fw-bold">{formatCurrency(payment.amount)}</div>
-                      <small className="text-muted">
+                    <div key={index} className="vdd-timeline-item">
+                      <div className="vdd-payment-amount">{formatCurrency(payment.amount)}</div>
+                      <small className="vdd-payment-meta">
                         {payment.method} • {formatDate(payment.date)}
                       </small>
                       {payment.notes && (
-                        <div className="small text-muted mt-1">{payment.notes}</div>
+                        <div className="vdd-payment-notes">{payment.notes}</div>
                       )}
                       {payment.cashReceived && (
-                        <div className="small text-muted">
+                        <div className="vdd-payment-cash">
                           Cash: {formatCurrency(payment.cashReceived)} 
                           | Change: {formatCurrency(payment.change || 0)}
                         </div>
@@ -463,7 +454,7 @@ const ViewDayoutDetails = ({
                   ))}
                 </div>
               ) : (
-                <p className="text-muted">No payment history</p>
+                <p className="vdd-no-data">No payment history</p>
               )}
             </div>
           </div>

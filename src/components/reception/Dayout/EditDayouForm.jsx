@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { countries } from "../FormSection1/countries";
 
+
 const EditDayoutForm = ({
   selectedReservation,
   formData,
@@ -47,13 +48,55 @@ const EditDayoutForm = ({
     fetchPackages();
   }, [onError]);
 
-  // Helper function to format date for HTML input
+  // Helper function to format date for HTML input - FIXED VERSION
   const formatDateForInput = (dateValue) => {
     if (!dateValue) return '';
     
     try {
-      const date = new Date(dateValue);
-      if (isNaN(date.getTime())) return '';
+      let date;
+      
+      // Handle different date formats
+      if (typeof dateValue === 'string') {
+        // Check if it's already in YYYY-MM-DD format
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+          return dateValue;
+        }
+        
+        // Handle MM-DD-YY or similar short formats
+        if (/^\d{1,2}-\d{1,2}-\d{2}$/.test(dateValue)) {
+          const parts = dateValue.split('-');
+          let month = parts[0].padStart(2, '0');
+          let day = parts[1].padStart(2, '0');
+          let year = parts[2];
+          
+          // Convert 2-digit year to 4-digit year
+          if (year.length === 2) {
+            const currentYear = new Date().getFullYear();
+            const currentCentury = Math.floor(currentYear / 100) * 100;
+            year = currentCentury + parseInt(year);
+            
+            // If the year is more than 50 years in the future, assume it's from the previous century
+            if (year > currentYear + 50) {
+              year -= 100;
+            }
+          }
+          
+          // Create date in YYYY-MM-DD format
+          const formattedDate = `${year}-${month}-${day}`;
+          date = new Date(formattedDate);
+        } else {
+          // Try to parse as regular date string
+          date = new Date(dateValue);
+        }
+      } else {
+        date = new Date(dateValue);
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date value:', dateValue);
+        return '';
+      }
       
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -61,7 +104,7 @@ const EditDayoutForm = ({
       
       return `${year}-${month}-${day}`;
     } catch (error) {
-      console.error('Date formatting error:', error);
+      console.error('Date formatting error:', error, 'for value:', dateValue);
       return '';
     }
   };
@@ -74,17 +117,16 @@ const EditDayoutForm = ({
       setEmailError(value && !emailRegex.test(value) ? 'Please enter a valid email address' : '');
     }
     
+    // Handle mobile field differently - store raw mobile number
     if (id === 'mobile') {
-      const countryCode = selectedCountry?.value || '';
-      const fullMobile = countryCode ? `${countryCode} ${value}` : value;
-      setFormData(prev => ({ ...prev, mobile: fullMobile }));
+      setFormData(prev => ({ ...prev, mobile: value }));
     } else {
       setFormData(prev => ({ ...prev, [id]: value }));
     }
 
     // Calculate total amount when relevant fields change
     if (['adults', 'kids'].includes(id)) {
-      calculateTotalAmount();
+      setTimeout(() => calculateTotalAmount(), 0);
     }
   };
 
@@ -110,7 +152,7 @@ const EditDayoutForm = ({
       : [...selectedPackages, packageId];
     
     setSelectedPackages(updatedPackages);
-    calculateTotalAmount(updatedPackages);
+    setTimeout(() => calculateTotalAmount(updatedPackages), 0);
   };
 
   const calculateTotalAmount = (packagesArray = selectedPackages) => {
@@ -147,15 +189,68 @@ const EditDayoutForm = ({
     setSelectedFiles(files);
   };
 
+  // Helper function to get mobile number with country code
+  const getFullMobileNumber = () => {
+    const countryCode = selectedCountry?.value || '';
+    const mobileNumber = formData.mobile || '';
+    
+    // If mobile already has country code, return as is
+    if (mobileNumber.includes('+') || !countryCode) {
+      return mobileNumber;
+    }
+    
+    // Combine country code with mobile number
+    return `${countryCode} ${mobileNumber}`;
+  };
+
+  // Helper function to extract only package IDs
+  const getPackageIds = (packages) => {
+    return packages.map(pkg => {
+      // If it's already just an ID string, return it
+      if (typeof pkg === 'string') {
+        return pkg;
+      }
+      // If it's an object with _id, extract the _id
+      if (pkg && typeof pkg === 'object' && pkg._id) {
+        return pkg._id;
+      }
+      // If it's an object with id, extract the id
+      if (pkg && typeof pkg === 'object' && pkg.id) {
+        return pkg.id;
+      }
+      // Fallback - return as is
+      return pkg;
+    }).filter(id => id); // Remove any null/undefined values
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Get the full mobile number
+    const fullMobile = getFullMobileNumber();
+    
+    // Validate required fields BEFORE creating FormData
+    if (!formData.firstName || formData.firstName.trim() === '') {
+      onError("First Name is required");
+      return;
+    }
+    
+    if (!fullMobile || fullMobile.trim() === '') {
+      onError("Mobile number is required");
+      return;
+    }
+    
+    if (!formData.checkIn) {
+      onError("Visit Date is required");
+      return;
+    }
     
     if (emailError) {
       onError("Please fix email validation error before submitting");
       return;
     }
 
-    if (selectedPackages.length === 0) {
+    if (!selectedPackages || selectedPackages.length === 0) {
       onError("Please select at least one package");
       return;
     }
@@ -165,32 +260,107 @@ const EditDayoutForm = ({
     try {
       const formDataToSend = new FormData();
       
-      // Add all form fields
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null && formData[key] !== undefined) {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
-
+      // Add basic form fields - always add required fields
+      formDataToSend.append('firstName', (formData.firstName || '').trim());
+      formDataToSend.append('mobile', fullMobile.trim());
+      formDataToSend.append('checkIn', formData.checkIn || '');
+      
+      // Add optional fields only if they have values
+      if (formData.middleName && formData.middleName.trim()) {
+        formDataToSend.append('middleName', formData.middleName.trim());
+      }
+      if (formData.surname && formData.surname.trim()) {
+        formDataToSend.append('surname', formData.surname.trim());
+      }
+      if (formData.email && formData.email.trim()) {
+        formDataToSend.append('email', formData.email.trim());
+      }
+      if (formData.startTime) {
+        formDataToSend.append('startTime', formData.startTime);
+      }
+      if (formData.endTime) {
+        formDataToSend.append('endTime', formData.endTime);
+      }
+      
+      // Add numeric fields
+      formDataToSend.append('adults', parseInt(formData.adults) || 1);
+      formDataToSend.append('kids', parseInt(formData.kids) || 0);
+      
+      // Add other optional fields
+      if (formData.dob) {
+        formDataToSend.append('dob', formData.dob);
+      }
+      if (formData.gender) {
+        formDataToSend.append('gender', formData.gender);
+      }
+      if (formData.city && formData.city.trim()) {
+        formDataToSend.append('city', formData.city.trim());
+      }
+      if (formData.address && formData.address.trim()) {
+        formDataToSend.append('address', formData.address.trim());
+      }
+      if (formData.idType) {
+        formDataToSend.append('idType', formData.idType);
+      }
+      if (formData.idNumber && formData.idNumber.trim()) {
+        formDataToSend.append('idNumber', formData.idNumber.trim());
+      }
+      
+      // Add payment fields
+      formDataToSend.append('totalAmount', parseFloat(formData.totalAmount) || 0);
+      formDataToSend.append('paidAmount', parseFloat(formData.paidAmount) || 0);
+      
+      if (formData.paymentMethod) {
+        formDataToSend.append('paymentMethod', formData.paymentMethod);
+      }
+      
+      formDataToSend.append('paymentStatus', formData.paymentStatus || 'Pending');
+      
+      if (formData.paymentNotes && formData.paymentNotes.trim()) {
+        formDataToSend.append('paymentNotes', formData.paymentNotes.trim());
+      }
+      
       // Add reservation type
       formDataToSend.append('reservationType', 'dayOut');
       
-      // Add selected packages
-      formDataToSend.append('selectedPackages', JSON.stringify(selectedPackages));
+      // Extract only package IDs and add them as JSON string
+      const packageIds = getPackageIds(selectedPackages);
+      console.log('Package IDs being sent:', packageIds);
+      formDataToSend.append('selectedPackages', JSON.stringify(packageIds));
       
-      // Add other persons
-      formDataToSend.append('otherPersons', JSON.stringify(persons.filter(person => person.name.trim())));
+      // Add other persons (only those with names)
+      const validPersons = persons.filter(person => person.name && person.name.trim() !== '');
+      if (validPersons.length > 0) {
+        // Clean up person objects to only include necessary fields
+        const cleanedPersons = validPersons.map(person => ({
+          name: person.name,
+          gender: person.gender || '',
+          age: person.age || '',
+          address: person.address || '',
+          idType: person.idType || '',
+          idNo: person.idNo || ''
+        }));
+        formDataToSend.append('otherPersons', JSON.stringify(cleanedPersons));
+      }
       
-      // Add country code
-      if (selectedCountry) {
+      // Add country code if selected
+      if (selectedCountry?.value) {
         formDataToSend.append('countryCode', selectedCountry.value);
       }
       
-      // Add files
-      selectedFiles.forEach(file => {
-        formDataToSend.append('idFiles', file);
-      });
+      // Add files if any
+      if (selectedFiles && selectedFiles.length > 0) {
+        selectedFiles.forEach((file) => {
+          formDataToSend.append('idFiles', file);
+        });
+      }
 
+      // Debug: Log FormData contents
+      console.log('FormData contents before sending:');
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+      
       const response = await axios.put(
         `http://localhost:8000/api/reservations/${selectedReservation._id}`,
         formDataToSend,
@@ -202,10 +372,13 @@ const EditDayoutForm = ({
       );
 
       onSuccess("Day-out reservation updated successfully!");
-      onReservationUpdate(response.data);
+      if (onReservationUpdate && typeof onReservationUpdate === 'function') {
+        onReservationUpdate(response.data);
+      }
       
     } catch (error) {
       console.error("Error updating reservation:", error);
+      console.error("Error response:", error.response?.data);
       onError(error.response?.data?.message || "Error updating reservation. Please try again.");
     } finally {
       setIsLoading(false);
@@ -219,6 +392,36 @@ const EditDayoutForm = ({
                          pkg.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Extract mobile number without country code for display
+  const getMobileNumberForDisplay = () => {
+    const mobile = formData.mobile || '';
+    const countryCode = selectedCountry?.value || '';
+    
+    if (countryCode && mobile.startsWith(countryCode)) {
+      return mobile.replace(countryCode, '').trim();
+    }
+    
+    // If mobile has a country code but it's different from selected country
+    if (mobile.includes('+') && countryCode) {
+      const parts = mobile.split(' ');
+      return parts.length > 1 ? parts.slice(1).join(' ') : mobile;
+    }
+    
+    return mobile;
+  };
+
+  // Helper function to get package ID for selection check
+  const getPackageId = (pkg) => {
+    if (typeof pkg === 'string') return pkg;
+    if (pkg && typeof pkg === 'object') return pkg._id || pkg.id;
+    return pkg;
+  };
+
+  // Check if a package is selected
+  const isPackageSelected = (packageId) => {
+    return selectedPackages.some(pkg => getPackageId(pkg) === packageId);
+  };
 
   return (
     <div className="edit-dayout-form">
@@ -277,7 +480,7 @@ const EditDayoutForm = ({
                   <select
                     className="form-control"
                     id="adults"
-                    value={formData.adults}
+                    value={formData.adults || 1}
                     onChange={handleFormChange}
                     required
                   >
@@ -292,7 +495,7 @@ const EditDayoutForm = ({
                   <select
                     className="form-control"
                     id="kids"
-                    value={formData.kids}
+                    value={formData.kids || 0}
                     onChange={handleFormChange}
                   >
                     {[...Array(11)].map((_, i) => (
@@ -319,7 +522,7 @@ const EditDayoutForm = ({
                     type="text"
                     className="form-control"
                     id="firstName"
-                    value={formData.firstName}
+                    value={formData.firstName || ''}
                     onChange={handleFormChange}
                     required
                   />
@@ -370,7 +573,7 @@ const EditDayoutForm = ({
                       type="tel"
                       className="form-control"
                       id="mobile"
-                      value={formData.mobile.split(' ')[1] || formData.mobile}
+                      value={getMobileNumberForDisplay()}
                       onChange={handleFormChange}
                       required
                     />
@@ -531,7 +734,7 @@ const EditDayoutForm = ({
                       <input
                         type="text"
                         className="form-control"
-                        value={person.name}
+                        value={person.name || ''}
                         onChange={(e) => handlePersonChange(index, 'name', e.target.value)}
                       />
                     </div>
@@ -539,7 +742,7 @@ const EditDayoutForm = ({
                       <label className="form-label">Gender</label>
                       <select
                         className="form-control"
-                        value={person.gender}
+                        value={person.gender || ''}
                         onChange={(e) => handlePersonChange(index, 'gender', e.target.value)}
                       >
                         <option value="">Select</option>
@@ -553,7 +756,7 @@ const EditDayoutForm = ({
                       <input
                         type="number"
                         className="form-control"
-                        value={person.age}
+                        value={person.age || ''}
                         onChange={(e) => handlePersonChange(index, 'age', e.target.value)}
                       />
                     </div>
@@ -561,7 +764,7 @@ const EditDayoutForm = ({
                       <label className="form-label">ID Type</label>
                       <select
                         className="form-control"
-                        value={person.idType}
+                        value={person.idType || ''}
                         onChange={(e) => handlePersonChange(index, 'idType', e.target.value)}
                       >
                         <option value="">Select</option>
@@ -577,7 +780,7 @@ const EditDayoutForm = ({
                       <input
                         type="text"
                         className="form-control"
-                        value={person.idNo}
+                        value={person.idNo || ''}
                         onChange={(e) => handlePersonChange(index, 'idNo', e.target.value)}
                       />
                     </div>
