@@ -16,16 +16,6 @@ function App() {
       <Link to='/restaurant/analytics'>click here to go to analytics page</Link>
       <br></br>
 
-      <Link to="/rooms/home">Go to Room Management Home</Link>
-      <br /><br />  
-      <Link to="/rooms/add">Add a New Room</Link>
-      <br /><br /> 
-      <Link to="/rooms/edit/:id">Edit Room Details</Link>
-      <br /><br /> 
-      <Link to="/info1">Click here to go to Info1 page</Link>
-
-
-
     </div>
   )
 }
