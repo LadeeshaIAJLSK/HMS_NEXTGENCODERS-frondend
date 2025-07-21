@@ -45,7 +45,7 @@
   flex-direction: column;
 }
 
-label {
+.setting-label {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 6px;
@@ -53,7 +53,7 @@ label {
 }
 
 /* Input and select fields */
-input,
+.setting-input,
 select {
   height: 36px;
   padding: 6px 10px;
@@ -63,7 +63,7 @@ select {
 }
 
 /* File input field specific styling */
-input[type="file"] {
+.setting-input[type="file"] {
   padding: 4px;
   height: auto;
 }

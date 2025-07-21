@@ -92,7 +92,7 @@ const OwnerDashboard = () => {
           <div className="dash-chart-header">Reception Status Overview</div>
           <div className="chart-table-row">
             <div className="chart-column">
-              <PieChart width={250} height={250}>
+              <PieChart width={250} height={270}>
                 <Pie data={receptionData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
                   {receptionData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -102,8 +102,8 @@ const OwnerDashboard = () => {
               </PieChart>
             </div>
             <div className="chart-column">
-              <LineChart width={400} height={250} data={receptionData}>
-                <CartesianGrid strokeDasharray="3 3" />
+              <LineChart width={450} height={270} data={receptionData}>
+                <CartesianGrid strokeDasharray="4 4" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
