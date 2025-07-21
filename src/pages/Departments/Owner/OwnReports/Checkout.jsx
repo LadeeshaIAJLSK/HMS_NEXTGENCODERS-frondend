@@ -3,7 +3,7 @@ import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 import './Checkout.css';
 
 // Main Component for Checkout Page
-const CheckoutPage = () => {
+const CheckoutP = () => {
   const [data, setData] = useState([]); // Store fetched checkout data
   const [entriesToShow, setEntriesToShow] = useState(6); // Controls how many entries to show in the table
 
@@ -121,4 +121,4 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+export default CheckoutP;

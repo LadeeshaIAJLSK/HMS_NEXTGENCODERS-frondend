@@ -6,7 +6,7 @@ import {
   LineChart, Line
 } from 'recharts';
 import './OwnDashboard.css';
-import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+
 
 
 // Define custom colors for pie chart segments
@@ -23,7 +23,7 @@ const OwnerDashboard = () => {
 
   const fetchReceptionData = async () => {
   try {
-    const res = await axios.get('http://localhost:8000/api/reception/latest');
+    const res = await axios.get('http://localhost:5003/api/reception/latest');
     const data = res.data;
 
     if (!data) {
@@ -48,7 +48,7 @@ const OwnerDashboard = () => {
   // Fetch sales chart data based on selected period
   const fetchSalesData = async (selectedPeriod) => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/sales?period=${selectedPeriod}`);
+      const res = await axios.get(`http://localhost:5003/api/sales?period=${selectedPeriod}`);
       setSalesData(res.data); // Set chart data
     } catch (err) {
       console.error('Error fetching sales data:', err); 
@@ -76,7 +76,7 @@ const OwnerDashboard = () => {
   // Send edited data to backend
   const handleUpdate = async () => {
     try {
-      await axios.post('http://localhost:8000/api/reception', editData);
+      await axios.post('http://localhost:5003/api/reception', editData);
       fetchReceptionData(); // Refresh data
     } catch (err) {
       console.error('Update failed:', err);
@@ -85,7 +85,7 @@ const OwnerDashboard = () => {
 
   return (
     <div className="Owndashboard-container">
-      <Ownsidebar/>
+     
       {/* Display metrics */}
       {/* Metrics row (top) */}
 <div className="dash-metrics-row">

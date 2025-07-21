@@ -6,17 +6,16 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import App from './App.jsx';
-import ResCategories from "./pages/Departments/Restaurant/Categories/ResCategories.jsx";
-import Products from "./pages/Departments/Restaurant/Products/Products";
+
 
 
 //owner goes here
-import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
-import SettingsPage from "./pages/Departments/Owner/OwnSettings/OwnSettings.jsx";
-import TransactionReport from "./pages/Departments/Owner/OwnReports/TransactionReports.jsx";
-import StockReport from "./pages/Departments/Owner/OwnReports/StockRepo.jsx";
-import CheckoutPage from "./pages/Departments/Owner/OwnReports/Checkout.jsx";
-import OwnerDashboard from "./pages/Departments/Owner/OwnDashboard/OwnDashboard.jsx"
+import RoomHomepage from './pages/Departments/Owner/OwnRooms/RoomHomepage.jsx';
+import OwnsettingsPage from './pages/Departments/Owner/OwnSettings/Ownsettingpage.jsx';
+import TransactionReportpage from "./pages/Departments/Owner/OwnReports/TransactionReportpage.jsx";
+import StockReportpage from "./pages/Departments/Owner/OwnReports/Stockreportpage.jsx";
+import CheckoutPage from "./pages/Departments/Owner/OwnReports/Checkoutpage.jsx";
+import OwnDashboardpage from './pages/Departments/Owner/OwnDashboard/OwnDashboardpage.jsx';
 
 
 
@@ -51,12 +50,12 @@ createRoot(document.getElementById('root')).render(
         
 
         {/*owner Routes */}
-        <Route path="/rooms/home" element={<RoomHome />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/Transactionreports" element={<TransactionReport />} />
-        <Route path="/Stockreports" element={<StockReport />} />
-        <Route path="/Checkout" element={<CheckoutPage />} />
-        <Route path="/dashboardowner" element={<OwnerDashboard />} />
+        <Route path="/rooms/home" element={<RoomHomepage />} />
+        <Route path="/ownsettings" element={<OwnsettingsPage />} />
+        <Route path="/Transactionreportspage" element={<TransactionReportpage />} />
+        <Route path="/Stockreportspage" element={<StockReportpage />} />
+        <Route path="/Checkoutpage" element={<CheckoutPage />} />
+        <Route path="/ownedashboardpg" element={<OwnDashboardpage />} />
 
 
            {/* Reception Routes */}

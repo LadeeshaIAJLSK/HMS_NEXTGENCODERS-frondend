@@ -1,6 +1,6 @@
 .roomhome-container {
   display: flex;
-  margin-left: 200px;
+  
   padding: 2rem;
   flex-direction: column;
   min-height: 100vh;

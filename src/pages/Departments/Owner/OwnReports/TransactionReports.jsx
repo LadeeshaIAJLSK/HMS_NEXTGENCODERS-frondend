@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -123,7 +123,7 @@ const TransactionReport = () => {
 
   return (
     <div className="transaction-report-wrapper">
-      <Ownsidebar />
+      
       <div className="transaction-report-container">
         <div className="transaction-filter-section">
           <h3>Filter Transaction History</h3>

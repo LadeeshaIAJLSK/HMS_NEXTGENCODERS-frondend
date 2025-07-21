@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
-import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
-import "./RoomHome.css"; // ✅ Just import the file, no 'styles from'
 
+import "./RoomHome.css"; // Using regular CSS, not CSS modules
 
 const Home = () => {
   const [rooms, setRooms] = useState([]);
@@ -70,13 +69,25 @@ const Home = () => {
   };
 
   const openAddModal = () => {
-    setFormRoom({ RoomNo: "", RStatus: "", RType: "", RClass: "", Price: "" });
+    setFormRoom({
+      RoomNo: "",
+      RStatus: "",
+      RType: "",
+      RClass: "",
+      Price: "",
+    });
     setEditMode(false);
     setShowModal(true);
   };
 
   const openEditModal = (room) => {
-    setFormRoom(room);
+    setFormRoom({
+      RoomNo: room.RoomNo || "",
+      RStatus: room.RStatus || "",
+      RType: room.RType || "",
+      RClass: room.RClass || "",
+      Price: room.Price || "",
+    });
     setEditingRoomId(room._id);
     setEditMode(true);
     setShowModal(true);
@@ -108,18 +119,18 @@ const Home = () => {
     setFormRoom({ RoomNo: "", RStatus: "", RType: "", RClass: "", Price: "" });
   };
 
-  if (loading) return <div className={styles["roomhome-loading"]}>Loading...</div>;
-  if (error) return <div className={styles["roomhome-error"]}>{error}</div>;
+  if (loading) return <div className="roomhome-loading">Loading...</div>;
+  if (error) return <div className="roomhome-error">{error}</div>;
 
   return (
-    <div className={styles["roomhome-container"]}>
-      <Ownsidebar />
+    <div className="roomhome-container">
+  
 
-      <div className={showModal ? styles["roomhome-blur"] : ""}>
-        <div className={styles["roomhome-header"]}>
+      <div className={showModal ? "roomhome-blur" : ""}>
+        <div className="roomhome-header">
           <h1>Rooms List</h1>
           <input
-            className={styles["roomhome-search-input"]}
+            className="roomhome-search-input"
             type="search"
             placeholder="Search"
             onChange={handleSearchArea}
@@ -130,7 +141,7 @@ const Home = () => {
           <p>No rooms available.</p>
         ) : (
           <>
-            <table className={styles["roomhome-table"]}>
+            <table className="roomhome-table">
               <thead>
                 <tr>
                   <th>Room-No</th>
@@ -150,18 +161,18 @@ const Home = () => {
                     <td>{room.RClass || "No Class"}</td>
                     <td>{room.Price ? `$${room.Price}` : "No Price"}</td>
                     <td>
-                     <button className={styles["roomhome-edit-btn"]}onClick={() => openEditModal(room)}>
+                      <button className="roomhome-edit-btn" onClick={() => openEditModal(room)}>
                         <FaEdit style={{ color: "#000" }} /> <span style={{ color: "#000" }}>Edit</span>
-                    </button>
-                    <button className={styles["roomhome-delete-btn"]}onClick={() => handleDelete(room._id)}>
+                      </button>
+                      <button className="roomhome-delete-btn" onClick={() => handleDelete(room._id)}>
                         <FaTrashAlt style={{ color: "white" }} /> <span style={{ color: "white" }}>Delete</span>
-                    </button>
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <button className={styles["roomhome-add-btn"]} onClick={openAddModal}>
+            <button className="roomhome-add-btn" onClick={openAddModal}>
               <FaPlus /> Add a New Room
             </button>
           </>
@@ -170,8 +181,8 @@ const Home = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className={styles["roomhome-modal-overlay"]}>
-          <div className={styles["roomhome-modal-content"]}>
+        <div className="roomhome-modal-overlay">
+          <div className="roomhome-modal-content">
             <h2>{editMode ? "Edit Room Details" : "Add a New Room"}</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
@@ -208,10 +219,22 @@ const Home = () => {
                 <label>Price</label>
                 <input name="Price" type="number" required value={formRoom.Price} onChange={handleFormChange} />
               </div>
-              <table border="none"><tr>
-                  <td><button type="button" className={styles["cancel-btn"]} onClick={() => setShowModal(false)}>Cancel</button></td>
-                  <td><button type="submit" className={styles["save-btn"]}>Save</button></td>
-              </tr></table>
+              <table border="none">
+                <tbody>
+                  <tr>
+                    <td>
+                      <button type="button" className="cancel-btn" onClick={closeModal}>
+                        Cancel
+                      </button>
+                    </td>
+                    <td>
+                      <button type="submit" className="save-btn">
+                        Save
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </form>
           </div>
         </div>

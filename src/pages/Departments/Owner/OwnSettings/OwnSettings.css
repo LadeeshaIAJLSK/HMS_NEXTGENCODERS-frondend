@@ -1,149 +1,150 @@
- /* Main container for the settings page */
-.Ownsettings-container { 
-  padding: 30px;
-  background-color: #f7f8fa;
-  min-height: 100vh;
+ /* OwnSettings Component Specific Styles - Scoped to prevent conflicts */
+
+/* Divider between sections */ 
+.ownsettings-section-divider {   
+  border-top: 1px solid #ddd;   
+  margin: 30px 0; 
+}  
+
+/* Grid layout for form fields (3 columns) */ 
+.ownsettings-grid-three-columns {   
+  display: grid;   
+  grid-template-columns: repeat(3, 1fr);   
+  gap: 20px 40px;   
+  margin-bottom: 20px; 
+}  
+
+/* General form group structure */ 
+.ownsettings-form-group {   
+  display: flex;   
+  flex-direction: column; 
+}  
+
+/* Labels specific to OwnSettings */
+.ownsettings-form-group label,
+.ownsettings-form-row label {   
+  font-size: 14px;   
+  font-weight: 500;   
+  margin-bottom: 6px; 
+}  
+
+/* Input and select fields within OwnSettings */ 
+.ownsettings-form-group input, 
+.ownsettings-form-group select,
+.ownsettings-form-row input,
+.ownsettings-form-row select {   
+  height: 36px;   
+  padding: 6px 10px;   
+  font-size: 14px;   
+  border: 1px solid #ccc;   
+  border-radius: 4px; 
+}  
+
+/* File input field specific styling */ 
+.ownsettings-form-row input[type="file"] {   
+  padding: 4px;   
+  height: auto; 
+}  
+
+/* Save button styling */ 
+.ownsettings-save-button {   
+  margin-left: 70%;   
+  padding: 10px 20px;   
+  background-color: #007bff;   
+  border: none;   
+  color: white;   
+  border-radius: 6px;   
+  font-size: 16px;   
+  cursor: pointer; 
+}  
+
+/* Hover effect for save button */ 
+.ownsettings-save-button:hover {   
+  background-color: #0056b3; 
+}  
+
+/* Error message display */ 
+.ownsettings-error-message {   
+  color: red;   
+  margin-top: 10px;   
+  font-weight: bold; 
+}  
+
+/* Layout for horizontal form sections */ 
+.ownsettings-horizontal-form {   
+  display: flex;   
+  flex-direction: column;   
+  gap: 15px;   
+  margin-bottom: 30px; 
+}  
+
+/* Row layout inside horizontal forms */ 
+.ownsettings-form-row {   
+  display: flex;   
+  align-items: center;   
+  gap: 20px; 
+}  
+
+/* Label inside form row */ 
+.ownsettings-form-row label {   
+  min-width: 200px;   
+  font-size: 14px;   
+  font-weight: 500; 
+}  
+
+/* Inputs in form row aligned with label */ 
+.ownsettings-form-row input, 
+.ownsettings-form-row select {   
+  flex: 1;   
+  height: 36px;   
+  padding: 6px 10px;   
+  font-size: 14px;   
+  border: 1px solid #ccc;   
+  border-radius: 4px; 
+}  
+
+/* Grid layout for grouped inputs like GST & CGST */ 
+.ownsettings-filter-grid {   
+  display: grid;   
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));   
+  gap: 10px;   
+  margin-bottom: 5px; 
+}  
+
+/* Overridden label style inside grouped grid */ 
+.ownsettings-form-group label {   
+  margin-bottom: 5px;   
+  font-weight: 500;   
+  color: #333; 
+}  
+
+/* Inputs in grouped grid form */ 
+.ownsettings-form-group input, 
+.ownsettings-form-group select {   
+  padding: 8px;   
+  border: 1px solid #ccc;   
+  border-radius: 6px;   
+  font-size: 14px; 
 }
 
-/* Form wrapper styling */
-.Ownsettings-form {
-  background: #fff;
-  padding: 20px;
-  margin-left: 220px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Section titles like "GST Settings", "Currency Settings" */
-.setting-section-title {
-  font-size: 32px;
-  font-weight: normal;
+/* Section titles specific to OwnSettings */
+.ownsettings-section-title {
+  font-size: 18px;
+  font-weight: 600;
   margin-bottom: 20px;
-  margin-top: 30px;
-}
-
-/* Divider between sections */
-.setting-section-divider {
-  border-top: 1px solid #ddd;
-  margin: 30px 0;
-}
-
-/* Grid layout for form fields (3 columns) */
-.setting-grid-three-columns {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px 40px;
-  margin-bottom: 20px;
-}
-
-/* General form group structure */
-.setting-form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 6px;
-}
-
-/* Input and select fields */
-input,
-select {
-  height: 36px;
-  padding: 6px 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* File input field specific styling */
-input[type="file"] {
-  padding: 4px;
-  height: auto;
-}
-
-/* Save button styling */
-.setting-save-button {
-  margin-left: 70%;
-  padding: 10px 20px;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* Hover effect for save button */
-.setting-save-button:hover {
-  background-color: #0056b3;
-}
-
-/* Error message display */
-.error-message {
-  color: red;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-/* Layout for horizontal form sections */
-.setting-horizontal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-/* Row layout inside horizontal forms */
-.setting-form-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-/* Label inside form row */
-.setting-form-row label {
-  min-width: 200px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Inputs in form row aligned with label */
-.setting-form-row input,
-.setting-form-row select {
-  flex: 1;
-  height: 36px;
-  padding: 6px 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* Grid layout for grouped inputs like GST & CGST */
-.setting-filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
-  margin-bottom: 5px;
-}
-
-/* Overridden label style inside grouped grid */
-.setting-form-group label {
-  margin-bottom: 5px;
-  font-weight: 500;
   color: #333;
 }
 
-/* Inputs in grouped grid form */
-.setting-form-group input,
-.setting-form-group select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
+/* Main container for the settings page */
+.ownsettings-container {
+  display: flex;
+  min-height: 100vh;
+  margin-right: 100px;
 }
 
-
-
+/* Settings form container */
+.ownsettings-form {
+  flex: 1;
+  padding: 20px;
+  background-color: #f8f9fa;
+}

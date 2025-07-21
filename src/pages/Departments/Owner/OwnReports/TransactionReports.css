@@ -2,6 +2,7 @@
 .transaction-report-wrapper {
   max-width: auto;
   margin: 1rem auto;
+  margin-right: 20px;
   padding:10px;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
@@ -10,7 +11,7 @@
 
 /* Main content container centered with max width */
 .transaction-report-container {
-  margin-left: 100px; /* Matches the sidebar width */
+  /* Matches the sidebar width */
   padding: 20px;
   background-color: #f5f5f5;
   min-height: 100vh;

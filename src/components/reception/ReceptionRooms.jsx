@@ -6,6 +6,7 @@ export default function ReceptionRooms() {
   const [rooms, setRooms] = useState({});
   const [expandedGroups, setExpandedGroups] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [editingRoom, setEditingRoom] = useState(null);
   const [statusOptions] = useState(['Booked', 'Vacant', 'Occupied', 'Out of Service']);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,12 +19,13 @@ export default function ReceptionRooms() {
 
   const fetchRooms = () => {
     setLoading(true);
+    setError(null);
     axios.get("http://localhost:8000/api/rooms")
       .then(res => {
-        if (res.data.success) {
+        if (res.data.success && res.data.rooms) {
           const grouped = {};
           res.data.rooms.forEach(room => {
-            const key = `${room.RType} - ${room.RClass}`;
+            const key = `${room.RType || 'Unknown'} - ${room.RClass || 'Unknown'}`;
             if (!grouped[key]) grouped[key] = [];
             grouped[key].push(room);
           });
@@ -34,11 +36,14 @@ export default function ReceptionRooms() {
             initialExpanded[key] = true;
           });
           setExpandedGroups(initialExpanded);
+        } else {
+          setError("No rooms data received");
         }
         setLoading(false);
       })
       .catch(err => {
         console.error("Error fetching rooms:", err);
+        setError("Failed to load rooms");
         setLoading(false);
       });
   };
@@ -51,6 +56,7 @@ export default function ReceptionRooms() {
   };
 
   const getStatusColor = (status) => {
+    if (!status) return 'status-other';
     switch (status.toLowerCase()) {
       case 'occupied': return 'status-occupied';
       case 'vacant': return 'status-vacant';
@@ -61,14 +67,28 @@ export default function ReceptionRooms() {
   };
   
   const handleStatusChange = (roomId, newStatus) => {
-    axios.put(`http://localhost:8000/api/rooms/${roomId}/status`, { status: newStatus })
+    // Update the backend
+    axios.put(`http://localhost:8000/api/rooms/${roomId}`, { RStatus: newStatus })
       .then(res => {
         if (res.data.success) {
-          fetchRooms();
+          // Update local state immediately for better UX
+          setRooms(prevRooms => {
+            const updatedRooms = { ...prevRooms };
+            Object.keys(updatedRooms).forEach(group => {
+              updatedRooms[group] = updatedRooms[group].map(room => 
+                room._id === roomId ? { ...room, RStatus: newStatus } : room
+              );
+            });
+            return updatedRooms;
+          });
+        } else {
+          console.error("Failed to update room status");
+          alert("Failed to update room status");
         }
       })
       .catch(err => {
         console.error("Error updating room status:", err);
+        alert("Error updating room status");
       });
   };
 
@@ -90,12 +110,17 @@ export default function ReceptionRooms() {
     
     Object.keys(rooms).forEach(group => {
       const filteredRooms = rooms[group].filter(room => {
-        const matchesSearch = room.RoomNo.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        const roomNo = room.RoomNo ? room.RoomNo.toString() : '';
+        const matchesSearch = roomNo.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const roomType = room.RType ? room.RType.toLowerCase() : '';
         const matchesType = typeFilter === "all" || 
-                          (typeFilter === "single" && room.RType.toLowerCase().includes("single")) ||
-                          (typeFilter === "double" && room.RType.toLowerCase().includes("double"));
+                          (typeFilter === "single" && roomType.includes("single")) ||
+                          (typeFilter === "double" && roomType.includes("double"));
+        
+        const roomStatus = room.RStatus ? room.RStatus.toLowerCase() : '';
         const matchesStatus = statusFilter === "all" || 
-                             room.RStatus.toLowerCase() === statusFilter.toLowerCase();
+                             roomStatus === statusFilter.toLowerCase();
         
         return matchesSearch && matchesType && matchesStatus;
       });
@@ -109,6 +134,7 @@ export default function ReceptionRooms() {
   };
 
   if (loading) return <div className="loading-spinner">Loading rooms...</div>;
+  if (error) return <div className="error-message">{error}</div>;
   
   const filtered = filteredGroups();
   
@@ -222,8 +248,10 @@ export default function ReceptionRooms() {
                   <tbody>
                     {filtered[group].map(room => (
                       <tr key={room._id} className="room-row">
-                        <td className="room-number">{room.RoomNo}</td>
-                        <td className="room-type">{room.RType}</td>
+                        <td className="room-number">
+                          {room.RoomNo ? `R${room.RoomNo}` : "No Room-No"}
+                        </td>
+                        <td className="room-type">{room.RType || "No Type"}</td>
                         <td className="room-guest">
                           {room.Guest || <span className="empty-guest">Vacant</span>}
                         </td>
@@ -242,12 +270,15 @@ export default function ReceptionRooms() {
                             <span 
                               className={`status-badge ${getStatusColor(room.RStatus)}`}
                               onClick={() => startEditing(room)}
+                              style={{ cursor: 'pointer' }}
                             >
-                              {room.RStatus}
+                              {room.RStatus || "No Status"}
                             </span>
                           )}
                         </td>
-                        <td className="room-price">${room.Price.toLocaleString()}</td>
+                        <td className="room-price">
+                          {room.Price ? `$${room.Price.toLocaleString()}` : "No Price"}
+                        </td>
                         <td className="room-actions">
                           {editingRoom?._id === room._id ? (
                             <button 
@@ -263,7 +294,7 @@ export default function ReceptionRooms() {
                                 className="action-btn edit-btn"
                                 onClick={() => startEditing(room)}
                               >
-                                Edit
+                                Edit Status
                               </button>
                             </>
                           )}

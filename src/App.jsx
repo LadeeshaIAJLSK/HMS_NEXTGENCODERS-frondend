@@ -24,7 +24,7 @@ function App() {
       <br />  
       <Link to="/settings">Settings</Link>
       <br/>
-      <Link to="/Transactionreports">TransactionReports</Link>
+      <Link to="/Transactionreportspage">TransactionReports</Link>
       <br/>
       <Link to="/Stockreports">StockReports</Link>
       <br/>

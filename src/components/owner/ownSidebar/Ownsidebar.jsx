@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import "./OwnsideBar.css";
 import { useState } from "react";
 
-const Sidebar = () => {
+const OwnerSidebar = () => {
   // Manages the open/close state of the Reports submenu
   const [isReportsOpen, setIsReportsOpen] = useState(false);
 
@@ -25,7 +25,7 @@ const Sidebar = () => {
       <ul className="Ownsidebar-nav">
         {/* Dashboard link */}
         <li>
-          <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
+          <NavLink to="/ownedashboardpg" className={({ isActive }) => (isActive ? "active" : "")}>
           📊  &nbsp;Dashboard
           </NavLink>
         </li>
@@ -40,7 +40,7 @@ const Sidebar = () => {
         {/* Reports menu toggle */}
         <li>
           <div className="Ownsidebar-nav-link reports-menu" onClick={toggleReportsMenu}>
-          📑&nbsp;Reports
+           📑 &nbsp;Reports
             <i className={`fa ${isReportsOpen ? "fa-chevron-up" : "fa-chevron-down"}`} style={{ float: "right" }}></i>
           </div>
 
@@ -48,17 +48,17 @@ const Sidebar = () => {
           {isReportsOpen && (
             <ul className="Ownsidebar-sub-menu">
               <li>
-                <NavLink to="/Transactionreports" className={({ isActive }) => (isActive ? "active" : "")}>
+                <NavLink to="/Transactionreportspage" className={({ isActive }) => (isActive ? "active" : "")}>
                 🔁&nbsp;Transaction Reports
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/Stockreports" className={({ isActive }) => (isActive ? "active" : "")}>
+                <NavLink to="/Stockreportspage" className={({ isActive }) => (isActive ? "active" : "")}>
                 💰 &nbsp;Stock Reports
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/Checkout" className={({ isActive }) => (isActive ? "active" : "")}>
+                <NavLink to="/Checkoutpage" className={({ isActive }) => (isActive ? "active" : "")}>
                 ↪️ &nbsp;Checkout Details
                 </NavLink>
               </li>
@@ -68,7 +68,7 @@ const Sidebar = () => {
 
         {/* Settings link */}
         <li>
-          <NavLink to="/settings" className={({ isActive }) => (isActive ? "active" : "")}>
+          <NavLink to="/ownsettings" className={({ isActive }) => (isActive ? "active" : "")}>
           ⚙️ &nbsp;Settings
           </NavLink>
         </li>
@@ -77,4 +77,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default OwnerSidebar;

@@ -114,76 +114,76 @@ const SettingsPage = () => {
 };
   
   return (
-    <div className="Ownsettings-container">
+    <div className="ownsettings-container">
       <Ownsidebar/>
-      <form onSubmit={handleSave} className="Ownsettings-form">
+      <form onSubmit={handleSave} className="ownsettings-form">
         {/* Site Settings */}
-        <h2 className="setting-section-title"><u>Site Settings</u></h2>
-        <div className="setting-grid-three-columns">
-          <div className="setting-form-group"><label>Site Page Title</label><input type="text" name="siteTitle" value={settings.siteTitle} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Site Language</label>
+        <h2 className="ownsettings-section-title"><u>Site Settings</u></h2>
+        <div className="ownsettings-grid-three-columns">
+          <div className="ownsettings-form-group"><label>Site Page Title</label><input type="text" name="siteTitle" value={settings.siteTitle} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Site Language</label>
             <select name="siteLanguage" value={settings.siteLanguage} onChange={handleChange}>
               {siteLanguages.map(lang => <option key={lang.code} value={lang.code}>{lang.name}</option>)}
             </select>
           </div>
-          <div className="setting-form-group"><label>Hotel Name</label><input type="text" name="hotelName" value={settings.hotelName} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Hotel E-mail</label><input type="email" name="hotelEmail" value={settings.hotelEmail} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Hotel Tagline</label><input type="text" name="hotelTagline" value={settings.hotelTagline} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Hotel Phone</label><input type="text" name="hotelPhone" value={settings.hotelPhone} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Hotel Mobile</label><input type="text" name="hotelMobile" value={settings.hotelMobile} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Hotel Website</label><input type="text" name="hotelWebsite" value={settings.hotelWebsite} onChange={handleChange} /></div>
-          <div className="setting-form-group"><label>Hotel Address</label><input type="text" name="hotelAddress" value={settings.hotelAddress} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel Name</label><input type="text" name="hotelName" value={settings.hotelName} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel E-mail</label><input type="email" name="hotelEmail" value={settings.hotelEmail} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel Tagline</label><input type="text" name="hotelTagline" value={settings.hotelTagline} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel Phone</label><input type="text" name="hotelPhone" value={settings.hotelPhone} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel Mobile</label><input type="text" name="hotelMobile" value={settings.hotelMobile} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel Website</label><input type="text" name="hotelWebsite" value={settings.hotelWebsite} onChange={handleChange} /></div>
+          <div className="ownsettings-form-group"><label>Hotel Address</label><input type="text" name="hotelAddress" value={settings.hotelAddress} onChange={handleChange} /></div>
         </div>
 
-        <div className="setting-section-divider" />
+        <div className="ownsettings-section-divider" />
 
         {/* GST */}
-        <h2 className="setting-section-title"><u>GST Settings</u></h2>
-        <div className="setting-horizontal-form">
-          <div className="setting-form-row"><label>GSTIN:</label><input type="text" name="gstin" value={settings.gstin} onChange={handleChange} /></div>
+        <h2 className="ownsettings-section-title"><u>GST Settings</u></h2>
+        <div className="ownsettings-horizontal-form">
+          <div className="ownsettings-form-row"><label>GSTIN:</label><input type="text" name="gstin" value={settings.gstin} onChange={handleChange} /></div>
 
-          <div className="setting-filter-grid">
+          <div className="ownsettings-filter-grid">
             <label>Room Rent GST(%)</label>
-            <div className="setting-form-group"><label>GST(%)</label><input type="text" name="gstRoom" value={settings.gstRoom} onChange={handleChange} /></div>
-            <div className="setting-form-group"><label>CGST(%)</label><input type="text" name="cgstRoom" value={settings.cgstRoom} onChange={handleChange} /></div>
+            <div className="ownsettings-form-group"><label>GST(%)</label><input type="text" name="gstRoom" value={settings.gstRoom} onChange={handleChange} /></div>
+            <div className="ownsettings-form-group"><label>CGST(%)</label><input type="text" name="cgstRoom" value={settings.cgstRoom} onChange={handleChange} /></div>
           </div>
 
-          <div className="setting-filter-grid">
+          <div className="ownsettings-filter-grid">
             <label>Food GST(%)</label>
-            <div className="setting-form-group"><label>GST(%)</label><input type="text" name="gstFood" value={settings.gstFood} onChange={handleChange} /></div>
-            <div className="setting-form-group"><label>CGST(%)</label><input type="text" name="cgstFood" value={settings.cgstFood} onChange={handleChange} /></div>
+            <div className="ownsettings-form-group"><label>GST(%)</label><input type="text" name="gstFood" value={settings.gstFood} onChange={handleChange} /></div>
+            <div className="ownsettings-form-group"><label>CGST(%)</label><input type="text" name="cgstFood" value={settings.cgstFood} onChange={handleChange} /></div>
           </div>
 
-          <div className="setting-filter-grid">
+          <div className="ownsettings-filter-grid">
             <label>Laundry GST(%)</label>
-            <div className="setting-form-group"><label>GST(%)</label><input type="text" name="gstLaundry" value={settings.gstLaundry} onChange={handleChange} /></div>
-            <div className="setting-form-group"><label>CGST(%)</label><input type="text" name="cgstLaundry" value={settings.cgstLaundry} onChange={handleChange} /></div>
+            <div className="ownsettings-form-group"><label>GST(%)</label><input type="text" name="gstLaundry" value={settings.gstLaundry} onChange={handleChange} /></div>
+            <div className="ownsettings-form-group"><label>CGST(%)</label><input type="text" name="cgstLaundry" value={settings.cgstLaundry} onChange={handleChange} /></div>
           </div>
         </div>
 
-        <div className="setting-section-divider" />
+        <div className="ownsettings-section-divider" />
 
         {/* Currency */}
-        <h2 className="setting-section-title"><u>Currency Settings</u></h2>
-        <div className="setting-horizontal-form">
-          <div className="setting-form-row"><label>Currency:</label><input type="text" name="currency" value={settings.currency} onChange={handleChange} placeholder="SriLankan Rupees" /></div>
-          <div className="setting-form-row"><label>Currency Symbol:</label><input type="text" name="currencySymbol" value={settings.currencySymbol} onChange={handleChange} placeholder="RS." /></div>
+        <h2 className="ownsettings-section-title"><u>Currency Settings</u></h2>
+        <div className="ownsettings-horizontal-form">
+          <div className="ownsettings-form-row"><label>Currency:</label><input type="text" name="currency" value={settings.currency} onChange={handleChange} placeholder="SriLankan Rupees" /></div>
+          <div className="ownsettings-form-row"><label>Currency Symbol:</label><input type="text" name="currencySymbol" value={settings.currencySymbol} onChange={handleChange} placeholder="RS." /></div>
         </div>
 
-        <div className="setting-section-divider" />
+        <div className="ownsettings-section-divider" />
 
         {/* Defaults */}
-        <h2 className="setting-section-title"><u>Default Settings</u></h2>
-        <div className="setting-horizontal-form">
-          <div className="setting-form-row"><label>Nationality:</label><input type="text" name="nationality" value={settings.nationality} onChange={handleChange} /></div>
-          <div className="setting-form-row"><label>Country:</label><input type="text" name="country" value={settings.country} onChange={handleChange} /></div>
-          <div className="setting-form-row"><label>Default Filter Dates Range (Days):</label><input type="text" name="filterDateRange" value={settings.filterDateRange} onChange={handleChange} /></div>
-          <div className="setting-form-row"><label>Site Logo:</label><input type="file" onChange={(e) => setSiteLogo(e.target.files[0])} /></div>
-          <div className="setting-form-row"><label>Logo Height (px):</label><input type="text" name="lHeight" value={settings.lHeight} onChange={handleChange} /></div>
-          <div className="setting-form-row"><label>Logo Width (px):</label><input type="text" name="lWidth" value={settings.lWidth} onChange={handleChange} /></div>
+        <h2 className="ownsettings-section-title"><u>Default Settings</u></h2>
+        <div className="ownsettings-horizontal-form">
+          <div className="ownsettings-form-row"><label>Nationality:</label><input type="text" name="nationality" value={settings.nationality} onChange={handleChange} /></div>
+          <div className="ownsettings-form-row"><label>Country:</label><input type="text" name="country" value={settings.country} onChange={handleChange} /></div>
+          <div className="ownsettings-form-row"><label>Default Filter Dates Range (Days):</label><input type="text" name="filterDateRange" value={settings.filterDateRange} onChange={handleChange} /></div>
+          <div className="ownsettings-form-row"><label>Site Logo:</label><input type="file" onChange={(e) => setSiteLogo(e.target.files[0])} /></div>
+          <div className="ownsettings-form-row"><label>Logo Height (px):</label><input type="text" name="lHeight" value={settings.lHeight} onChange={handleChange} /></div>
+          <div className="ownsettings-form-row"><label>Logo Width (px):</label><input type="text" name="lWidth" value={settings.lWidth} onChange={handleChange} /></div>
         </div>
 
-        <button type="submit" className="setting-save-button">Save Settings</button>
+        <button type="submit" className="ownsettings-save-button">Save Settings</button>
       </form>
     </div>
   );
