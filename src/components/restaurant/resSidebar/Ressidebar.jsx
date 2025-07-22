@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import "./Ressidebar.css"; 
+import "./Ressidebar.css";
 
 const Ressidebar = () => {
+
+
   return (
     <div className="sidebar">
       <h2>NexStay Hotel</h2>
@@ -12,10 +14,10 @@ const Ressidebar = () => {
       </div>
       <ul>
         <li>
-          <Link to="/dashboard">📊 Dashboard</Link>
+          <Link to="/restaurant/dashboard">📊 Dashboard</Link>
         </li>
         <li>
-          <Link to="/create-order">📝 Create Order</Link>
+          <Link to="/restaurant/create-order">📝 Create Order</Link>
         </li>
         <li>
           <Link to="/restaurant/products">📦 Products</Link>
@@ -24,7 +26,13 @@ const Ressidebar = () => {
           <Link to="/restaurant/categories">📂 Category</Link>
         </li>
         <li>
-          <Link to="/analytics">📈 Analytics</Link>
+          <Link to="/restaurant/analytics">📈 Analytics</Link>
+        </li>
+        <li>
+          <Link to="/"><span>⏻</span> Logout </Link>
+        </li>
+        <li className="logout-item">
+          
         </li>
       </ul>
     </div>

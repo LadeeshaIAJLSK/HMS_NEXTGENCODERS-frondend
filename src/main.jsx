@@ -1,5 +1,6 @@
 
 
+
 import React from 'react'; // Add this line
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -39,13 +40,27 @@ import HotelDash from './components/reception/Dashboard/HotelDash.jsx';
 
 
 
+import ResCategories from "./pages/Departments/Restaurant/Categories/ResCategories.jsx";
+import Products from "./pages/Departments/Restaurant/Products/Products";
+import Analytics from "./pages/Departments/Restaurant/Analytics/Analytics.jsx";
+
+import { NotificationProvider } from './context/NotificationContext.jsx';
+import RestaurantPOS from './components/restaurant/RestaurantPOS';
+import Dashboard from './pages/Departments/Restaurant/Dashboard/Dashboard.jsx';
+
+
+
+
+
+
 
 
 
 createRoot(document.getElementById('root')).render(
    <StrictMode>
-    <Router>
-      <Routes>
+    <NotificationProvider>
+      <Router>
+        <Routes>
         <Route path="/" element={<App />} />
         
 
@@ -76,11 +91,23 @@ createRoot(document.getElementById('root')).render(
         <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
         <Route path="/hdash" element={<HotelDash />} />
         
+        {/* Restaurant Routes */}
 
-      </Routes>
-    </Router>
+        
+            <Route path="/restaurant/categories" element={<ResCategories />} />
+            <Route path="/restaurant/products" element={<Products />} />
+            <Route path="/restaurant/create-order" element={<RestaurantPOS />} />
+            <Route path="/restaurant/dashboard" element={<Dashboard />} />
+            <Route path="/restaurant/analytics" element={<Analytics />} />
+
+
+
+    </Routes>
+      </Router>
+    </NotificationProvider>
   </StrictMode>
 );
+
 
 
 
