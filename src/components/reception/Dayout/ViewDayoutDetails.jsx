@@ -21,6 +21,8 @@ const ViewDayoutDetails = ({
     cashReceived: ''
   });
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Calculate amounts
   const totalAmount = selectedReservation?.totalAmount || 0;
@@ -41,6 +43,15 @@ const ViewDayoutDetails = ({
   // Format currency
   const formatCurrency = (amount) => {
     return `Rs ${(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  };
+
+  // Show success popup in center of screen
+  const showCenterSuccessPopup = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessPopup(true);
+    setTimeout(() => {
+      setShowSuccessPopup(false);
+    }, 3000);
   };
 
   // Handle payment submission
@@ -74,13 +85,18 @@ const ViewDayoutDetails = ({
         }
       );
 
-      setPaymentHistory([...paymentHistory, response.data]);
-      onSuccess('Payment recorded successfully!');
+      // Ensure paymentHistory is an array before spreading
+      const currentPaymentHistory = Array.isArray(paymentHistory) ? paymentHistory : [];
+      setPaymentHistory([...currentPaymentHistory, response.data]);
+      
+      showCenterSuccessPopup('Payment recorded successfully! 💰');
       setShowPaymentForm(false);
       setPaymentData({ amount: '', method: 'Cash', notes: '', cashReceived: '' });
       
       // Refresh reservation data
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error('Error recording payment:', error);
       onError(error.response?.data?.message || 'Error recording payment');
@@ -107,8 +123,10 @@ const ViewDayoutDetails = ({
         notes: 'Day-out reservation completed'
       });
 
-      onSuccess('Day-out reservation completed successfully!');
-      onCheckoutComplete();
+      showCenterSuccessPopup('Day-out reservation completed successfully! 🎉');
+      setTimeout(() => {
+        onCheckoutComplete();
+      }, 2500);
     } catch (error) {
       console.error('Error completing reservation:', error);
       onError(error.response?.data?.message || 'Error completing reservation');
@@ -119,6 +137,22 @@ const ViewDayoutDetails = ({
 
   return (
     <div className="vdd-container-fluid">
+      {/* Success Popup Modal */}
+      {showSuccessPopup && (
+        <div className="vdd-success-modal-overlay">
+          <div className="vdd-success-modal">
+            <div className="vdd-success-modal-content">
+              <div className="vdd-success-icon-large">✅</div>
+              <h3 className="vdd-success-title">Success!</h3>
+              <p className="vdd-success-text">{successMessage}</p>
+              <div className="vdd-success-loader">
+                <div className="vdd-loader-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="vdd-header">
         <h2 className="vdd-title">🏖️ Day-Out Reservation Details</h2>
         <div className="vdd-btn-group">
@@ -433,7 +467,7 @@ const ViewDayoutDetails = ({
               <h5 className="vdd-card-title">📜 Payment History</h5>
             </div>
             <div className="vdd-card-body">
-              {paymentHistory && paymentHistory.length > 0 ? (
+              {Array.isArray(paymentHistory) && paymentHistory.length > 0 ? (
                 <div className="vdd-timeline">
                   {paymentHistory.map((payment, index) => (
                     <div key={index} className="vdd-timeline-item">

@@ -1,366 +1,194 @@
-/* ViewDayoutDetails Component Styles */
+/* Success Modal Popup Styles - Add these to your ViewDayoutDetails.css */
 
-.vdd-container-fluid {
-  padding: 1rem 2rem 2rem;
-  max-width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-/* Header Styles */
-.vdd-header {
+/* Modal Overlay - Fixed positioning to stay in center regardless of scroll */
+.vdd-success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: center;
+  z-index: 10000;
+  animation: vdd-fade-in 0.3s ease-out;
 }
 
-.vdd-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
+/* Modal Container */
+.vdd-success-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: vdd-scale-in 0.3s ease-out;
+  overflow: hidden;
 }
 
-.vdd-btn-group {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-/* Button Styles */
-.vdd-btn {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+/* Modal Content */
+.vdd-success-modal-content {
+  padding: 40px 30px 30px 30px;
   text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  white-space: nowrap;
-}
-
-.vdd-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.vdd-btn-outline-secondary {
-  color: #6c757d;
-  border-color: #6c757d;
-  background-color: transparent;
-}
-
-.vdd-btn-outline-secondary:hover {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.vdd-btn-success {
-  color: #fff;
-  background-color: #198754;
-  border-color: #198754;
-}
-
-.vdd-btn-success:hover {
-  background-color: #157347;
-  border-color: #146c43;
-}
-
-.vdd-btn-primary {
-  color: #fff;
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
-.vdd-btn-primary:hover {
-  background-color: #0b5ed7;
-  border-color: #0a58ca;
-}
-
-.vdd-btn-secondary {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.vdd-btn-secondary:hover {
-  background-color: #5c636a;
-  border-color: #565e64;
-}
-
-.vdd-btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-}
-
-/* Layout Styles */
-.vdd-row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-right: -0.75rem;
-  margin-left: -0.75rem;
-}
-
-.vdd-col-12 {
-  flex: 0 0 100%;
-  max-width: 100%;
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-}
-
-.vdd-col-md-6 {
-  flex: 0 0 50%;
-  max-width: 50%;
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-}
-
-.vdd-col-md-8 {
-  flex: 0 0 66.666667%;
-  max-width: 66.666667%;
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-}
-
-.vdd-col-md-4 {
-  flex: 0 0 33.333333%;
-  max-width: 33.333333%;
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-}
-
-.vdd-mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-/* Card Styles */
-.vdd-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.vdd-card-header {
-  padding: 0.75rem 1rem;
-  margin-bottom: 0;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  border-radius: 0.375rem 0.375rem 0 0;
+/* Large Success Icon */
+.vdd-success-icon-large {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: vdd-bounce 0.6s ease-out;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
 }
 
-.vdd-card-body {
-  flex: 1 1 auto;
-  padding: 1rem;
-}
-
-.vdd-card-title {
-  margin-bottom: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.vdd-payment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Status Badge Styles */
-.vdd-badge {
-  display: inline-block;
-  padding: 0.35em 0.65em;
-  font-size: 0.75em;
+/* Success Title */
+.vdd-success-title {
+  font-size: 1.8rem;
   font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.375rem;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.vdd-status-completed,
-.vdd-payment-fully-paid {
-  background-color: #198754;
-}
-
-.vdd-status-confirmed,
-.vdd-payment-partially-paid {
-  background-color: #0d6efd;
-}
-
-.vdd-status-pending,
-.vdd-payment-pending {
-  background-color: #ffc107;
-  color: #212529;
-}
-
-.vdd-status-cancelled {
-  background-color: #dc3545;
-}
-
-.vdd-status-unknown,
-.vdd-payment-unknown {
-  background-color: #6c757d;
-}
-
-/* Grid Layouts */
-.vdd-status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.vdd-status-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.vdd-status-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0;
-  color: #6c757d;
-}
-
-.vdd-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.vdd-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.vdd-code {
-  display: inline-block;
-  padding: 0.125rem 0.375rem;
-  font-size: 87.5%;
-  color: #d63384;
-  background-color: #f8f9fa;
-  border-radius: 0.25rem;
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-/* Guest Information */
-.vdd-guest-info p {
-  margin: 0.5rem 0;
+/* Success Message Text */
+.vdd-success-text {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
   line-height: 1.5;
+  opacity: 0.95;
 }
 
-.vdd-person-card {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  background-color: #f8f9fa;
-}
-
-.vdd-person-card p {
-  margin: 0.25rem 0;
-}
-
-/* Package Styles */
-.vdd-packages-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.vdd-package-card {
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  background-color: #fff;
-}
-
-.vdd-package-body {
-  padding: 1rem;
-}
-
-.vdd-package-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
-}
-
-.vdd-package-description {
-  color: #6c757d;
-  margin-bottom: 0.75rem;
-}
-
-.vdd-features-list {
-  margin-top: 0.5rem;
-  padding-left: 1.25rem;
-}
-
-.vdd-features-list li {
-  margin-bottom: 0.25rem;
-}
-
-/* Payment Styles */
-.vdd-payment-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.vdd-payment-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.vdd-amount {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.vdd-amount-total {
-  color: #0d6efd;
-}
-
-.vdd-amount-paid {
-  color: #198754;
-}
-
-.vdd-amount-due {
-  color: #dc3545;
-}
-
-/* Progress Bar */
-.vdd-progress-container {
-  margin-bottom: 1.5rem;
-}
-
-.vdd-progress-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.vdd-progress {
+/* Loading Bar Container */
+.vdd-success-loader {
   width: 100%;
-  height: 1rem;
-  background-color: #e9ecef;
-  border-radius: 0.5rem;
-  overflow: hidden}
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+/* Animated Loading Bar */
+.vdd-loader-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 2px;
+  animation: vdd-loader-progress 3s linear forwards;
+  box-shadow: 0 0 10px rgba(79, 172, 254, 0.6);
+}
+
+/* Animations */
+@keyframes vdd-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vdd-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes vdd-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -15px, 0);
+  }
+  70% {
+    transform: translate3d(0, -8px, 0);
+  }
+  90% {
+    transform: translate3d(0, -3px, 0);
+  }
+}
+
+@keyframes vdd-loader-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Alternative Success Modal Styles - More Colorful Version */
+.vdd-success-modal-colorful .vdd-success-modal-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+}
+
+.vdd-success-modal-green .vdd-success-modal-content {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.vdd-success-modal-payment .vdd-success-modal-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .vdd-success-modal {
+    width: 95%;
+    max-width: 350px;
+  }
+  
+  .vdd-success-modal-content {
+    padding: 30px 20px 25px 20px;
+  }
+  
+  .vdd-success-icon-large {
+    font-size: 3rem;
+    margin-bottom: 15px;
+  }
+  
+  .vdd-success-title {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .vdd-success-text {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+}
+
+/* Dark Theme Support */
+@media (prefers-color-scheme: dark) {
+  .vdd-success-modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  
+  .vdd-success-modal {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Additional Animation for Different Success Types */
+.vdd-success-payment .vdd-success-icon-large::before {
+  content: "💰";
+}
+
+.vdd-success-checkout .vdd-success-icon-large::before {
+  content: "🎉";
+}
+
+/* Print Styles - Hide popup when printing */
+@media print {
+  .vdd-success-modal-overlay {
+    display: none !important;
+  }
+}
