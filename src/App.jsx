@@ -22,7 +22,7 @@ function App() {
       <br/>
       <Link to="/rooms/home">Go to Room Management Home</Link>
       <br />  
-      <Link to="/settings">Settings</Link>
+      <Link to="/ownsettings">Settings</Link>
       <br/>
       <Link to="/Transactionreportspage">TransactionReports</Link>
       <br/>
