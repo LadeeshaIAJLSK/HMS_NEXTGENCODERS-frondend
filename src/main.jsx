@@ -28,6 +28,7 @@ import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
 import GuestRes from './components/reception/Formedit/GuestRes.jsx';
 import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
 import EditReservation1 from './pages/Departments/Reception/DNReservations/EditReservation1.jsx';
+import DayoutReservationpage from './pages/Departments/Reception/DOReservations/DayoutReservationpage.jsx';
 
 
 
@@ -37,6 +38,7 @@ import EditPackages from './components/reception/Dayout/EditPackages.jsx';
 import PackageHome from './components/reception/Dayout/PackageHome.jsx';
 import HotelDash from './components/reception/Dashboard/HotelDash.jsx';
 import DayoutReservation from './components/reception/Dayout/DayoutReservation.jsx';
+import Packagespage from './pages/Departments/Reception/DOReservations/packagespage.jsx';
 
 
 
@@ -96,6 +98,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
         <Route path="/hdash" element={<HotelDash />} />
         <Route path="/dayout" element={<DayoutReservation />} />
+        <Route path="/dayout-create" element={<DayoutReservationpage />} /> {/* Route for DayoutReservationpage component */}
+        <Route path="/dayout-packages" element={<Packagespage />} /> {/* Route for packagespage component */}
        
         
         

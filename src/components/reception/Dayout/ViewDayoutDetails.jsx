@@ -154,10 +154,10 @@ const ViewDayoutDetails = ({
       )}
 
       <div className="vdd-header">
-        <h2 className="vdd-title">🏖️ Day-Out Reservation Details</h2>
+        <h2 className="vdd-title"> Day-Out Reservation Details</h2>
         <div className="vdd-btn-group">
           <button className="vdd-btn vdd-btn-outline-secondary" onClick={onBackToEdit}>
-            ✏️ Edit Reservation
+             Edit Reservation
           </button>
           {selectedReservation?.status !== 'Completed' && amountDue === 0 && (
             <button 
@@ -165,7 +165,7 @@ const ViewDayoutDetails = ({
               onClick={handleCheckout}
               disabled={isProcessing}
             >
-              {isProcessing ? 'Processing...' : '✅ Complete Reservation'}
+              {isProcessing ? 'Processing...' : 'Complete Reservation'}
             </button>
           )}
         </div>
@@ -208,7 +208,7 @@ const ViewDayoutDetails = ({
         <div className="vdd-col-12">
           <div className="vdd-card">
             <div className="vdd-card-header">
-              <h5 className="vdd-card-title">📅 Visit Information</h5>
+              <h5 className="vdd-card-title">Visit Information</h5>
             </div>
             <div className="vdd-card-body">
               <div className="vdd-info-grid">
@@ -241,7 +241,7 @@ const ViewDayoutDetails = ({
         <div className="vdd-col-md-6">
           <div className="vdd-card">
             <div className="vdd-card-header">
-              <h5 className="vdd-card-title">👤 Primary Guest Information</h5>
+              <h5 className="vdd-card-title"> Primary Guest Information</h5>
             </div>
             <div className="vdd-card-body">
               <div className="vdd-guest-info">
@@ -268,7 +268,7 @@ const ViewDayoutDetails = ({
           <div className="vdd-col-md-6">
             <div className="vdd-card">
               <div className="vdd-card-header">
-                <h5 className="vdd-card-title">👥 Other Persons</h5>
+                <h5 className="vdd-card-title"> Other Persons</h5>
               </div>
               <div className="vdd-card-body">
                 {selectedReservation.otherPersons.map((person, index) => (
@@ -290,7 +290,7 @@ const ViewDayoutDetails = ({
         <div className="vdd-col-12">
           <div className="vdd-card">
             <div className="vdd-card-header">
-              <h5 className="vdd-card-title">📦 Selected Packages</h5>
+              <h5 className="vdd-card-title"> Selected Packages</h5>
             </div>
             <div className="vdd-card-body">
               {packageDetails && packageDetails.length > 0 ? (
@@ -329,7 +329,7 @@ const ViewDayoutDetails = ({
         <div className="vdd-col-md-8">
           <div className="vdd-card">
             <div className="vdd-card-header vdd-payment-header">
-              <h5 className="vdd-card-title">💳 Payment Information</h5>
+              <h5 className="vdd-card-title"> Payment Information</h5>
               {amountDue > 0 && (
                 <button 
                   className="vdd-btn vdd-btn-primary vdd-btn-sm"
@@ -464,7 +464,7 @@ const ViewDayoutDetails = ({
         <div className="vdd-col-md-4">
           <div className="vdd-card">
             <div className="vdd-card-header">
-              <h5 className="vdd-card-title">📜 Payment History</h5>
+              <h5 className="vdd-card-title"> Payment History</h5>
             </div>
             <div className="vdd-card-body">
               {Array.isArray(paymentHistory) && paymentHistory.length > 0 ? (

@@ -26,7 +26,7 @@ const Ressidebar = () => {
           <Link to="/rooms">📂 All Rooms</Link>
         </li>
         <li>
-          <Link to="/restaurant/analytics">📈 Analytics</Link>
+          <Link to="/dayout-create">📈 DayOut Reservation</Link>
         </li>
         <li>
           <Link to="/"><span>⏻</span> Logout </Link>

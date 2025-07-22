@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { countries } from "../FormSection1/countries";
+import "./Editdayout.css";
 
 
 const EditDayoutReservationForm = ({
@@ -327,7 +328,7 @@ useEffect(() => {
         {/* Visit Information Section */}
         <div className="dayout-form-section">
           <div className="dayout-form-container">
-            <h5 className="dayout-form-heading">📅 Visit Information</h5>
+            <h5 className="dayout-form-heading">Visit Information</h5>
             <div className="dayout-form-grid">
               <div className="dayout-form-group">
                 <label className="dayout-form-label">Visit Date *</label>
@@ -400,7 +401,7 @@ useEffect(() => {
         {/* Customer Information Section */}
         <div className="dayout-form-section">
           <div className="dayout-form-container">
-            <h5 className="dayout-form-heading">👤 Customer Information</h5>
+            <h5 className="dayout-form-heading"> Customer Information</h5>
             <div className="dayout-form-grid">
               <div className="dayout-form-group">
                 <label className="dayout-form-label">First Name *</label>
@@ -577,13 +578,13 @@ useEffect(() => {
         <div className="dayout-form-section">
           <div className="dayout-form-container">
             <div className="dayout-section-header">
-              <h5 className="dayout-form-heading">👥 Other Persons</h5>
+              <h5 className="dayout-form-heading"> Other Persons</h5>
               <button
                 type="button"
                 className="dayout-btn dayout-btn-success"
                 onClick={handleAddPerson}
               >
-                ➕ Add Person
+                ➕ 
               </button>
             </div>
             
@@ -597,7 +598,7 @@ useEffect(() => {
                       className="dayout-btn dayout-btn-danger"
                       onClick={() => handleRemovePerson(index)}
                     >
-                      ✖️ Remove
+                      ✖️ 
                     </button>
                   )}
                 </div>
@@ -666,7 +667,7 @@ useEffect(() => {
         {/* Package Selection Section */}
         <div className="dayout-form-section">
           <div className="dayout-form-container">
-            <h5 className="dayout-form-heading">📦 Package Selection</h5>
+            <h5 className="dayout-form-heading"> Package Selection</h5>
             
             {/* Package Filters */}
             <div className="dayout-filter-section">
@@ -755,7 +756,7 @@ useEffect(() => {
         {/* Payment Information Section */}
         <div className="dayout-form-section">
           <div className="dayout-form-container">
-            <h5 className="dayout-form-heading">💳 Payment Information</h5>
+            <h5 className="dayout-form-heading">Payment Information</h5>
             <div className="dayout-form-grid">
               <div className="dayout-form-group">
                 <label className="dayout-form-label">Total Amount</label>
@@ -828,7 +829,7 @@ useEffect(() => {
         className="dayout-btn dayout-btn-danger"
         onClick={onDeleteReservation}
       >
-        🗑️ Delete Reservation
+         Delete Reservation
       </button>
       
       <div className="dayout-button-group">
@@ -838,7 +839,7 @@ useEffect(() => {
           disabled={isSubmitting}
           onClick={handleSubmit}
         >
-          {isSubmitting ? 'Updating...' : '💾 Update Reservation'}
+          {isSubmitting ? 'Updating...' : 'Update Reservation'}
         </button>
       </div>
     </div>

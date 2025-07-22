@@ -67,13 +67,13 @@ const DayoutReservation = () => {
   return (
     <div className="dayout-form-scope">
       <div className="dayout-container">
-        <h2 className="dayout-main-heading">🏖️ Day Out Reservation</h2>
+        <h2 className="dayout-main-heading"> Day Out Reservation</h2>
         
         <form onSubmit={handleSubmit} className="dayout-form">
           {/* Date and Guest Information */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">📅 Visit Information</h5>
+              <h5 className="dayout-form-heading">Visit Information</h5>
               <div className="dayout-form-grid">
                 <div className="dayout-form-group">
                   <label className="dayout-form-label">Visit Date *</label>
@@ -146,7 +146,7 @@ const DayoutReservation = () => {
           {/* Customer Type Selection */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">👤 Customer Information</h5>
+              <h5 className="dayout-form-heading"> Customer Information</h5>
               
               <div className="dayout-customer-type-options">
                 <label className="dayout-radio-label">
@@ -157,7 +157,7 @@ const DayoutReservation = () => {
                     onChange={() => setCustomerType("new")}
                     className="dayout-radio-input"
                   />
-                  <span>➕ New Customer</span>
+                  <span>New Customer</span>
                 </label>
 
                 <label className="dayout-radio-label">
@@ -168,7 +168,7 @@ const DayoutReservation = () => {
                     onChange={() => setCustomerType("existing")}
                     className="dayout-radio-input"
                   />
-                  <span>🔍 Existing Customer</span>
+                  <span>Existing Customer</span>
                 </label>
               </div>
 
@@ -188,7 +188,7 @@ const DayoutReservation = () => {
                       className="dayout-btn dayout-btn-info"
                       onClick={handleCustomerSearch}
                     >
-                      🔍 Search
+                       Search
                     </button>
                   </div>
                   
@@ -396,13 +396,13 @@ const DayoutReservation = () => {
           <div className="dayout-form-section">
             <div className="dayout-form-container">
               <div className="dayout-section-header">
-                <h5 className="dayout-form-heading">👥 Other Persons</h5>
+                <h5 className="dayout-form-heading"> Other Persons</h5>
                 <button
                   type="button"
                   className="dayout-btn dayout-btn-success"
                   onClick={handleAddPerson}
                 >
-                  ➕ Add Person
+                  ➕ 
                 </button>
               </div>
               
@@ -416,7 +416,7 @@ const DayoutReservation = () => {
                         className="dayout-btn dayout-btn-danger"
                         onClick={() => handleRemovePerson(index)}
                       >
-                        ✖️ Remove
+                        ✖️
                       </button>
                     )}
                   </div>
@@ -485,7 +485,7 @@ const DayoutReservation = () => {
           {/* Package Selection */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">📦 Package Selection</h5>
+              <h5 className="dayout-form-heading"> Package Selection</h5>
               
               {/* Package Filters */}
               <div className="dayout-filter-section">
@@ -574,7 +574,7 @@ const DayoutReservation = () => {
           {/* Payment Information */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">💳 Payment Information</h5>
+              <h5 className="dayout-form-heading">Payment Information</h5>
               <div className="dayout-form-grid">
                 <div className="dayout-form-group">
                   <label className="dayout-form-label">Total Amount</label>
@@ -644,7 +644,7 @@ const DayoutReservation = () => {
               Cancel
             </button>
             <button type="submit" className="dayout-btn dayout-btn-primary">
-              🏖️ Create Day Out Reservation
+               Create Day Out Reservation
             </button>
           </div>
         </form>
