@@ -1,451 +1,561 @@
-/* DayoutReservation.css */
-
-/* Base Styles */
+/* Scoped CSS for DayoutReservation component only */
 .dayout-form-scope {
+  --primary-color: #00421e;
+  --secondary-color: #008080;
+  --accent-color: #e74c3c;
+  --light-color: #ecf0f1;
+  --dark-color: #020e1b;
+  --success-color: #00431c;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --border-radius: 6px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
   line-height: 1.6;
-  background-color: #f5f7fa;
-  padding: 20px 0;
+  color: #072902;
+  padding: 20px;
 }
 
+.dayout-form-scope * {
+  box-sizing: border-box;
+}
+
+/* Main Container */
 .dayout-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
 .dayout-main-heading {
-  background: linear-gradient(135deg, #001302 0%, #5fdf4e 100%);
-  color: white;
-  padding: 20px;
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Form Styling */
+.dayout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 /* Form Sections */
 .dayout-form-section {
-  padding: 20px;
-  border-bottom: 1px solid #eaeef5;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
 }
 
-.dayout-form-section:last-child {
-  border-bottom: none;
+.dayout-form-section:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .dayout-form-container {
-  padding: 0 10px;
+  padding: 30px;
 }
 
 .dayout-form-heading {
-  color: #4a5568;
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 18px;
+  font-size: 1.5rem;
   font-weight: 600;
-  display: flex;
-  align-items: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--light-color);
+  position: relative;
 }
 
-.dayout-form-heading:before {
-  margin-right: 10px;
+.dayout-form-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background-color: var(--secondary-color);
 }
 
-/* Form Grid - 3 columns */
+/* Form Grid Layout */
 .dayout-form-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Full width form group */
+.dayout-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
 .dayout-form-group-full {
   grid-column: 1 / -1;
 }
 
-/* Form Elements */
+/* Form Labels */
 .dayout-form-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
+  margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #4a5568;
+  color: var(--dark-color);
+  font-size: 0.95rem;
 }
 
-.dayout-form-input, .dayout-form-select, .dayout-form-textarea {
+/* Form Inputs */
+.dayout-form-input,
+.dayout-form-select,
+.dayout-form-textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  color: #555;
+  transition: var(--transition);
   background-color: #fff;
 }
 
-.dayout-form-input:focus, .dayout-form-select:focus, .dayout-form-textarea:focus {
+.dayout-form-input:focus,
+.dayout-form-select:focus,
+.dayout-form-textarea:focus {
   outline: none;
-  border-color: #14c723;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+  border-color: #135736;
+  box-shadow: 0 0 0 3px rgba(3, 87, 1, 0.2);
 }
 
-.dayout-form-input::placeholder {
-  color: #a0aec0;
+.dayout-form-input::placeholder,
+.dayout-form-textarea::placeholder {
+  color: #aaa;
 }
 
-.dayout-form-textarea {
-  min-height: 80px;
-  resize: vertical;
+.dayout-form-input-error {
+  border-color: var(--danger-color);
 }
 
-.dayout-form-select {
-  appearance: none;
-  
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
+.dayout-form-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
 }
 
-/* Readonly inputs */
 .dayout-readonly {
-  background-color: #f7fafc;
-  color: #718096;
+  background-color: #f8f9fa;
   cursor: not-allowed;
 }
 
-/* Input Groups (for prefixes) */
+/* Textarea */
+.dayout-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Mobile/Country Input Group */
+.dayout-mobile-group .dayout-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dayout-country-select {
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+/* Input Group with Prefix */
 .dayout-input-group {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .dayout-input-prefix {
-  padding: 10px 12px;
-  background-color: #edf2f7;
-  border: 1px solid #e2e8f0;
+  background-color: var(--light-color);
+  border: 1px solid #ddd;
   border-right: none;
-  border-radius: 6px 0 0 6px;
-  font-size: 14px;
-  color: #4a5568;
+  padding: 0.75rem;
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  font-weight: 500;
+  color: var(--dark-color);
 }
 
 .dayout-input-group .dayout-form-input {
-  border-radius: 0 6px 6px 0;
-}
-
-/* Mobile Input Group */
-.dayout-mobile-group .dayout-input-group {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-}
-
-.dayout-mobile-group .dayout-country-select {
-  border-radius: 6px 0 0 6px;
-}
-
-.dayout-mobile-group .dayout-form-input {
-  border-radius: 0 6px 6px 0;
+  border-left: none;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
 }
 
 /* Radio Buttons */
 .dayout-customer-type-options {
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .dayout-radio-label {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
   cursor: pointer;
-  font-size: 14px;
-  color: #4a5568;
+  font-weight: 500;
+  font-size: 1rem;
 }
 
 .dayout-radio-input {
-  margin-right: 8px;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+}
+
+.dayout-radio-input:checked {
+  border-color: var(--secondary-color);
+}
+
+.dayout-radio-input:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: var(--secondary-color);
+  border-radius: 50%;
 }
 
 /* Search Section */
 .dayout-search-section {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .dayout-search-controls {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .dayout-search-controls .dayout-form-input {
   flex: 1;
 }
 
+/* Search Results */
 .dayout-search-results {
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 15px;
-  background-color: #f8fafc;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
 .dayout-search-results h6 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 15px;
+  margin-bottom: 0.75rem;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .dayout-results-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .dayout-result-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
   text-align: left;
-  padding: 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  background-color: white;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 13px;
+  transition: var(--transition);
+  width: 100%;
 }
 
 .dayout-result-item:hover {
-  background-color: #ebf8ff;
-  border-color: #bee3f8;
+  background-color: var(--light-color);
+  border-color: var(--secondary-color);
 }
 
 /* Person Cards */
+.dayout-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
 .dayout-person-card {
-  background-color: #f8fafc;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 15px;
-  border: 1px solid #e2e8f0;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .dayout-person-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .dayout-person-header h6 {
   margin: 0;
-  font-size: 16px;
-  color: #4a5568;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 /* Package Selection */
 .dayout-filter-section {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: end;
 }
 
+.dayout-selected-count {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  text-align: center;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Package Grid */
 .dayout-packages-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
+  gap: 1.5rem;
 }
 
 .dayout-package-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 15px;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.2s;
-  background-color: white;
+  transition: var(--transition);
+  position: relative;
 }
 
 .dayout-package-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-color: var(--secondary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .dayout-package-selected {
-  border-color: #4299e1;
-  background-color: #ebf8ff;
+  border-color: var(--success-color);
+  background-color: #f0fff4;
 }
 
 .dayout-package-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 }
 
 .dayout-package-title {
   margin: 0;
-  font-size: 16px;
-  color: #2d3748;
-}
-
-.dayout-checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .dayout-package-description {
-  margin: 0 0 10px 0;
-  font-size: 13px;
-  color: #4a5568;
+  color: #666;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
 }
 
-.dayout-package-category, .dayout-package-price {
-  margin: 5px 0;
-  font-size: 13px;
+.dayout-package-category {
+  font-size: 0.9rem;
+  color: var(--dark-color);
+  margin-bottom: 0.5rem;
 }
 
-.dayout-package-price strong {
-  color: #2d3748;
+.dayout-package-price {
+  color: var(--success-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 .dayout-package-features {
-  margin-top: 10px;
-  font-size: 12px;
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
 }
 
 .dayout-package-features ul {
-  margin: 5px 0 0 0;
-  padding-left: 20px;
+  margin: 0.5rem 0 0;
+  padding-left: 0;
+  list-style: none;
 }
 
 .dayout-package-features li {
-  margin-bottom: 3px;
+  margin-bottom: 0.25rem;
+  color: #666;
 }
 
 .dayout-no-packages {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 20px;
-  color: #718096;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
 }
 
-.dayout-selected-count {
-  padding: 10px;
-  background-color: #edf2f7;
-  border-radius: 6px;
-  text-align: center;
-  font-size: 14px;
-  color: #4a5568;
+/* Checkbox */
+.dayout-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+}
+
+.dayout-checkbox:checked {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.dayout-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 /* File Input */
 .dayout-file-input {
-  padding: 8px;
+  padding: 0.5rem !important;
 }
 
 .dayout-form-text {
-  font-size: 12px;
-  color: #718096;
-  margin-top: 5px;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
 /* Buttons */
 .dayout-btn {
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  border: none;
+  transition: var(--transition);
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
 }
 
 .dayout-btn-primary {
-  background-color: #4299e1;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .dayout-btn-primary:hover {
-  background-color: #3182ce;
+  background-color: #00301a;
+  transform: translateY(-1px);
 }
 
 .dayout-btn-secondary {
-  background-color: #e2e8f0;
-  color: #4a5568;
+  background-color: #6c757d;
+  color: white;
 }
 
 .dayout-btn-secondary:hover {
-  background-color: #cbd5e0;
+  background-color: #545b62;
+  transform: translateY(-1px);
 }
 
 .dayout-btn-success {
-  background-color: #48bb78;
+  background-color: var(--success-color);
   color: white;
 }
 
 .dayout-btn-success:hover {
-  background-color: #38a169;
+  background-color: #003016;
+  transform: translateY(-1px);
 }
 
 .dayout-btn-danger {
-  background-color: #f56565;
+  background-color: var(--danger-color);
   color: white;
 }
 
 .dayout-btn-danger:hover {
-  background-color: #e53e3e;
+  background-color: #c0392b;
+  transform: translateY(-1px);
 }
 
 .dayout-btn-info {
-  background-color: #4299e1;
+  background-color: var(--secondary-color);
   color: white;
 }
 
 .dayout-btn-info:hover {
-  background-color: #3182ce;
+  background-color: #006666;
+  transform: translateY(-1px);
 }
 
 /* Form Actions */
 .dayout-form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  padding: 20px;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--light-color);
+  margin-top: 1rem;
 }
 
-/* Error State */
-.dayout-form-input-error {
-  border-color: #f56565;
-}
-
-.dayout-form-input-error:focus {
-  box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.2);
-}
-
-/* Section Header */
-.dayout-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 1024px) {
-  .dayout-form-grid, .dayout-filter-section {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
-  .dayout-form-grid, .dayout-filter-section {
+  .dayout-form-scope {
+    padding: 10px;
+  }
+  
+  .dayout-form-container {
+    padding: 20px;
+  }
+  
+  .dayout-main-heading {
+    font-size: 1.5rem;
+  }
+  
+  .dayout-form-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .dayout-filter-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .dayout-packages-grid {
@@ -454,7 +564,7 @@
   
   .dayout-customer-type-options {
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
   }
   
   .dayout-search-controls {
@@ -465,8 +575,73 @@
     flex-direction: column;
   }
   
+  .dayout-mobile-group .dayout-input-group {
+    flex-direction: column;
+  }
+  
+  .dayout-country-select {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .dayout-form-container {
+    padding: 15px;
+  }
+  
+  .dayout-main-heading {
+    font-size: 1.25rem;
+  }
+  
+  .dayout-form-heading {
+    font-size: 1.25rem;
+  }
+  
+  .dayout-person-card {
+    padding: 1rem;
+  }
+  
+  .dayout-package-card {
+    padding: 1rem;
+  }
+}
+
+/* Animation for smooth transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dayout-form-section {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Focus states for accessibility */
+.dayout-btn:focus,
+.dayout-package-card:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .dayout-form-scope {
+    padding: 0;
+  }
+  
+  .dayout-form-section {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+  }
+  
   .dayout-btn {
-    width: 100%;
-    justify-content: center;
+    display: none;
   }
 }
