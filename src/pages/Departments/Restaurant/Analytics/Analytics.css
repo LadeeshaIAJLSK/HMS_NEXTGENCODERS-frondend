@@ -45,19 +45,19 @@
   align-items: flex-end;
 }
 
-.filter-group {
+.resfilter-group {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.filter-group label {
+.resfilter-group label {
   font-size: 14px;
   font-weight: 500;
   color: #555;
 }
 
-.filter-input {
+.resfilter-input {
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -65,7 +65,7 @@
   min-width: 150px;
 }
 
-.filter-input:focus {
+.resfilter-input:focus {
   outline: none;
   border-color: #20c997;
   box-shadow: 0 0 0 2px rgba(32, 201, 151, 0.1);
@@ -83,7 +83,7 @@
   margin-bottom: 15px;
 }
 
-.table-container {
+.restable-container {
   background: white;
   border-radius: 8px;
   overflow: hidden;

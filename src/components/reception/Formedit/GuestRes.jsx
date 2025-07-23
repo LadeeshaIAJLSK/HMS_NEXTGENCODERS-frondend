@@ -3,8 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SearchSection from "./SearchSection"
 import EditReservationForm from "./EditReservationForm";
+import EditDayoutForm from "../Dayout/EditDayouForm";
 import ViewReservationDetails from "./ViewReservationDetails";
-import { countries } from "../FormSection1/countries"; // Assuming you have a countries.js file with the countries array
+import ViewDayoutDetails from "../Dayout/ViewDayoutDetails";
+import { countries } from "../FormSection1/countries";
 
 const GuestRes = () => {
   const navigate = useNavigate();
@@ -19,11 +21,15 @@ const GuestRes = () => {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [roomDetails, setRoomDetails] = useState([]);
+  const [packageDetails, setPackageDetails] = useState([]);
   const [paymentHistory, setPaymentHistory] = useState([]);
+  const [filterType, setFilterType] = useState("all"); // all, room, dayOut
 
   const [formData, setFormData] = useState({
     checkIn: "",
     checkOut: "",
+    startTime: "",
+    endTime: "",
     duration: "",
     adults: "1",
     kids: "0",
@@ -38,6 +44,10 @@ const GuestRes = () => {
     gender: "",
     idType: "",
     idNumber: "",
+    totalAmount: 0,
+    advancePayment: 0,
+    paymentMethod: "",
+    paymentNotes: ""
   });
 
   const [persons, setPersons] = useState([
@@ -45,6 +55,7 @@ const GuestRes = () => {
   ]);
 
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedPackages, setSelectedPackages] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
@@ -68,17 +79,30 @@ const GuestRes = () => {
     fetchAllReservations();
   }, []);
 
-  // Fetch room and payment details when viewing a reservation
+  // Fetch details when viewing a reservation
   useEffect(() => {
     if (viewMode && selectedReservation) {
       const fetchDetails = async () => {
         try {
-          const roomsResponse = await axios.get("http://localhost:8000/api/posts/rooms");
-          const bookedRooms = roomsResponse.data.rooms.filter(room => 
-            selectedReservation.selectedRooms.includes(room.RoomNo)
-          );
-          setRoomDetails(bookedRooms);
+          // Fetch room details for room reservations
+          if (selectedReservation.reservationType === 'room' && selectedReservation.selectedRooms) {
+            const roomsResponse = await axios.get("http://localhost:8000/api/posts/rooms");
+            const bookedRooms = roomsResponse.data.rooms.filter(room => 
+              selectedReservation.selectedRooms.includes(room.RoomNo)
+            );
+            setRoomDetails(bookedRooms);
+          }
           
+          // Fetch package details for day-out reservations
+          if (selectedReservation.reservationType === 'dayOut' && selectedReservation.selectedPackages) {
+            const packagesResponse = await axios.get("http://localhost:8000/api/packages");
+            const bookedPackages = packagesResponse.data.filter(pkg => 
+              selectedReservation.selectedPackages.includes(pkg._id)
+            );
+            setPackageDetails(bookedPackages);
+          }
+          
+          // Fetch payment history
           const paymentsResponse = await axios.get(
             `http://localhost:8000/api/reservations/${selectedReservation._id}/payments`
           );
@@ -92,25 +116,30 @@ const GuestRes = () => {
     }
   }, [viewMode, selectedReservation]);
 
-  // Filter reservations based on search term
+  // Filter reservations based on search term and type
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setDisplayedReservations(allReservations);
-    } else {
-      const filtered = allReservations.filter(reservation => {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-          reservation.firstName.toLowerCase().includes(searchLower) ||
-          (reservation.surname && reservation.surname.toLowerCase().includes(searchLower)) ||
-          reservation.mobile.includes(searchTerm) ||
-          (reservation._id && reservation._id.toLowerCase().includes(searchLower)) ||
-          (reservation.idNumber && reservation.idNumber.toLowerCase().includes(searchLower))
-        );
-      });
-      setDisplayedReservations(filtered);
-      setCurrentPage(1);
+    let filtered = allReservations;
+
+    // Filter by type
+    if (filterType !== "all") {
+      filtered = filtered.filter(reservation => reservation.reservationType === filterType);
     }
-  }, [searchTerm, allReservations]);
+
+    // Filter by search term
+    if (searchTerm.trim() !== "") {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(reservation => 
+        reservation.firstName.toLowerCase().includes(searchLower) ||
+        (reservation.surname && reservation.surname.toLowerCase().includes(searchLower)) ||
+        reservation.mobile.includes(searchTerm) ||
+        (reservation._id && reservation._id.toLowerCase().includes(searchLower)) ||
+        (reservation.idNumber && reservation.idNumber.toLowerCase().includes(searchLower))
+      );
+    }
+
+    setDisplayedReservations(filtered);
+    setCurrentPage(1);
+  }, [searchTerm, allReservations, filterType]);
 
   const loadReservation = (reservation) => {
     setSelectedReservation(reservation);
@@ -118,7 +147,9 @@ const GuestRes = () => {
     
     setFormData({
       checkIn: reservation.checkIn.split('T')[0],
-      checkOut: reservation.checkOut.split('T')[0],
+      checkOut: reservation.checkOut ? reservation.checkOut.split('T')[0] : "",
+      startTime: reservation.startTime || "",
+      endTime: reservation.endTime || "",
       duration: reservation.duration,
       adults: reservation.adults,
       kids: reservation.kids,
@@ -128,11 +159,15 @@ const GuestRes = () => {
       middleName: reservation.middleName || "",
       surname: reservation.surname || "",
       dob: reservation.dob ? reservation.dob.split('T')[0] : "",
-      address: reservation.address,
+      address: reservation.address || "",
       city: reservation.city || "",
       gender: reservation.gender || "",
       idType: reservation.idType || "",
       idNumber: reservation.idNumber || "",
+      totalAmount: reservation.totalAmount || 0,
+      advancePayment: reservation.advancePayment || 0,
+      paymentMethod: reservation.paymentMethod || "",
+      paymentNotes: reservation.paymentNotes || ""
     });
 
     if (reservation.otherPersons && reservation.otherPersons.length > 0) {
@@ -142,6 +177,7 @@ const GuestRes = () => {
     }
 
     setSelectedRooms(reservation.selectedRooms || []);
+    setSelectedPackages(reservation.selectedPackages || []);
 
     if (reservation.countryCode) {
       const country = countries.find(c => c.value === reservation.countryCode);
@@ -156,7 +192,9 @@ const GuestRes = () => {
     setViewMode(true);
     setFormData({
       checkIn: reservation.checkIn.split('T')[0],
-      checkOut: reservation.checkOut.split('T')[0],
+      checkOut: reservation.checkOut ? reservation.checkOut.split('T')[0] : "",
+      startTime: reservation.startTime || "",
+      endTime: reservation.endTime || "",
       duration: reservation.duration,
       adults: reservation.adults,
       kids: reservation.kids,
@@ -166,11 +204,11 @@ const GuestRes = () => {
       middleName: reservation.middleName || "",
       surname: reservation.surname || "",
       dob: reservation.dob ? reservation.dob.split('T')[0] : "",
-      address: reservation.address,
+      address: reservation.address || "",
       city: reservation.city || "",
       gender: reservation.gender || "",
       idType: reservation.idType || "",
-      idNumber: reservation.idNumber || "",
+      idNumber: reservation.idNumber || ""
     });
   };
 
@@ -189,33 +227,44 @@ const GuestRes = () => {
       setDisplayedReservations(displayedReservations.filter(r => r._id !== selectedReservation._id));
       
       // Reset form data
-      setFormData({
-        checkIn: "",
-        checkOut: "",
-        duration: "",
-        adults: "1",
-        kids: "0",
-        firstName: "",
-        mobile: "",
-        email: "",
-        middleName: "",
-        surname: "",
-        dob: "",
-        address: "",
-        city: "",
-        gender: "",
-        idType: "",
-        idNumber: "",
-      });
-      setPersons([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
-      setSelectedCountry(null);
-      setSelectedFiles([]);
-      setSelectedRooms([]);
+      resetFormData();
     } catch (error) {
       console.error("Error deleting reservation:", error);
       setError("Error deleting reservation. Please try again.");
       setSuccess("");
     }
+  };
+
+  const resetFormData = () => {
+    setFormData({
+      checkIn: "",
+      checkOut: "",
+      startTime: "",
+      endTime: "",
+      duration: "",
+      adults: "1",
+      kids: "0",
+      firstName: "",
+      mobile: "",
+      email: "",
+      middleName: "",
+      surname: "",
+      dob: "",
+      address: "",
+      city: "",
+      gender: "",
+      idType: "",
+      idNumber: "",
+      totalAmount: 0,
+      advancePayment: 0,
+      paymentMethod: "",
+      paymentNotes: ""
+    });
+    setPersons([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
+    setSelectedCountry(null);
+    setSelectedFiles([]);
+    setSelectedRooms([]);
+    setSelectedPackages([]);
   };
 
   const refreshReservations = async () => {
@@ -228,28 +277,11 @@ const GuestRes = () => {
     }
   };
 
-  return (
-    <div className="edit-reservation-container">
-      <h1 className="page-title">Edit Reservation</h1>
-      
-      <SearchSection
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        entriesPerPage={entriesPerPage}
-        setEntriesPerPage={setEntriesPerPage}
-        error={error}
-        success={success}
-        displayedReservations={displayedReservations}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        isLoading={isLoading}
-        selectedReservation={selectedReservation}
-        viewMode={viewMode}
-        loadReservation={loadReservation}
-        viewReservation={viewReservation}
-      />
-      
-      {selectedReservation && !viewMode && (
+  const renderEditForm = () => {
+    if (!selectedReservation) return null;
+
+    if (selectedReservation.reservationType === 'room') {
+      return (
         <EditReservationForm
           selectedReservation={selectedReservation}
           formData={formData}
@@ -273,9 +305,41 @@ const GuestRes = () => {
             loadReservation(updatedReservation);
           }}
         />
-      )}
-      
-      {selectedReservation && viewMode && (
+      );
+    } else {
+      return (
+        <EditDayoutForm
+          selectedReservation={selectedReservation}
+          formData={formData}
+          setFormData={setFormData}
+          persons={persons}
+          setPersons={setPersons}
+          selectedPackages={selectedPackages}
+          setSelectedPackages={setSelectedPackages}
+          selectedCountry={selectedCountry}
+          setSelectedCountry={setSelectedCountry}
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
+          existingFiles={existingFiles}
+          onDeleteReservation={handleDeleteReservation}
+          onSuccess={(message) => setSuccess(message)}
+          onError={(message) => setError(message)}
+          onReservationUpdate={(updatedReservation) => {
+            setAllReservations(allReservations.map(res => 
+              res._id === updatedReservation._id ? updatedReservation : res
+            ));
+            loadReservation(updatedReservation);
+          }}
+        />
+      );
+    }
+  };
+
+  const renderViewDetails = () => {
+    if (!selectedReservation) return null;
+
+    if (selectedReservation.reservationType === 'room') {
+      return (
         <ViewReservationDetails
           selectedReservation={selectedReservation}
           formData={formData}
@@ -287,7 +351,89 @@ const GuestRes = () => {
           onError={(message) => setError(message)}
           onCheckoutComplete={refreshReservations}
         />
-      )}
+      );
+    } else {
+      return (
+        <ViewDayoutDetails
+          selectedReservation={selectedReservation}
+          formData={formData}
+          packageDetails={packageDetails}
+          paymentHistory={paymentHistory}
+          setPaymentHistory={setPaymentHistory}
+          onBackToEdit={() => setViewMode(false)}
+          onSuccess={(message) => setSuccess(message)}
+          onError={(message) => setError(message)}
+          onCheckoutComplete={refreshReservations}
+        />
+      );
+    }
+  };
+
+  return (
+    <div className="edit-reservation-container">
+      <h1 className="page-title">Manage Reservations</h1>
+      
+      {/* Type Filter */}
+      <div className="mb-3">
+        <div className="btn-group" role="group" aria-label="Reservation type filter">
+          <input
+            type="radio"
+            className="btn-check"
+            name="filterType"
+            id="all"
+            checked={filterType === "all"}
+            onChange={() => setFilterType("all")}
+          />
+          <label className="btn btn-outline-primary" htmlFor="all">
+            All Reservations
+          </label>
+
+          <input
+            type="radio"
+            className="btn-check"
+            name="filterType"
+            id="room"
+            checked={filterType === "room"}
+            onChange={() => setFilterType("room")}
+          />
+          <label className="btn btn-outline-success" htmlFor="room">
+            Room Reservations
+          </label>
+
+          <input
+            type="radio"
+            className="btn-check"
+            name="filterType"
+            id="dayOut"
+            checked={filterType === "dayOut"}
+            onChange={() => setFilterType("dayOut")}
+          />
+          <label className="btn btn-outline-info" htmlFor="dayOut">
+            Day-Out Reservations
+          </label>
+        </div>
+      </div>
+      
+      <SearchSection
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        entriesPerPage={entriesPerPage}
+        setEntriesPerPage={setEntriesPerPage}
+        error={error}
+        success={success}
+        displayedReservations={displayedReservations}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        isLoading={isLoading}
+        selectedReservation={selectedReservation}
+        viewMode={viewMode}
+        loadReservation={loadReservation}
+        viewReservation={viewReservation}
+      />
+      
+      {selectedReservation && !viewMode && renderEditForm()}
+      
+      {selectedReservation && viewMode && renderViewDetails()}
     </div>
   );
 };

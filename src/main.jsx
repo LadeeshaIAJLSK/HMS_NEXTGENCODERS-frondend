@@ -25,8 +25,12 @@ import FormSection from './components/reception/Formsection1.jsx';
 import Reservation1 from './pages/Departments/Reception/DNReservations/Reservation1.jsx';
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
 import GuestRes from './components/reception/Formedit/GuestRes.jsx';
-import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
+
 import EditReservation1 from './pages/Departments/Reception/DNReservations/EditReservation1.jsx';
+import DayoutReservationpage from './pages/Departments/Reception/DOReservations/DayoutReservationpage.jsx';
+import DayoutReservation from './components/reception/Dayout/DayoutReservation.jsx';
+import Recepdashboardpage from './pages/Departments/Reception/Dashboardrecep/Recepdashboard.jsx'
+
 
 
 
@@ -34,12 +38,15 @@ import CreatePackages from './components/reception/Dayout/CreatePackages.jsx';
 import DeletePackages from './components/reception/Dayout/DeletePackages.jsx';
 import EditPackages from './components/reception/Dayout/EditPackages.jsx';
 import PackageHome from './components/reception/Dayout/PackageHome.jsx';
-import HotelDash from './components/reception/Dashboard/HotelDash.jsx';
+
+import Packagespage from './pages/Departments/Reception/DOReservations/packagespage.jsx';
 
 
 
 
 
+
+//resturent here
 import ResCategories from "./pages/Departments/Restaurant/Categories/ResCategories.jsx";
 import Products from "./pages/Departments/Restaurant/Products/Products";
 import Analytics from "./pages/Departments/Restaurant/Analytics/Analytics.jsx";
@@ -87,9 +94,14 @@ createRoot(document.getElementById('root')).render(
         <Route path="/page1"  element={<Reservation1 />} />
         <Route path="/rooms" element={<Rooms/>} />
         <Route path="/guest" element={<GuestRes />} />
-        <Route path="/dashboardreception" element={<Fulldashboard />} />
+        
         <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
-        <Route path="/hdash" element={<HotelDash />} />
+        <Route path="/dayout" element={<DayoutReservation />} />
+        <Route path="/dayout-create" element={<DayoutReservationpage />} /> {/* Route for DayoutReservationpage component */}
+        <Route path="/dayout-packages" element={<Packagespage />} /> {/* Route for packagespage component */}
+        <Route path="/recepdash" element={<Recepdashboardpage/>} />
+       
+     
         
         {/* Restaurant Routes */}
 

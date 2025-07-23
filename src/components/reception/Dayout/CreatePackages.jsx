@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import './Createpackeages.css'; // Import your CSS for styling
 
 export default class CreatePackages extends Component {
     constructor(props) {

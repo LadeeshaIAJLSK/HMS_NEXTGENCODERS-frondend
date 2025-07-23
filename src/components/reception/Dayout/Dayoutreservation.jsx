@@ -1,422 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { countries } from '../FormSection1/countries.jsx'; // Adjust the import path as necessary   
+import React from 'react';
+import { countries } from "../FormSection1/countries";
+import useDayoutForm from './useDayoutForm';
+import './DayoutReservation.css';
 
-const DayForm = () => {
-  const fileInputRef = useRef(null);
-  
-  const [formData, setFormData] = useState({
-    // Add reservation type
-    reservationType: "overnight", // "overnight" or "dayOut"
-    
-    // Existing fields (same for both types)
-    checkIn: "",
-    checkOut: "",
-    duration: "",
-    adults: "1",
-    kids: "0",
-    firstName: "",
-    mobile: "",
-    email: "",
-    middleName: "",
-    surname: "",
-    dob: "",
-    address: "",
-    city: "",
-    gender: "",
-    idType: "",
-    idNumber: "",
-    customerId: "",
-    advancePayment: "",
-    paymentMethod: "",
-    paymentNotes: "",
-    totalAmount: 0,
-    
-    // NEW: Day-out specific fields
-    dayOutDate: "", // Date for day-out
-    startTime: "",  // Start time for day-out
-    endTime: ""     // End time for day-out
-  });
-
-  const [customerType, setCustomerType] = useState("new");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [persons, setPersons] = useState([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
-  
-  // Existing room states
-  const [rooms, setRooms] = useState([]);
-  const [selectedRooms, setSelectedRooms] = useState([]);
-  const [roomTypeFilter, setRoomTypeFilter] = useState("");
-  const [roomClassFilter, setRoomClassFilter] = useState("");
-  
-  // NEW: Package states
-  const [packages, setPackages] = useState([]);
-  const [selectedPackages, setSelectedPackages] = useState([]);
-  const [packageCategoryFilter, setPackageCategoryFilter] = useState("all");
-  
-  const [searchQuery, setSearchQuery] = useState("");
-  const [uniqueTypes, setUniqueTypes] = useState([]);
-  const [uniqueClasses, setUniqueClasses] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  const [emailError, setEmailError] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-
-  // Fetch rooms (existing function)
-  const fetchRooms = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/api/reservations/available-rooms");
-      const roomsData = response.data.rooms || [];
-      setRooms(roomsData);
-      
-      const types = [...new Set(roomsData.map(room => room.RType).filter(Boolean))];
-      const classes = [...new Set(roomsData.map(room => room.RClass).filter(Boolean))];
-      setUniqueTypes(types);
-      setUniqueClasses(classes);
-    } catch (error) {
-      console.error("Error fetching rooms:", error);
-      setRooms([]);
-    }
-  };
-
-  // NEW: Fetch packages function
-  const fetchPackages = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/api/packages");
-      setPackages(response.data || []);
-    } catch (error) {
-      console.error("Error fetching packages:", error);
-      setPackages([]);
-    }
-  };
-
-  // Calculate total amount for ROOMS (overnight)
-  const calculateRoomTotalAmount = () => {
-    if (selectedRooms.length === 0 || !formData.duration) return 0;
-    
-    const selectedRoomObjects = rooms.filter(room => 
-      selectedRooms.includes(room.RoomNo)
-    );
-    
-    const totalRoomPrice = selectedRoomObjects.reduce((sum, room) => {
-      const roomPrice = room.RPrice || room.Price || 0;
-      return sum + roomPrice;
-    }, 0);
-    
-    return totalRoomPrice * parseInt(formData.duration);
-  };
-
-  // NEW: Calculate total amount for PACKAGES (day-out)
-  const calculatePackageTotalAmount = () => {
-    if (selectedPackages.length === 0) return 0;
-    
-    const selectedPackageObjects = packages.filter(pkg => 
-      selectedPackages.includes(pkg._id)
-    );
-    
-    const adultsCount = parseInt(formData.adults) || 0;
-    const kidsCount = parseInt(formData.kids) || 0;
-    const totalPersons = adultsCount + kidsCount;
-    
-    return selectedPackageObjects.reduce((sum, pkg) => {
-      return sum + (pkg.pricePerChild * totalPersons);
-    }, 0);
-  };
-
-  // Calculate total amount based on reservation type
-  const calculateTotalAmount = () => {
-    if (formData.reservationType === "overnight") {
-      return calculateRoomTotalAmount();
-    } else {
-      return calculatePackageTotalAmount();
-    }
-  };
-
-  // Update total amount when selections change
-  useEffect(() => {
-    const totalAmount = calculateTotalAmount();
-    setFormData(prev => ({ ...prev, totalAmount }));
-  }, [selectedRooms, selectedPackages, formData.duration, formData.adults, formData.kids, formData.reservationType, rooms, packages]);
-
-  // Fetch data when reservation type changes
-  useEffect(() => {
-    if (formData.reservationType === "overnight") {
-      fetchRooms();
-    } else {
-      fetchPackages();
-    }
-  }, [formData.reservationType]);
-
-  // Handle reservation type change
-  const handleReservationTypeChange = (type) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      reservationType: type,
-      totalAmount: 0
-    }));
-    
-    // Clear selections when switching types
-    setSelectedRooms([]);
-    setSelectedPackages([]);
-  };
-
-  // Existing duration calculation for overnight
-  useEffect(() => {
-    if (formData.reservationType === "overnight") {
-      const { checkIn, checkOut } = formData;
-      if (checkIn && checkOut) {
-        const start = new Date(checkIn);
-        const end = new Date(checkOut);
-        const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-        setFormData(prev => ({ ...prev, duration: diff > 0 ? diff : "" }));
-      }
-    }
-  }, [formData.checkIn, formData.checkOut, formData.reservationType]);
-
-  // NEW: Duration calculation for day-out (in hours)
-  useEffect(() => {
-    if (formData.reservationType === "dayOut") {
-      const { startTime, endTime } = formData;
-      if (startTime && endTime) {
-        const start = new Date(`${formData.dayOutDate}T${startTime}`);
-        const end = new Date(`${formData.dayOutDate}T${endTime}`);
-        const diff = Math.ceil((end - start) / (1000 * 60 * 60)); // Hours
-        setFormData(prev => ({ ...prev, duration: diff > 0 ? diff : "" }));
-      }
-    }
-  }, [formData.dayOutDate, formData.startTime, formData.endTime, formData.reservationType]);
-
-  const handleCustomerSearch = async () => {
-    if (!searchTerm.trim()) return;
-    
-    try {
-      const response = await axios.get(`http://localhost:8000/api/reservations/search?term=${searchTerm}`);
-      setSearchResults(response.data);
-      setShowSearchResults(true);
-    } catch (error) {
-      console.error("Error searching customers:", error);
-      alert("Error searching customers");
-    }
-  };
-
-  const handleCustomerSelect = (customer) => {
-    setFormData({
-      ...formData,
-      customerId: customer._id,
-      firstName: customer.firstName,
-      middleName: customer.middleName || "",
-      surname: customer.surname || "",
-      mobile: customer.mobile,
-      email: customer.email || "",
-      dob: customer.dob || "",
-      address: customer.address || "",
-      city: customer.city || "",
-      gender: customer.gender || "",
-    });
-    
-    if (customer.country) {
-      const country = countries.find(c => c.label === customer.country);
-      if (country) setSelectedCountry(country);
-    }
-    
-    setShowSearchResults(false);
-  };
-
-  useEffect(() => {
-    if (selectedCountry) {
-      setFormData(prev => ({
-        ...prev,
-        mobile: selectedCountry.value + " " + (prev.mobile.split(' ')[1] || ""),
-      }));
-    }
-  }, [selectedCountry]);
-
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedFiles(files);
-  };
-
-  const handleFormChange = (e) => {
-    const { id, name, value } = e.target;
-    const key = id || name;
-
-    setFormData(prev => ({ ...prev, [key]: value }));
-
-    if (key === "email") {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      setEmailError(!emailPattern.test(value));
-    }
-  };
-
-  const handleAddPerson = () => {
-    setPersons([...persons, { name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
-  };
-
-  const handleRemovePerson = (index) => {
-    if (persons.length > 1) {
-      const updatedPersons = [...persons];
-      updatedPersons.splice(index, 1);
-      setPersons(updatedPersons);
-    }
-  };
-
-  const handlePersonChange = (index, field, value) => {
-    const updatedPersons = [...persons];
-    updatedPersons[index][field] = value;
-    setPersons(updatedPersons);
-  };
-
-  // Handle room selection (existing)
-  const handleRoomSelect = (roomNo) => {
-    setSelectedRooms(prev => 
-      prev.includes(roomNo) 
-        ? prev.filter(r => r !== roomNo) 
-        : [...prev, roomNo]
-    );
-  };
-
-  // NEW: Handle package selection
-  const handlePackageSelect = (packageId) => {
-    setSelectedPackages(prev => 
-      prev.includes(packageId) 
-        ? prev.filter(p => p !== packageId) 
-        : [...prev, packageId]
-    );
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validation based on reservation type
-    if (formData.reservationType === "overnight") {
-      if (selectedRooms.length === 0) {
-        alert("Please select at least one room");
-        return;
-      }
-      if (!formData.duration) {
-        alert("Please select valid check-in and check-out dates");
-        return;
-      }
-    } else {
-      if (selectedPackages.length === 0) {
-        alert("Please select at least one package");
-        return;
-      }
-      if (!formData.dayOutDate || !formData.startTime || !formData.endTime) {
-        alert("Please select date and time for day-out");
-        return;
-      }
-    }
-    
-    try {
-      const formDataToSend = new FormData();
-    
-      // Add all form data
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
-      
-      if (customerType === "existing" && formData.customerId) {
-        formDataToSend.append('customerId', formData.customerId);
-      }
-      
-      formDataToSend.append('otherPersons', JSON.stringify(persons));
-      
-      // Add selections based on type
-      if (formData.reservationType === "overnight") {
-        formDataToSend.append('selectedRooms', JSON.stringify(selectedRooms));
-      } else {
-        formDataToSend.append('selectedPackages', JSON.stringify(selectedPackages));
-      }
-      
-      if (formData.advancePayment) {
-        formDataToSend.append('paidAmount', formData.advancePayment);
-      }
-      
-      selectedFiles.forEach((file) => {
-        formDataToSend.append('idFiles', file);
-      });
-      
-      if (selectedCountry) {
-        formDataToSend.append('country', selectedCountry.label);
-        formDataToSend.append('countryCode', selectedCountry.value);
-      }
-
-      await axios.post("http://localhost:8000/api/reservations", formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      alert(`${formData.reservationType === "overnight" ? "Room" : "Package"} reservation submitted successfully! ✅`);
-      
-      // Reset form
-      setFormData({
-        reservationType: "overnight",
-        checkIn: "",
-        checkOut: "",
-        duration: "",
-        adults: "1",
-        kids: "0",
-        firstName: "",
-        mobile: "",
-        email: "",
-        middleName: "",
-        surname: "",
-        dob: "",
-        address: "",
-        city: "",
-        gender: "",
-        idType: "",
-        idNumber: "",
-        customerId: "",
-        advancePayment: "",
-        paymentMethod: "",
-        paymentNotes: "",
-        totalAmount: 0,
-        dayOutDate: "",
-        startTime: "",
-        endTime: ""
-      });
-      setPersons([{ name: '', gender: '', age: '', address: '', idType: '', idNo: '' }]);
-      setSelectedCountry(null);
-      setSelectedFiles([]);
-      setSelectedRooms([]);
-      setSelectedPackages([]);
-      setCustomerType("new");
-      setSearchTerm("");
-      setSearchResults([]);
-      setShowSearchResults(false);
-      
-      await fetchRooms();
-      
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      
-    } catch (error) {
-      console.error("Error saving data:", error);
-      alert("Error submitting reservation. Please try again. ❌");
-    }
-  };
-
-  return {
+const DayoutReservation = () => {
+  const {
     formData,
     customerType,
     searchTerm,
     searchResults,
     showSearchResults,
     persons,
-    rooms,
-    selectedRooms,
-    packages, // NEW
-    selectedPackages, // NEW
-    roomTypeFilter,
-    roomClassFilter,
-    packageCategoryFilter, // NEW
+    packages,
+    selectedPackages,
+    packageCategoryFilter,
     searchQuery,
-    uniqueTypes,
-    uniqueClasses,
+    uniqueCategories,
     selectedCountry,
     emailError,
     selectedFiles,
@@ -430,19 +29,628 @@ const DayForm = () => {
     handleAddPerson,
     handleRemovePerson,
     handlePersonChange,
-    handleRoomSelect,
-    handlePackageSelect, // NEW
-    handleReservationTypeChange, // NEW
-    setRoomTypeFilter,
-    setRoomClassFilter,
-    setPackageCategoryFilter, // NEW
+    handlePackageSelect,
+    setPackageCategoryFilter,
     setSearchQuery,
     handleFileChange,
     handleSubmit,
-    fetchRooms,
-    fetchPackages, // NEW
     calculateTotalAmount
+  } = useDayoutForm();
+
+  // Helper function to format date for HTML input
+  const formatDateForInput = (dateValue) => {
+    if (!dateValue) return '';
+    
+    try {
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return '';
+      
+      // Convert to YYYY-MM-DD format
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return '';
+    }
   };
+
+  const filteredPackages = packages.filter(pkg => {
+    const matchesCategory = packageCategoryFilter === "all" || pkg.category === packageCategoryFilter;
+    const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         pkg.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  return (
+    <div className="dayout-form-scope">
+      <div className="dayout-container">
+        <h2 className="dayout-main-heading"> Day Out Reservation</h2>
+        
+        <form onSubmit={handleSubmit} className="dayout-form">
+          {/* Date and Guest Information */}
+          <div className="dayout-form-section">
+            <div className="dayout-form-container">
+              <h5 className="dayout-form-heading">Visit Information</h5>
+              <div className="dayout-form-grid">
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Visit Date *</label>
+                  <input
+                    type="date"
+                    className="dayout-form-input"
+                    id="checkIn"
+                    value={formatDateForInput(formData.checkIn)}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Start Time *</label>
+                  <input
+                    type="time"
+                    className="dayout-form-input"
+                    id="startTime"
+                    value={formData.startTime || ''}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">End Time *</label>
+                  <input
+                    type="time"
+                    className="dayout-form-input"
+                    id="endTime"
+                    value={formData.endTime || ''}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Adults *</label>
+                  <select
+                    className="dayout-form-select"
+                    id="adults"
+                    value={formData.adults}
+                    onChange={handleFormChange}
+                    required
+                  >
+                    {[...Array(10)].map((_, i) => (
+                      <option key={`adults-${i + 1}`} value={i + 1}>{i + 1}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Kids</label>
+                  <select
+                    className="dayout-form-select"
+                    id="kids"
+                    value={formData.kids}
+                    onChange={handleFormChange}
+                  >
+                    {[...Array(11)].map((_, i) => (
+                      <option key={`kids-${i}`} value={i}>{i}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Customer Type Selection */}
+          <div className="dayout-form-section">
+            <div className="dayout-form-container">
+              <h5 className="dayout-form-heading"> Customer Information</h5>
+              
+              <div className="dayout-customer-type-options">
+                <label className="dayout-radio-label">
+                  <input
+                    type="radio"
+                    name="customerType"
+                    checked={customerType === "new"}
+                    onChange={() => setCustomerType("new")}
+                    className="dayout-radio-input"
+                  />
+                  <span>New Customer</span>
+                </label>
+
+                <label className="dayout-radio-label">
+                  <input
+                    type="radio"
+                    name="customerType"
+                    checked={customerType === "existing"}
+                    onChange={() => setCustomerType("existing")}
+                    className="dayout-radio-input"
+                  />
+                  <span>Existing Customer</span>
+                </label>
+              </div>
+
+              {/* Existing Customer Search */}
+              {customerType === "existing" && (
+                <div className="dayout-search-section">
+                  <div className="dayout-search-controls">
+                    <input
+                      type="text"
+                      className="dayout-form-input"
+                      placeholder="Search by name, mobile, or email..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="dayout-btn dayout-btn-info"
+                      onClick={handleCustomerSearch}
+                    >
+                       Search
+                    </button>
+                  </div>
+                  
+                  {/* Search Results */}
+                  {showSearchResults && (
+                    <div className="dayout-search-results">
+                      <h6>Search Results:</h6>
+                      {searchResults.length === 0 ? (
+                        <p>No customers found</p>
+                      ) : (
+                        <div className="dayout-results-list">
+                          {searchResults.map((customer) => (
+                            <button
+                              key={customer._id}
+                              type="button"
+                              className="dayout-result-item"
+                              onClick={() => handleCustomerSelect(customer)}
+                            >
+                              <strong>{customer.firstName} {customer.surname}</strong>
+                              <br />
+                              📱 {customer.mobile} | 📧 {customer.email}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Customer Details Form */}
+              <div className="dayout-form-grid">
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">First Name *</label>
+                  <input
+                    type="text"
+                    className="dayout-form-input"
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Middle Name</label>
+                  <input
+                    type="text"
+                    className="dayout-form-input"
+                    id="middleName"
+                    value={formData.middleName}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Surname</label>
+                  <input
+                    type="text"
+                    className="dayout-form-input"
+                    id="surname"
+                    value={formData.surname}
+                    onChange={handleFormChange}
+                  />
+                </div>
+                
+                <div className="dayout-form-group dayout-mobile-group">
+                  <label className="dayout-form-label">Mobile *</label>
+                  <div className="dayout-input-group">
+                    <select
+                      className="dayout-form-select dayout-country-select"
+                      value={selectedCountry?.value || ''}
+                      onChange={(e) => {
+                        const country = countries.find(c => c.value === e.target.value);
+                        setSelectedCountry(country);
+                      }}
+                    >
+                      <option value="">Country</option>
+                      {countries.map((country, index) => (
+                        <option key={`country-${index}-${country.value}`} value={country.value}>
+                          {country.label}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      className="dayout-form-input"
+                      id="mobile"
+                      value={formData.mobile.split(' ')[1] || formData.mobile}
+                      onChange={handleFormChange}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Email</label>
+                  <input
+                    type="email"
+                    className={`dayout-form-input ${emailError ? 'dayout-form-input-error' : ''}`}
+                    id="email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                  />
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Date of Birth</label>
+                  <input
+                    type="date"
+                    className="dayout-form-input"
+                    id="dob"
+                    value={formatDateForInput(formData.dob)}
+                    onChange={handleFormChange}
+                  />
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Gender</label>
+                  <select
+                    className="dayout-form-select"
+                    id="gender"
+                    value={formData.gender}
+                    onChange={handleFormChange}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">City</label>
+                  <input
+                    type="text"
+                    className="dayout-form-input"
+                    id="city"
+                    value={formData.city}
+                    onChange={handleFormChange}
+                  />
+                </div>
+                
+                <div className="dayout-form-group dayout-form-group-full">
+                  <label className="dayout-form-label">Address *</label>
+                  <textarea
+                    className="dayout-form-textarea"
+                    id="address"
+                    value={formData.address}
+                    onChange={handleFormChange}
+                    rows="2"
+                    required
+                  />
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">ID Type *</label>
+                  <select
+                    className="dayout-form-select"
+                    id="idType"
+                    value={formData.idType}
+                    onChange={handleFormChange}
+                    required
+                  >
+                    <option value="">Select ID Type</option>
+                    <option value="Passport">Passport</option>
+                    <option value="Driving License">Driving License</option>
+                    <option value="National ID">National ID</option>
+                    <option value="Aadhar Card">Aadhar Card</option>
+                    <option value="Voter ID">Voter ID</option>
+                  </select>
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">ID Number *</label>
+                  <input
+                    type="text"
+                    className="dayout-form-input"
+                    id="idNumber"
+                    value={formData.idNumber}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+                
+                <div className="dayout-form-group dayout-form-group-full">
+                  <label className="dayout-form-label">Upload ID Files</label>
+                  <input
+                    type="file"
+                    className="dayout-form-input dayout-file-input"
+                    ref={fileInputRef}
+                    multiple
+                    accept="image/*,.pdf"
+                    onChange={handleFileChange}
+                  />
+                  <div className="dayout-form-text">
+                    Upload images or PDF files of identification documents
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Other Persons */}
+          <div className="dayout-form-section">
+            <div className="dayout-form-container">
+              <div className="dayout-section-header">
+                <h5 className="dayout-form-heading"> Other Persons</h5>
+                <button
+                  type="button"
+                  className="dayout-btn dayout-btn-success"
+                  onClick={handleAddPerson}
+                >
+                  ➕ 
+                </button>
+              </div>
+              
+              {persons.map((person, index) => (
+                <div key={`person-${index}`} className="dayout-person-card">
+                  <div className="dayout-person-header">
+                    <h6>Person {index + 1}</h6>
+                    {persons.length > 1 && (
+                      <button
+                        type="button"
+                        className="dayout-btn dayout-btn-danger"
+                        onClick={() => handleRemovePerson(index)}
+                      >
+                        ✖️
+                      </button>
+                    )}
+                  </div>
+                  <div className="dayout-form-grid">
+                    <div className="dayout-form-group">
+                      <label className="dayout-form-label">Name</label>
+                      <input
+                        type="text"
+                        className="dayout-form-input"
+                        value={person.name}
+                        onChange={(e) => handlePersonChange(index, 'name', e.target.value)}
+                      />
+                    </div>
+                    <div className="dayout-form-group">
+                      <label className="dayout-form-label">Gender</label>
+                      <select
+                        className="dayout-form-select"
+                        value={person.gender}
+                        onChange={(e) => handlePersonChange(index, 'gender', e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div className="dayout-form-group">
+                      <label className="dayout-form-label">Age</label>
+                      <input
+                        type="number"
+                        className="dayout-form-input"
+                        value={person.age}
+                        onChange={(e) => handlePersonChange(index, 'age', e.target.value)}
+                      />
+                    </div>
+                    <div className="dayout-form-group">
+                      <label className="dayout-form-label">ID Type</label>
+                      <select
+                        className="dayout-form-select"
+                        value={person.idType}
+                        onChange={(e) => handlePersonChange(index, 'idType', e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Driving License">Driving License</option>
+                        <option value="National ID">National ID</option>
+                        <option value="Aadhar Card">Aadhar Card</option>
+                        <option value="Voter ID">Voter ID</option>
+                      </select>
+                    </div>
+                    <div className="dayout-form-group">
+                      <label className="dayout-form-label">ID Number</label>
+                      <input
+                        type="text"
+                        className="dayout-form-input"
+                        value={person.idNo}
+                        onChange={(e) => handlePersonChange(index, 'idNo', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Package Selection */}
+          <div className="dayout-form-section">
+            <div className="dayout-form-container">
+              <h5 className="dayout-form-heading"> Package Selection</h5>
+              
+              {/* Package Filters */}
+              <div className="dayout-filter-section">
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Search Packages</label>
+                  <input
+                    type="text"
+                    className="dayout-form-input"
+                    placeholder="Search packages..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Category</label>
+                  <select
+                    className="dayout-form-select"
+                    value={packageCategoryFilter}
+                    onChange={(e) => setPackageCategoryFilter(e.target.value)}
+                  >
+                    <option value="all">All Categories</option>
+                    {uniqueCategories.map((category, index) => (
+                      <option key={`category-${index}-${category}`} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Selected Packages</label>
+                  <div className="dayout-selected-count">
+                    {selectedPackages.length} package(s) selected
+                  </div>
+                </div>
+              </div>
+
+              {/* Available Packages */}
+              <div className="dayout-packages-grid">
+                {filteredPackages.length === 0 ? (
+                  <div className="dayout-no-packages">
+                    <p>No packages available</p>
+                  </div>
+                ) : (
+                  filteredPackages.map(pkg => (
+                    <div 
+                      key={pkg._id} 
+                      className={`dayout-package-card ${selectedPackages.includes(pkg._id) ? 'dayout-package-selected' : ''}`}
+                      onClick={() => handlePackageSelect(pkg._id)}
+                    >
+                      <div className="dayout-package-header">
+                        <h6 className="dayout-package-title">{pkg.name}</h6>
+                        <input
+                          type="checkbox"
+                          className="dayout-checkbox"
+                          checked={selectedPackages.includes(pkg._id)}
+                          onChange={() => {}}
+                        />
+                      </div>
+                      <p className="dayout-package-description">{pkg.description}</p>
+                      <p className="dayout-package-category">
+                        <strong>Category:</strong> {pkg.category}
+                      </p>
+                      <p className="dayout-package-price">
+                        <strong>Rs {pkg.pricePerChild}</strong> per child
+                      </p>
+                      {pkg.features && pkg.features.length > 0 && (
+                        <div className="dayout-package-features">
+                          <small>Features:</small>
+                          <ul>
+                            {pkg.features.slice(0, 2).map((feature, index) => (
+                              <li key={`feature-${index}`}>• {feature}</li>
+                            ))}
+                            {pkg.features.length > 2 && (
+                              <li>... +{pkg.features.length - 2} more</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Information */}
+          <div className="dayout-form-section">
+            <div className="dayout-form-container">
+              <h5 className="dayout-form-heading">Payment Information</h5>
+              <div className="dayout-form-grid">
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Total Amount</label>
+                  <div className="dayout-input-group">
+                    <span className="dayout-input-prefix">Rs</span>
+                    <input
+                      type="number"
+                      className="dayout-form-input dayout-readonly"
+                      value={formData.totalAmount}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Advance Payment</label>
+                  <div className="dayout-input-group">
+                    <span className="dayout-input-prefix">Rs</span>
+                    <input
+                      type="number"
+                      className="dayout-form-input"
+                      id="advancePayment"
+                      value={formData.advancePayment}
+                      onChange={handleFormChange}
+                      min="0"
+                      max={formData.totalAmount}
+                    />
+                  </div>
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Payment Method</label>
+                  <select
+                    className="dayout-form-select"
+                    id="paymentMethod"
+                    value={formData.paymentMethod}
+                    onChange={handleFormChange}
+                  >
+                    <option value="">Select Payment Method</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Payment Notes</label>
+                  <textarea
+                    className="dayout-form-textarea"
+                    id="paymentNotes"
+                    value={formData.paymentNotes}
+                    onChange={handleFormChange}
+                    rows="2"
+                    placeholder="Any additional payment notes..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="dayout-form-actions">
+            <button type="button" className="dayout-btn dayout-btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" className="dayout-btn dayout-btn-primary">
+               Create Day Out Reservation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
-export default DayForm;
+export default DayoutReservation;

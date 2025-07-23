@@ -81,22 +81,22 @@ export default function Analytics() {
           </div>
           
           <div className="global-filters">
-            <div className="filter-group">
+            <div className="resfilter-group">
               <label>Select Date</label>
               <input
                 type="date"
                 value={globalDate}
                 onChange={(e) => setGlobalDate(e.target.value)}
-                className="filter-input"
+                className="resfilter-input"
               />
             </div>
             
-            <div className="filter-group">
+            <div className="resfilter-group">
               <label>Select Order Type</label>
               <select
                 value={globalOrderType}
                 onChange={(e) => setGlobalOrderType(e.target.value)}
-                className="filter-input"
+                className="resfilter-input"
               >
                 <option value="all">All Orders</option>
                 <option value="Take Away">Take Away</option>
@@ -109,7 +109,7 @@ export default function Analytics() {
         {/* Middle Section - Most Sold Item */}
         <div className="most-sold-section">
           <h2>Most Sold Item of Today</h2>
-          <div className="table-container">
+          <div className="restable-container">
             <table className="analytics-table">
               <thead>
                 <tr>
@@ -144,22 +144,22 @@ export default function Analytics() {
         {/* Lower Section - Detailed Sales Breakdown */}
         <div className="sales-breakdown-section">
           <div className="breakdown-filters">
-            <div className="filter-group">
+            <div className="resfilter-group">
               <label>Select Date</label>
               <input
                 type="date"
                 value={breakdownDate}
                 onChange={(e) => setBreakdownDate(e.target.value)}
-                className="filter-input"
+                className="resfilter-input"
               />
             </div>
             
-            <div className="filter-group">
+            <div className="resfilter-group">
               <label>Filter By</label>
               <select
                 value={breakdownFilter}
                 onChange={(e) => setBreakdownFilter(e.target.value)}
-                className="filter-input"
+                className="resfilter-input"
               >
                 <option value="all">All Items</option>
                 <option value="name">By Name</option>
@@ -169,7 +169,7 @@ export default function Analytics() {
             </div>
           </div>
 
-          <div className="table-container">
+          <div className="restable-container">
             <table className="analytics-table">
               <thead>
                 <tr>
