@@ -8,7 +8,7 @@ import {
 } from '@stripe/react-stripe-js';
 
 // Initialize Stripe (replace with your publishable key)
-const stripePromise = loadStripe('pk_test_51RI1S8GdtmB2RaQx7LDN1Xp7UogMW4eYl572BvgGoQdNSlknPcm2y3ipVAJYFbZcTjpQ8xfD83e0qZGwvANVU0Bz00iBIjAqCV');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 // Card Input Component
 const CardPaymentForm = ({ onPaymentSuccess, amount }) => {
