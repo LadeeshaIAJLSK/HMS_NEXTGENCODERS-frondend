@@ -45,7 +45,7 @@ const HMSHome = () => {
       ],
       image:
         "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3",
-      price: 399,
+      price: 39,
     },
     {
       id: 1,
@@ -61,7 +61,7 @@ const HMSHome = () => {
       ],
       image:
         "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3",
-      price: 299,
+      price: 29,
     },
     {
       id: 2,
@@ -77,7 +77,7 @@ const HMSHome = () => {
       ],
       image:
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3",
-      price: 249,
+      price: 24,
     },
     {
       id: 3,
@@ -92,7 +92,7 @@ const HMSHome = () => {
       ],
       image:
         "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?ixlib=rb-4.0.3&fit=crop&w=800&h=600",
-      price: 199,
+      price: 19,
     },
     {
       id: 4,
@@ -108,7 +108,7 @@ const HMSHome = () => {
       ],
       image:
         "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3",
-      price: 179,
+      price: 14,
     },
   ];
 
