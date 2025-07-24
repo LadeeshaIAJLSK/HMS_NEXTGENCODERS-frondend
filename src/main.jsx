@@ -13,7 +13,6 @@ import RoomHome from "./pages/Departments/Owner/OwnRooms/RoomHome.jsx";
 import CreateRooms from "./pages/Departments/Owner/OwnRooms/CreateRooms";
 import EditRooms from "./pages/Departments/Owner/OwnRooms/EditRooms";
 import RoomDetails from "./pages/Departments/Owner/OwnRooms/RoomDetails"; 
-import FormSection from './components/reception/Formsection1.jsx';
 
 
 
@@ -22,13 +21,18 @@ import FormSection from './components/reception/Formsection1.jsx';
 
 import SettingsPage from "./pages/Departments/Owner/OwnSettings/OwnSettings.jsx";
 import TransactionReport from "./pages/Departments/Owner/OwnReports/Reports.jsx";
+
+
+
 //reception goes here
+import FormSection from './components/reception/Formsection1.jsx';
 import Reservation1 from './pages/Departments/Reception/DNReservations/Reservation1.jsx';
 import Rooms from './pages/Departments/Reception/Rooms/Rooms.jsx';
 import GuestRes from './components/reception/Formedit/GuestRes.jsx';
-import Fulldashboard from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
+
 import EditReservation1 from './pages/Departments/Reception/DNReservations/EditReservation1.jsx';
 import DayoutReservationpage from './pages/Departments/Reception/DOReservations/DayoutReservationpage.jsx';
+import Recepdashboardpage from './pages/Departments/Reception/Dashboard/Fulldashboard.jsx';
 
 
 
@@ -94,12 +98,14 @@ createRoot(document.getElementById('root')).render(
         <Route path="/page1"  element={<Reservation1 />} />
         <Route path="/rooms" element={<Rooms/>} />
         <Route path="/guest" element={<GuestRes />} />
-        <Route path="/dashboard" element={<Fulldashboard />} />
+        
+        
         <Route path="/edit-reservation" element={<EditReservation1 />} /> {/* Route for EditReservation1 component */}
         
         <Route path="/dayout" element={<DayoutReservation />} />
         <Route path="/dayout-create" element={<DayoutReservationpage />} /> {/* Route for DayoutReservationpage component */}
         <Route path="/dayout-packages" element={<Packagespage />} /> {/* Route for packagespage component */}
+        <Route path="/recepdashboard" element={<Recepdashboardpage />} /> {/* Route for Recepdashboardpage component */}
        
         
         

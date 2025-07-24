@@ -14,7 +14,7 @@ const Ressidebar = () => {
       </div>
       <ul>
         <li>
-          <Link to="/dashboard">📊 Dashboard</Link>
+          <Link to="/recepdashboard">📊 Dashboard</Link>
         </li>
         <li>
           <Link to="/page1">📝 Create Reservation</Link>
@@ -27,6 +27,9 @@ const Ressidebar = () => {
         </li>
         <li>
           <Link to="/dayout-create">📈 DayOut Reservation</Link>
+        </li>
+        <li>
+          <Link to="/dayout-packages">📈 Package management</Link>
         </li>
         <li>
           <Link to="/"><span>⏻</span> Logout </Link>

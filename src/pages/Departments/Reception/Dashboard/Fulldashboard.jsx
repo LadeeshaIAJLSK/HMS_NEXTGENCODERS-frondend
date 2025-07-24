@@ -1,8 +1,8 @@
 import React from "react";
-import Sidebar2 from "../../../../components/reception/recSidebar/Recsidebar";
-import HotelDashboard from "../../../../components/reception/HotelDashboard"; // Adjust the path to your CheckInForm component
+import Sidebar2 from "../../../../components/reception/recSidebar/Recsidebar"; // Adjust the path to your Sidebar component
+import DashboardStats from "../../../../components/reception/Dashboard/DashboardStats"
 
-const Fulldashboard = () => {
+const Recepdashboardpage = () => {
   return (
     <div style={{ 
       display: 'grid',
@@ -13,10 +13,10 @@ const Fulldashboard = () => {
         <Sidebar2/>
       </div>
       <div style={{ padding: '20px' }}>
-        <HotelDashboard/>
+        <DashboardStats/>
       </div>
     </div>
   );
 };
 
-export default Fulldashboard;
+export default Recepdashboardpage;
