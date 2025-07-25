@@ -6,6 +6,22 @@ import './index.css';
 import App from './App.jsx';
 
 
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import HMSHome from "./components/home/HMSHome";
+import { AuthProvider } from "./context/AuthContext";
+import { PackagesProvider } from "./context/PackagesContext";
+import Packages from "./components/packages/Packages";
+import Cart from "./components/packages/Cart";
+import OwnerPackages from "./components/packages/OwnerPackages";
+import PackageManagement from "./components/packages/PackageManagement";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SnackbarProvider } from "notistack";
+
+
 
 
 
@@ -58,15 +74,53 @@ import Dashboard from './pages/Departments/Restaurant/Dashboard/Dashboard.jsx';
 
 
 
-createRoot(document.getElementById('root')).render(
-   <StrictMode>
-    <NotificationProvider>
-      <Router>
-        <Routes>
-        <Route path="/" element={<App />} />
-        
+const queryClient = new QueryClient();
 
-        {/*owner Routes */}
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <PackagesProvider>
+          <NotificationProvider>
+            <SnackbarProvider maxSnack={3} autoHideDuration={2500}>
+              <Router>
+                <div className="min-h-screen bg-gray-100">
+                  <Routes>
+                    {/* Authentication Routes */}
+                    <Route path="/" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/hms-home" element={<HMSHome />} />
+                    <Route
+                    path="/packages"
+                    element={
+                      <ProtectedRoute>
+                        <Packages />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route
+                    path="/my-packages"
+                    element={
+                      <ProtectedRoute>
+                        <OwnerPackages />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/package-management"
+                    element={
+                      <ProtectedRoute>
+                        <PackageManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+
+
+                    {/*owner Routes */}
         <Route path="/rooms/home" element={<RoomHomepage />} />
         <Route path="/ownsettings" element={<OwnsettingsPage />} />
         <Route path="/Transactionreportspage" element={<TransactionReportpage />} />
@@ -77,7 +131,12 @@ createRoot(document.getElementById('root')).render(
 
            {/* Reception Routes */}
 
-            
+            {/* Package Management Routes */}
+                <Route path="/packages" element={<PackageHome />} />
+                <Route path="/packages/add" element={<CreatePackages />} />
+                <Route path="/packages/edit/:id" element={<EditPackages />} />
+                <Route path="/packages/delete/:id" element={<DeletePackages />} />
+
 
         {/* Reception Routes */}
         <Route path="/reception" element={<FormSection />} />
@@ -90,13 +149,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/dayout-create" element={<DayoutReservationpage />} /> {/* Route for DayoutReservationpage component */}
         <Route path="/dayout-packages" element={<Packagespage />} /> {/* Route for packagespage component */}
         <Route path="/recepdash" element={<Recepdashboardpage/>} />
-
-        {/* Package Management Routes */}
-                <Route path="/packages" element={<PackageHome />} />
-                <Route path="/packages/add" element={<CreatePackages />} />
-                <Route path="/packages/edit/:id" element={<EditPackages />} />
-                <Route path="/packages/delete/:id" element={<DeletePackages />} />
-
        
      
         
@@ -110,9 +162,17 @@ createRoot(document.getElementById('root')).render(
             <Route path="/restaurant/analytics" element={<Analytics />} />
 
 
+                    
 
-    </Routes>
-      </Router>
-    </NotificationProvider>
+                    {/* Fallback route */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </div>
+              </Router>
+            </SnackbarProvider>
+          </NotificationProvider>
+        </PackagesProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   </StrictMode>
 );

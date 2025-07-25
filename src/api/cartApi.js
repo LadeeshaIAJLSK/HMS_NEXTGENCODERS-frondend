@@ -10,7 +10,7 @@ export const packages = z.object({
   price: z.string(),
 });
 
-const API_BASE_URL = "http://localhost:8000";
+
 
 export const addToMyCart = async (packages) => {
   console.log("hi" + packages);

@@ -28,16 +28,20 @@ const PackageManagement = () => {
   if (!user) {
     navigate("/login");
   }
+
+  // Fixed handlePackageClick function with debugging
   const handlePackageClick = (packageId) => {
+    console.log("Clicked package ID:", packageId); // Add this for debugging
+    
     switch (packageId) {
       case 5: // Owner Package
-        navigate("/owner-dashboard");
+        navigate("/ownedashboardpg");
         break;
       case 1: // Reception Package
-        navigate("/reception-dashboard");
+        navigate("/recepdash");
         break;
       case 2: // Restaurant Package
-        navigate("/restaurant-dashboard");
+        navigate("/restaurant/dashboard");
         break;
       case 3: // Kitchen Package
         navigate("/kitchen-dashboard");
@@ -46,9 +50,15 @@ const PackageManagement = () => {
         navigate("/housekeeping-dashboard");
         break;
       default:
+        console.warn(`No route defined for package ID: ${packageId}`);
+        // You might want to show a notification or handle this case
+        enqueueSnackbar(`No dashboard available for this package (ID: ${packageId})`, { 
+          variant: "warning" 
+        });
         break;
     }
   };
+
   const { data: ownerEmployeeData, isFetching: isEmployeeDataFetching } =
     useQuery({
       queryKey: ["owner-employee", email],
@@ -80,6 +90,7 @@ const PackageManagement = () => {
   const cartTotalPrice = useMemo(() => {
     return purchasedItemData?.reduce((sum, item) => sum + item.price, 0);
   }, [purchasedItemData]);
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
 
@@ -378,12 +389,16 @@ const PackageManagement = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {purchasedItemData?.map((pkg, index) => (
               <motion.div
-                key={pkg.id}
+                key={`package-${pkg.id}-${index}`} // Fixed: Added unique key
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer group"
-                onClick={() => handlePackageClick(pkg.id)}
+                onClick={() => {
+                  console.log("Package clicked:", pkg); // Debug log
+                  handlePackageClick(pkg.pkgId);
+
+                }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -492,7 +507,7 @@ const PackageManagement = () => {
               <tbody className="text-gray-800 text-sm">
                 {ownerEmployeeData?.map((employee, index) => (
                   <tr
-                    key={employee._id}
+                    key={`employee-${employee._id}`} // Fixed: Added unique key
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-3 border-b">{index + 1}</td>
@@ -503,7 +518,7 @@ const PackageManagement = () => {
                       <div className="flex flex-wrap gap-2">
                         {employee?.role?.map((r, idx) => (
                           <span
-                            key={idx}
+                            key={`role-${employee._id}-${idx}`} // Fixed: Added unique key
                             className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
                           >
                             {r}
