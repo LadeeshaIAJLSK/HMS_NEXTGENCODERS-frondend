@@ -20,6 +20,12 @@ const DayoutReservation = () => {
     emailError,
     selectedFiles,
     fileInputRef,
+    // Popup states
+    showPopup,
+    popupType,
+    popupMessage,
+    handlePopupOk,
+    
     handleFormChange,
     setCustomerType,
     setSearchTerm,
@@ -118,7 +124,7 @@ const DayoutReservation = () => {
   return (
     <div className="dayout-form-scope">
       <div className="dayout-container">
-        <h2 className="dayout-main-heading"> Day Out Reservation</h2>
+        <h2 className="dayout-main-heading">Day Out Reservation</h2>
         
         <form onSubmit={handleSubmit} className="dayout-form">
           {/* Date and Guest Information */}
@@ -197,7 +203,7 @@ const DayoutReservation = () => {
           {/* Customer Type Selection */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading"> Customer Information</h5>
+              <h5 className="dayout-form-heading">Customer Information</h5>
               
               <div className="dayout-customer-type-options">
                 <label className="dayout-radio-label">
@@ -239,7 +245,7 @@ const DayoutReservation = () => {
                       className="dayout-btn dayout-btn-info"
                       onClick={handleCustomerSearch}
                     >
-                       Search
+                      Search
                     </button>
                   </div>
                   
@@ -450,13 +456,13 @@ const DayoutReservation = () => {
           <div className="dayout-form-section">
             <div className="dayout-form-container">
               <div className="dayout-section-header">
-                <h5 className="dayout-form-heading"> Other Persons</h5>
+                <h5 className="dayout-form-heading">Other Persons</h5>
                 <button
                   type="button"
                   className="dayout-btn dayout-btn-success"
                   onClick={handleAddPerson}
                 >
-                  ➕ 
+                  ➕
                 </button>
               </div>
               
@@ -539,7 +545,7 @@ const DayoutReservation = () => {
           {/* Package Selection */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading"> Package Selection</h5>
+              <h5 className="dayout-form-heading">Package Selection</h5>
               
               {/* Package Filters */}
               <div className="dayout-filter-section">
@@ -698,10 +704,33 @@ const DayoutReservation = () => {
               Cancel
             </button>
             <button type="submit" className="dayout-btn dayout-btn-primary">
-               Create Day Out Reservation
+              Create Day Out Reservation
             </button>
           </div>
         </form>
+
+        {/* SUCCESS/ERROR POPUP */}
+        {showPopup && (
+          <div className="success-popup-overlay">
+            <div className="success-popup-content">
+              <div className="success-popup-icon">
+                {popupType === 'success' ? '✅' : '❌'}
+              </div>
+              <h3 className="success-popup-title">
+                {popupType === 'success' ? 'Success!' : 'Error!'}
+              </h3>
+              <p className="success-popup-message">
+                {popupMessage}
+              </p>
+              <button
+                onClick={handlePopupOk}
+                className="success-popup-button"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
