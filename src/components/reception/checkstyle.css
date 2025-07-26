@@ -488,3 +488,62 @@
 .checkin-form-scope .full-width {
   grid-column: 1 / -1;
 }
+
+/* Add these styles to your checkstyle.css file */
+
+.success-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Make sure it's above other elements */
+}
+
+.success-popup-content {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+.success-popup-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.success-popup-title {
+  margin: 15px 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.success-popup-message {
+  margin: 15px 0;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.success-popup-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.success-popup-button:hover {
+  background-color: #0056b3;
+}

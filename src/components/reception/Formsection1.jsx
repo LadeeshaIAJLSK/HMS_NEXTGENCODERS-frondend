@@ -1,6 +1,5 @@
 import React from 'react';
-
-import CheckInInfo from  './FormSection1/CheckInInfo';
+import CheckInInfo from './FormSection1/CheckInInfo';
 import CustomerTypeSection from './FormSection1/CustomerTypeSection';
 import GuestInfo from './FormSection1/GuestInfo';
 import IdCardInfo from './FormSection1/IdCardInfo';
@@ -67,7 +66,7 @@ const FormSection = () => {
           setSearchQuery={form.setSearchQuery}
         />
         
-         <PaymentInfo 
+        <PaymentInfo 
           formData={form.formData}
           handleFormChange={form.handleFormChange}
           errors={form.errors}
@@ -79,6 +78,29 @@ const FormSection = () => {
           </button>
         </div>
       </form>
+
+      {/* ADD THE POPUP HERE - AT THE END OF THE COMPONENT */}
+      {form.showPopup && (
+        <div className="success-popup-overlay">
+          <div className="success-popup-content">
+            <div className="success-popup-icon">
+              {form.popupType === 'success' ? '✅' : '❌'}
+            </div>
+            <h3 className="success-popup-title">
+              {form.popupType === 'success' ? 'Success!' : 'Error!'}
+            </h3>
+            <p className="success-popup-message">
+              {form.popupMessage}
+            </p>
+            <button 
+              onClick={form.handlePopupOk}
+              className="success-popup-button"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

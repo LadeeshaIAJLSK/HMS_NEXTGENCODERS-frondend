@@ -57,6 +57,57 @@ const DayoutReservation = () => {
     }
   };
 
+  // Handle country selection and update mobile field with country code
+  const handleCountryChange = (e) => {
+    const country = countries.find(c => c.value === e.target.value);
+    setSelectedCountry(country);
+    
+    if (country) {
+      // Extract the country code from the country object
+      const countryCode = country.value; // Assuming country.value contains the code like "+94"
+      
+      // Update the mobile field to include the country code
+      const currentMobile = formData.mobile || '';
+      // Remove any existing country code if present
+      const mobileWithoutCode = currentMobile.replace(/^\+\d+\s*/, '');
+      
+      // Create new mobile number with country code
+      const newMobile = `${countryCode} ${mobileWithoutCode}`;
+      
+      // Update form data
+      handleFormChange({
+        target: {
+          id: 'mobile',
+          value: newMobile
+        }
+      });
+    }
+  };
+
+  // Handle mobile number change
+  const handleMobileChange = (e) => {
+    let value = e.target.value;
+    
+    // If there's a selected country, ensure the country code is preserved
+    if (selectedCountry) {
+      const countryCode = selectedCountry.value;
+      
+      // If the value doesn't start with the country code, add it
+      if (!value.startsWith(countryCode)) {
+        // Remove any existing country code first
+        const cleanValue = value.replace(/^\+\d+\s*/, '');
+        value = `${countryCode} ${cleanValue}`;
+      }
+    }
+    
+    handleFormChange({
+      target: {
+        id: 'mobile',
+        value: value
+      }
+    });
+  };
+
   const filteredPackages = packages.filter(pkg => {
     const matchesCategory = packageCategoryFilter === "all" || pkg.category === packageCategoryFilter;
     const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -255,33 +306,36 @@ const DayoutReservation = () => {
                   />
                 </div>
                 
-                <div className="dayout-form-group dayout-mobile-group">
-                  <label className="dayout-form-label">Mobile *</label>
-                  <div className="dayout-input-group">
-                    <select
-                      className="dayout-form-select dayout-country-select"
-                      value={selectedCountry?.value || ''}
-                      onChange={(e) => {
-                        const country = countries.find(c => c.value === e.target.value);
-                        setSelectedCountry(country);
-                      }}
-                    >
-                      <option value="">Country</option>
-                      {countries.map((country, index) => (
-                        <option key={`country-${index}-${country.value}`} value={country.value}>
-                          {country.label}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="tel"
-                      className="dayout-form-input"
-                      id="mobile"
-                      value={formData.mobile.split(' ')[1] || formData.mobile}
-                      onChange={handleFormChange}
-                      required
-                    />
-                  </div>
+                {/* Separate Country Field */}
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Country *</label>
+                  <select
+                    className="dayout-form-select"
+                    value={selectedCountry?.value || ''}
+                    onChange={handleCountryChange}
+                    required
+                  >
+                    <option value="">Select Country</option>
+                    {countries.map((country, index) => (
+                      <option key={`country-${index}-${country.value}`} value={country.value}>
+                        {country.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Mobile Number Field */}
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Mobile Number *</label>
+                  <input
+                    type="tel"
+                    className="dayout-form-input"
+                    id="mobile"
+                    value={formData.mobile || ''}
+                    onChange={handleMobileChange}
+                    placeholder={selectedCountry ? `${selectedCountry.value} Enter mobile number` : "Select country first"}
+                    required
+                  />
                 </div>
                 
                 <div className="dayout-form-group">
