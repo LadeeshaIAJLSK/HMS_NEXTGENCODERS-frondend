@@ -54,8 +54,26 @@ const useDayoutForm = () => {
   const [emailError, setEmailError] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
+  // Popup state
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState('success'); // 'success' or 'error'
+  const [popupMessage, setPopupMessage] = useState('');
+
   // Generate unique keys for dropdown options
   const getOptionKey = (prefix, value) => `${prefix}-${value}`;
+
+  // Popup handler
+  const handlePopupOk = () => {
+    setShowPopup(false);
+    setPopupMessage('');
+  };
+
+  // Show popup function
+  const showPopupMessage = (type, message) => {
+    setPopupType(type);
+    setPopupMessage(message);
+    setShowPopup(true);
+  };
 
   const fetchPackages = async () => {
     try {
@@ -112,7 +130,7 @@ const useDayoutForm = () => {
       setShowSearchResults(true);
     } catch (error) {
       console.error("Error searching customers:", error);
-      alert("Error searching customers");
+      showPopupMessage('error', 'Error searching customers. Please try again.');
     }
   };
 
@@ -235,17 +253,17 @@ const useDayoutForm = () => {
     e.preventDefault();
 
     if (selectedPackages.length === 0) {
-      alert("Please select at least one package");
+      showPopupMessage('error', 'Please select at least one package');
       return;
     }
 
     if (!formData.checkIn || !formData.startTime || !formData.endTime) {
-      alert("Please fill in all required time fields");
+      showPopupMessage('error', 'Please fill in all required time fields');
       return;
     }
 
     if (!formData.paymentMethod && formData.advancePayment && parseFloat(formData.advancePayment) > 0) {
-      alert("Please select a payment method for the advance payment");
+      showPopupMessage('error', 'Please select a payment method for the advance payment');
       return;
     }
     
@@ -321,7 +339,7 @@ const useDayoutForm = () => {
       });
       
       console.log('Server response:', response.data);
-      alert("Dayout reservation submitted successfully! ✅");
+      showPopupMessage('success', 'Day Out reservation submitted successfully!');
       
       // Reset form
       setFormData({
@@ -376,7 +394,7 @@ const useDayoutForm = () => {
     } catch (error) {
       console.error("Error saving data:", error);
       console.error("Error response:", error.response?.data);
-      alert("Error submitting dayout reservation. Please try again. ❌");
+      showPopupMessage('error', 'Error submitting day out reservation. Please try again.');
     }
   };
 
@@ -396,6 +414,12 @@ const useDayoutForm = () => {
     emailError,
     selectedFiles,
     fileInputRef,
+    // Popup states
+    showPopup,
+    popupType,
+    popupMessage,
+    handlePopupOk,
+    // Functions
     handleFormChange,
     setCustomerType,
     setSearchTerm,

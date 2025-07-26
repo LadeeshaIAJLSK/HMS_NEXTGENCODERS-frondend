@@ -45,6 +45,11 @@ const useCheckInForm = () => {
   const [emailError, setEmailError] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
+  // Popup states
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState('success'); // 'success' or 'error'
+  const [popupMessage, setPopupMessage] = useState('');
+
   const fetchRooms = async () => {
     try {
       const res = await axios.get("http://localhost:8000/api/rooms");
@@ -79,6 +84,19 @@ const useCheckInForm = () => {
     setFormData(prev => ({ ...prev, totalAmount }));
   }, [selectedRooms, formData.duration, rooms]);
 
+  // Show popup function
+  const showPopupMessage = (type, message) => {
+    setPopupType(type);
+    setPopupMessage(message);
+    setShowPopup(true);
+  };
+
+  // Handle popup OK button
+  const handlePopupOk = () => {
+    setShowPopup(false);
+    setPopupMessage('');
+  };
+
   const handleCustomerSearch = async () => {
     if (!searchTerm.trim()) return;
     
@@ -88,7 +106,7 @@ const useCheckInForm = () => {
       setShowSearchResults(true);
     } catch (error) {
       console.error("Error searching customers:", error);
-      alert("Error searching customers");
+      showPopupMessage('error', 'Error searching customers. Please try again.');
     }
   };
 
@@ -186,13 +204,13 @@ const useCheckInForm = () => {
 
     // Validate that rooms are selected
     if (selectedRooms.length === 0) {
-      alert("Please select at least one room");
+      showPopupMessage('error', 'Please select at least one room');
       return;
     }
 
     // Validate that duration is calculated
     if (!formData.duration) {
-      alert("Please select valid check-in and check-out dates");
+      showPopupMessage('error', 'Please select valid check-in and check-out dates');
       return;
     }
     
@@ -231,7 +249,7 @@ const useCheckInForm = () => {
         }
       });
       
-      alert("Reservation submitted successfully! ✅");
+      showPopupMessage('success', 'Reservation submitted successfully!');
       
       // Reset form
       setFormData({
@@ -274,7 +292,7 @@ const useCheckInForm = () => {
       
     } catch (error) {
       console.error("Error saving data:", error);
-      alert("Error submitting reservation. Please try again. ❌");
+      showPopupMessage('error', 'Error submitting reservation. Please try again.');
     }
   };
 
@@ -296,6 +314,11 @@ const useCheckInForm = () => {
     emailError,
     selectedFiles,
     fileInputRef,
+    // Popup states and handlers
+    showPopup,
+    popupType,
+    popupMessage,
+    handlePopupOk,
     handleFormChange,
     setCustomerType,
     setSearchTerm,
@@ -312,7 +335,7 @@ const useCheckInForm = () => {
     handleFileChange,
     handleSubmit,
     fetchRooms,
-    calculateTotalAmount // Export the calculation function
+    calculateTotalAmount
   };
 };
 

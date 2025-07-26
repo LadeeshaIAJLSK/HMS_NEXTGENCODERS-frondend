@@ -28,6 +28,12 @@ const Ressidebar = () => {
         <li>
           <Link to="/dayout-create">📈 DayOut Reservation</Link>
         </li>
+
+        
+        <li>
+          <Link to="/dayout-packages">📈 Package management</Link>
+        </li>
+        <li></li>
         <li>
           <Link to="/"><span>⏻</span> Logout </Link>
         </li>
@@ -37,3 +43,5 @@ const Ressidebar = () => {
 };
 
 export default Ressidebar;
+
+

@@ -24,8 +24,56 @@ const ViewDayoutDetails = ({
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Calculate amounts
-  const totalAmount = selectedReservation?.totalAmount || 0;
+  // Get packages to display - prioritize selectedReservation packages, fallback to packageDetails
+  const getPackageDisplay = () => {
+    // First check if selectedReservation has packages
+    if (selectedReservation?.packages && selectedReservation.packages.length > 0) {
+      return selectedReservation.packages;
+    }
+    
+    // Then check if selectedReservation has selectedPackages
+    if (selectedReservation?.selectedPackages && selectedReservation.selectedPackages.length > 0) {
+      return selectedReservation.selectedPackages;
+    }
+    
+    // Fallback to packageDetails prop
+    if (packageDetails && packageDetails.length > 0) {
+      return packageDetails;
+    }
+    
+    // Check if formData has selected packages
+    if (formData?.selectedPackages && formData.selectedPackages.length > 0) {
+      return formData.selectedPackages;
+    }
+    
+    return [];
+  };
+
+  const displayPackages = getPackageDisplay();
+
+  // Calculate package total
+  const calculatePackageTotal = () => {
+    if (!displayPackages || displayPackages.length === 0) return 0;
+    
+    return displayPackages.reduce((total, pkg) => {
+      // Try different possible price fields
+      const packagePrice = pkg.totalPrice || 
+                          (pkg.quantity && pkg.price ? pkg.quantity * pkg.price : 0) ||
+                          (pkg.quantity && pkg.pricePerChild ? pkg.quantity * pkg.pricePerChild : 0) ||
+                          pkg.price || 
+                          pkg.pricePerChild || 
+                          pkg.amount || 
+                          0;
+      
+      return total + packagePrice;
+    }, 0);
+  };
+
+  const packageTotal = calculatePackageTotal();
+
+  // Calculate amounts - include package total if not already included in selectedReservation.totalAmount
+  const reservationTotal = selectedReservation?.totalAmount || 0;
+  const totalAmount = reservationTotal > 0 ? reservationTotal : packageTotal;
   const paidAmount = selectedReservation?.paidAmount || 0;
   const amountDue = totalAmount - paidAmount;
   const paymentProgress = totalAmount > 0 ? Math.round((paidAmount / totalAmount) * 100) : 0;
@@ -52,6 +100,18 @@ const ViewDayoutDetails = ({
     setTimeout(() => {
       setShowSuccessPopup(false);
     }, 3000);
+  };
+
+  // Handle clicking on amount due to auto-fill payment form
+  const handleAmountDueClick = () => {
+    if (amountDue > 0) {
+      setPaymentData(prev => ({
+        ...prev,
+        amount: amountDue.toString(),
+        cashReceived: '' // Don't auto-fill cash received
+      }));
+      setShowPaymentForm(true);
+    }
   };
 
   // Handle payment submission
@@ -213,7 +273,7 @@ const ViewDayoutDetails = ({
             <div className="vdd-card-body">
               <div className="vdd-info-grid">
                 <div className="vdd-info-item">
-                  <strong>Visit Date:</strong> {formatDate(formData.checkIn)}
+                  <strong>Visit Date:</strong> {formatDate(formData?.checkIn || selectedReservation?.checkIn)}
                 </div>
                 <div className="vdd-info-item">
                   <strong>Time:</strong> {selectedReservation?.startTime} - {selectedReservation?.endTime}
@@ -222,13 +282,13 @@ const ViewDayoutDetails = ({
                   <strong>Duration:</strong> {selectedReservation?.duration} hours
                 </div>
                 <div className="vdd-info-item">
-                  <strong>Adults:</strong> {formData.adults}
+                  <strong>Adults:</strong> {formData?.adults || selectedReservation?.adults}
                 </div>
                 <div className="vdd-info-item">
-                  <strong>Kids:</strong> {formData.kids}
+                  <strong>Kids:</strong> {formData?.kids || selectedReservation?.kids}
                 </div>
                 <div className="vdd-info-item">
-                  <strong>Total Guests:</strong> {parseInt(formData.adults) + parseInt(formData.kids)}
+                  <strong>Total Guests:</strong> {parseInt(formData?.adults || selectedReservation?.adults || 0) + parseInt(formData?.kids || selectedReservation?.kids || 0)}
                 </div>
               </div>
             </div>
@@ -245,17 +305,17 @@ const ViewDayoutDetails = ({
             </div>
             <div className="vdd-card-body">
               <div className="vdd-guest-info">
-                <p><strong>Name:</strong> {formData.firstName} {formData.middleName} {formData.surname}</p>
-                <p><strong>Mobile:</strong> {formData.mobile}</p>
-                <p><strong>Email:</strong> {formData.email || 'Not provided'}</p>
-                <p><strong>Date of Birth:</strong> {formatDate(formData.dob)}</p>
-                <p><strong>Gender:</strong> {formData.gender || 'Not specified'}</p>
-                <p><strong>Address:</strong> {formData.address}</p>
-                <p><strong>City:</strong> {formData.city || 'Not specified'}</p>
-                {formData.idType && (
+                <p><strong>Name:</strong> {formData?.firstName || selectedReservation?.firstName} {formData?.middleName || selectedReservation?.middleName} {formData?.surname || selectedReservation?.surname}</p>
+                <p><strong>Mobile:</strong> {formData?.mobile || selectedReservation?.mobile}</p>
+                <p><strong>Email:</strong> {formData?.email || selectedReservation?.email || 'Not provided'}</p>
+                <p><strong>Date of Birth:</strong> {formatDate(formData?.dob || selectedReservation?.dob)}</p>
+                <p><strong>Gender:</strong> {formData?.gender || selectedReservation?.gender || 'Not specified'}</p>
+                <p><strong>Address:</strong> {formData?.address || selectedReservation?.address}</p>
+                <p><strong>City:</strong> {formData?.city || selectedReservation?.city || 'Not specified'}</p>
+                {(formData?.idType || selectedReservation?.idType) && (
                   <>
-                    <p><strong>ID Type:</strong> {formData.idType}</p>
-                    <p><strong>ID Number:</strong> {formData.idNumber}</p>
+                    <p><strong>ID Type:</strong> {formData?.idType || selectedReservation?.idType}</p>
+                    <p><strong>ID Number:</strong> {formData?.idNumber || selectedReservation?.idNumber}</p>
                   </>
                 )}
               </div>
@@ -293,31 +353,57 @@ const ViewDayoutDetails = ({
               <h5 className="vdd-card-title"> Selected Packages</h5>
             </div>
             <div className="vdd-card-body">
-              {packageDetails && packageDetails.length > 0 ? (
-                <div className="vdd-packages-grid">
-                  {packageDetails.map((pkg, index) => (
-                    <div key={index} className="vdd-package-card">
-                      <div className="vdd-package-body">
-                        <h6 className="vdd-package-title">{pkg.name}</h6>
-                        <p className="vdd-package-description">{pkg.description}</p>
-                        <p><strong>Category:</strong> {pkg.category}</p>
-                        <p><strong>Price:</strong> {formatCurrency(pkg.pricePerChild)} per person</p>
-                        {pkg.features && pkg.features.length > 0 && (
-                          <div>
-                            <strong>Features:</strong>
-                            <ul className="vdd-features-list">
-                              {pkg.features.map((feature, fIndex) => (
-                                <li key={fIndex}>{feature}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
+              {displayPackages && displayPackages.length > 0 ? (
+                <>
+                  <div className="vdd-packages-grid">
+                    {displayPackages.map((pkg, index) => (
+                      <div key={index} className="vdd-package-card">
+                        <div className="vdd-package-body">
+                          <h6 className="vdd-package-title">{pkg.name || pkg.packageName || 'Package'}</h6>
+                          <p className="vdd-package-description">{pkg.description || 'No description available'}</p>
+                          <p><strong>Category:</strong> {pkg.category || 'General'}</p>
+                          <p><strong>Price:</strong> {formatCurrency(pkg.pricePerChild || pkg.price || pkg.amount || 0)} per person</p>
+                          {pkg.quantity && <p><strong>Quantity:</strong> {pkg.quantity}</p>}
+                          <p><strong>Package Total:</strong> {formatCurrency(
+                            pkg.totalPrice || 
+                            (pkg.quantity && pkg.price ? pkg.quantity * pkg.price : 0) ||
+                            (pkg.quantity && pkg.pricePerChild ? pkg.quantity * pkg.pricePerChild : 0) ||
+                            pkg.price || 
+                            pkg.pricePerChild || 
+                            pkg.amount || 
+                            0
+                          )}</p>
+                          {pkg.features && pkg.features.length > 0 && (
+                            <div>
+                              <strong>Features:</strong>
+                              <ul className="vdd-features-list">
+                                {pkg.features.map((feature, fIndex) => (
+                                  <li key={fIndex}>{feature}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                  
+                  {/* Package Total Summary */}
+                  <div className="vdd-package-total-summary">
+                    <div className="vdd-total-row">
+                      <strong>Total Package Amount: {formatCurrency(packageTotal)}</strong>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                </>
               ) : (
-                <p>No packages selected</p>
+                <div className="vdd-no-packages">
+                  <p>No packages selected</p>
+                  <small className="text-muted">
+                    Debug info: packageDetails length: {packageDetails?.length || 0}, 
+                    selectedReservation.packages: {selectedReservation?.packages?.length || 0},
+                    selectedReservation.selectedPackages: {selectedReservation?.selectedPackages?.length || 0}
+                  </small>
+                </div>
               )}
             </div>
           </div>
@@ -351,10 +437,26 @@ const ViewDayoutDetails = ({
                 </div>
                 <div className="vdd-payment-item">
                   <strong>Amount Due:</strong>
-                  <div className={`vdd-amount ${amountDue > 0 ? 'vdd-amount-due' : 'vdd-amount-paid'}`}>
+                  <div 
+                    className={`vdd-amount ${amountDue > 0 ? 'vdd-amount-due vdd-clickable-amount' : 'vdd-amount-paid'}`}
+                    onClick={handleAmountDueClick}
+                    style={{ cursor: amountDue > 0 ? 'pointer' : 'default' }}
+                    title={amountDue > 0 ? 'Click to auto-fill payment form' : ''}
+                  >
                     {formatCurrency(amountDue)}
+                    {amountDue > 0 && <small className="vdd-click-hint"> (click to pay)</small>}
                   </div>
                 </div>
+              </div>
+
+              {/* Debug information */}
+              <div className="vdd-debug-info" style={{ fontSize: '12px', color: '#666', marginTop: '10px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <strong>Debug Info:</strong><br/>
+                Reservation Total: {formatCurrency(reservationTotal)}<br/>
+                Package Total: {formatCurrency(packageTotal)}<br/>
+                Final Total Used: {formatCurrency(totalAmount)}<br/>
+                Paid Amount: {formatCurrency(paidAmount)}<br/>
+                Amount Due: {formatCurrency(amountDue)}
               </div>
 
               {/* Payment Progress Bar */}
@@ -396,7 +498,11 @@ const ViewDayoutDetails = ({
                       <select
                         className="vdd-form-control"
                         value={paymentData.method}
-                        onChange={(e) => setPaymentData(prev => ({...prev, method: e.target.value}))}
+                        onChange={(e) => setPaymentData(prev => ({
+                          ...prev, 
+                          method: e.target.value,
+                          cashReceived: '' // Don't auto-fill cash received when method changes
+                        }))}
                         required
                       >
                         <option value="Cash">Cash</option>

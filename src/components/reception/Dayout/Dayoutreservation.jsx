@@ -20,6 +20,12 @@ const DayoutReservation = () => {
     emailError,
     selectedFiles,
     fileInputRef,
+    // Popup states
+    showPopup,
+    popupType,
+    popupMessage,
+    handlePopupOk,
+    
     handleFormChange,
     setCustomerType,
     setSearchTerm,
@@ -57,6 +63,57 @@ const DayoutReservation = () => {
     }
   };
 
+  // Handle country selection and update mobile field with country code
+  const handleCountryChange = (e) => {
+    const country = countries.find(c => c.value === e.target.value);
+    setSelectedCountry(country);
+    
+    if (country) {
+      // Extract the country code from the country object
+      const countryCode = country.value; // Assuming country.value contains the code like "+94"
+      
+      // Update the mobile field to include the country code
+      const currentMobile = formData.mobile || '';
+      // Remove any existing country code if present
+      const mobileWithoutCode = currentMobile.replace(/^\+\d+\s*/, '');
+      
+      // Create new mobile number with country code
+      const newMobile = `${countryCode} ${mobileWithoutCode}`;
+      
+      // Update form data
+      handleFormChange({
+        target: {
+          id: 'mobile',
+          value: newMobile
+        }
+      });
+    }
+  };
+
+  // Handle mobile number change
+  const handleMobileChange = (e) => {
+    let value = e.target.value;
+    
+    // If there's a selected country, ensure the country code is preserved
+    if (selectedCountry) {
+      const countryCode = selectedCountry.value;
+      
+      // If the value doesn't start with the country code, add it
+      if (!value.startsWith(countryCode)) {
+        // Remove any existing country code first
+        const cleanValue = value.replace(/^\+\d+\s*/, '');
+        value = `${countryCode} ${cleanValue}`;
+      }
+    }
+    
+    handleFormChange({
+      target: {
+        id: 'mobile',
+        value: value
+      }
+    });
+  };
+
   const filteredPackages = packages.filter(pkg => {
     const matchesCategory = packageCategoryFilter === "all" || pkg.category === packageCategoryFilter;
     const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -67,7 +124,7 @@ const DayoutReservation = () => {
   return (
     <div className="dayout-form-scope">
       <div className="dayout-container">
-        <h2 className="dayout-main-heading"> Day Out Reservation</h2>
+        <h2 className="dayout-main-heading">Day Out Reservation</h2>
         
         <form onSubmit={handleSubmit} className="dayout-form">
           {/* Date and Guest Information */}
@@ -146,7 +203,7 @@ const DayoutReservation = () => {
           {/* Customer Type Selection */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading"> Customer Information</h5>
+              <h5 className="dayout-form-heading">Customer Information</h5>
               
               <div className="dayout-customer-type-options">
                 <label className="dayout-radio-label">
@@ -188,7 +245,7 @@ const DayoutReservation = () => {
                       className="dayout-btn dayout-btn-info"
                       onClick={handleCustomerSearch}
                     >
-                       Search
+                      Search
                     </button>
                   </div>
                   
@@ -255,33 +312,36 @@ const DayoutReservation = () => {
                   />
                 </div>
                 
-                <div className="dayout-form-group dayout-mobile-group">
-                  <label className="dayout-form-label">Mobile *</label>
-                  <div className="dayout-input-group">
-                    <select
-                      className="dayout-form-select dayout-country-select"
-                      value={selectedCountry?.value || ''}
-                      onChange={(e) => {
-                        const country = countries.find(c => c.value === e.target.value);
-                        setSelectedCountry(country);
-                      }}
-                    >
-                      <option value="">Country</option>
-                      {countries.map((country, index) => (
-                        <option key={`country-${index}-${country.value}`} value={country.value}>
-                          {country.label}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="tel"
-                      className="dayout-form-input"
-                      id="mobile"
-                      value={formData.mobile.split(' ')[1] || formData.mobile}
-                      onChange={handleFormChange}
-                      required
-                    />
-                  </div>
+                {/* Separate Country Field */}
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Country *</label>
+                  <select
+                    className="dayout-form-select"
+                    value={selectedCountry?.value || ''}
+                    onChange={handleCountryChange}
+                    required
+                  >
+                    <option value="">Select Country</option>
+                    {countries.map((country, index) => (
+                      <option key={`country-${index}-${country.value}`} value={country.value}>
+                        {country.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Mobile Number Field */}
+                <div className="dayout-form-group">
+                  <label className="dayout-form-label">Mobile Number *</label>
+                  <input
+                    type="tel"
+                    className="dayout-form-input"
+                    id="mobile"
+                    value={formData.mobile || ''}
+                    onChange={handleMobileChange}
+                    placeholder={selectedCountry ? `${selectedCountry.value} Enter mobile number` : "Select country first"}
+                    required
+                  />
                 </div>
                 
                 <div className="dayout-form-group">
@@ -396,13 +456,13 @@ const DayoutReservation = () => {
           <div className="dayout-form-section">
             <div className="dayout-form-container">
               <div className="dayout-section-header">
-                <h5 className="dayout-form-heading"> Other Persons</h5>
+                <h5 className="dayout-form-heading">Other Persons</h5>
                 <button
                   type="button"
                   className="dayout-btn dayout-btn-success"
                   onClick={handleAddPerson}
                 >
-                  ➕ 
+                  ➕
                 </button>
               </div>
               
@@ -485,7 +545,7 @@ const DayoutReservation = () => {
           {/* Package Selection */}
           <div className="dayout-form-section">
             <div className="dayout-form-container">
-              <h5 className="dayout-form-heading"> Package Selection</h5>
+              <h5 className="dayout-form-heading">Package Selection</h5>
               
               {/* Package Filters */}
               <div className="dayout-filter-section">
@@ -644,10 +704,33 @@ const DayoutReservation = () => {
               Cancel
             </button>
             <button type="submit" className="dayout-btn dayout-btn-primary">
-               Create Day Out Reservation
+              Create Day Out Reservation
             </button>
           </div>
         </form>
+
+        {/* SUCCESS/ERROR POPUP */}
+        {showPopup && (
+          <div className="success-popup-overlay">
+            <div className="success-popup-content">
+              <div className="success-popup-icon">
+                {popupType === 'success' ? '✅' : '❌'}
+              </div>
+              <h3 className="success-popup-title">
+                {popupType === 'success' ? 'Success!' : 'Error!'}
+              </h3>
+              <p className="success-popup-message">
+                {popupMessage}
+              </p>
+              <button
+                onClick={handlePopupOk}
+                className="success-popup-button"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
