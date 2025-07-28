@@ -1,3 +1,4 @@
+// Updated RoomHome.jsx to use a custom popup message box instead of alert()
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
@@ -7,11 +8,14 @@ import styles from "./RoomHome.module.css";
 const Home = () => {
   const [rooms, setRooms] = useState([]);
   const [allRooms, setAllRooms] = useState([]);
+  const [roomNoError, setRoomNoError] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editingRoomId, setEditingRoomId] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   const [formRoom, setFormRoom] = useState({
     RoomNo: "",
@@ -41,15 +45,21 @@ const Home = () => {
       .finally(() => setLoading(false));
   };
 
+  const showSuccessPopup = (message) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000);
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this room?")) {
       try {
         await axios.delete(`http://localhost:5004/api/rooms/${id}`);
         setRooms((prev) => prev.filter((room) => room._id !== id));
         setAllRooms((prev) => prev.filter((room) => room._id !== id));
-        alert("Room deleted successfully.");
+        showSuccessPopup("Room deleted successfully!");
       } catch (error) {
-        alert("Failed to delete room.");
+        showSuccessPopup("Failed to delete room.");
       }
     }
   };
@@ -82,25 +92,44 @@ const Home = () => {
   };
 
   const handleFormChange = (e) => {
-    setFormRoom({ ...formRoom, [e.target.name]: e.target.value });
-  };
+  setFormRoom({ ...formRoom, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editMode) {
-        await axios.put(`http://localhost:5004/api/rooms/${editingRoomId}`, formRoom);
-        alert("Room updated successfully!");
-      } else {
-        await axios.post("http://localhost:5004/api/rooms", formRoom);
-        alert("Room added successfully!");
-      }
-      setShowModal(false);
-      fetchRooms();
-    } catch (err) {
-      alert("Failed to save room.");
+  if (e.target.name === "RoomNo") {
+    setRoomNoError(""); // clear error when changing RoomNo
+  }
+};
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Check for duplicate RoomNo (excluding current room if editing)
+  const isDuplicate = allRooms.some(
+    (room) =>
+      room.RoomNo.toString() === formRoom.RoomNo.toString() &&
+      (!editMode || room._id !== editingRoomId)
+  );
+
+  if (isDuplicate) {
+    setRoomNoError("This Room-No already exists.");
+    return;
+  } else {
+    setRoomNoError(""); // clear if no error
+  }
+
+  try {
+    if (editMode) {
+      await axios.put(`http://localhost:5004/api/rooms/${editingRoomId}`, formRoom);
+      showSuccessPopup("Room updated successfully!");
+    } else {
+      await axios.post("http://localhost:5004/api/rooms", formRoom);
+      showSuccessPopup("Room added successfully!");
     }
-  };
+    setShowModal(false);
+    fetchRooms();
+  } catch (err) {
+    showSuccessPopup("Failed to save room.");
+  }
+};
+
 
   const closeModal = () => {
     setShowModal(false);
@@ -110,11 +139,12 @@ const Home = () => {
   if (loading) return <div className={styles["roomhome-loading"]}>Loading...</div>;
   if (error) return <div className={styles["roomhome-error"]}>{error}</div>;
 
-  return (
-    <div className={styles["roomhome-container"]}>
-      <Ownsidebar />
+  return (<div className={styles["roomhome-container"]}>
+  <Ownsidebar />
 
-      <div className={showModal ? styles["roomhome-blur"] : ""}>
+  {/* Only main content gets blurred during popup or modal */}
+  <div className={`${styles["roomhome-content"]} ${(showModal || showPopup) ? styles["roomhome-blur"] : ""}`}>
+
         <div className={styles["roomhome-header"]}>
           <h1>Rooms List</h1>
           <input
@@ -149,11 +179,11 @@ const Home = () => {
                     <td>{room.RClass || "No Class"}</td>
                     <td>{room.Price ? `$${room.Price}` : "No Price"}</td>
                     <td>
-                     <button className={styles["roomhome-icon-btn"]} onClick={() => openEditModal(room)}>
-                           <FaEdit className={styles["edit-icon"]} />
+                      <button className={styles["roomhome-icon-btn"]} onClick={() => openEditModal(room)}>
+                        <FaEdit className={styles["edit-icon"]} />
                       </button>
                       <button className={styles["roomhome-icon-btn"]} onClick={() => handleDelete(room._id)}>
-                            <FaTrashAlt className={styles["delete-icon"]} />
+                        <FaTrashAlt className={styles["delete-icon"]} />
                       </button>
                     </td>
                   </tr>
@@ -167,16 +197,24 @@ const Home = () => {
         )}
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className={styles["roomhome-modal-overlay"]}>
           <div className={styles["roomhome-modal-content"]}>
             <h2>{editMode ? "Edit Room Details" : "Add a New Room"}</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Room-No</label>
-                <input name="RoomNo" type="number" required value={formRoom.RoomNo} onChange={handleFormChange} />
-              </div>
+  <label>Room-No</label>
+  <input
+    name="RoomNo"
+    type="number"
+    required
+    value={formRoom.RoomNo}
+    onChange={handleFormChange}
+    style={roomNoError ? { borderColor: "red" } : {}}
+  />
+  {roomNoError && <small style={{ color: "red" }}>{roomNoError}</small>}
+</div>
+
               <div className="form-group">
                 <label>Room Status</label>
                 <select name="RStatus" required value={formRoom.RStatus} onChange={handleFormChange}>
@@ -207,11 +245,29 @@ const Home = () => {
                 <label>Price</label>
                 <input name="Price" type="number" required value={formRoom.Price} onChange={handleFormChange} />
               </div>
-              <table border="none"><tr>
-                  <td><button type="button" className={styles["cancel-btn"]} onClick={() => setShowModal(false)}>Cancel</button></td>
-                  <td><button type="submit" className={styles["save-btn"]}>Save</button></td>
-              </tr></table>
+              <table border="none">
+                <tr>
+                  <td>
+                    <button type="button" className={styles["cancel-btn"]} onClick={closeModal}>Cancel</button>
+                  </td>
+                  <td>
+                    <button type="submit" className={styles["save-btn"]}>Save</button>
+                  </td>
+                </tr>
+              </table>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup */}
+      {showPopup && (
+        <div className={styles["popup-success"]}>
+          <div className={styles["popup-box"]}>
+            <span className={styles["popup-icon"]}>✅</span>
+            <h3>Success!</h3>
+            <p>{popupMessage}</p>
+            <button className={styles["popup-ok"]} onClick={() => setShowPopup(false)}>OK</button>
           </div>
         </div>
       )}

@@ -59,6 +59,7 @@ const SettingsPage = () => {
   };
 
   const [settings, setSettings] = useState(initialSettings);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [error, setError] = useState(null);
   const [siteLogo, setSiteLogo] = useState(null);
 
@@ -101,12 +102,16 @@ const SettingsPage = () => {
     });
 
     if (response.data.success) {
-      alert("Saved successfully!");
-      setSettings(initialSettings);
-      setSiteLogo(null);
-    } else {
-      alert("Save failed.");
-    }
+  setShowSuccessMessage(true);  // show message
+  setTimeout(() => {
+    setShowSuccessMessage(false); // hide after 3 seconds
+  }, 3000);
+  setSettings(initialSettings);
+  setSiteLogo(null);
+} else {
+  alert("Save failed.");
+}
+
   } catch (error) {
     console.error("Error saving settings:", error);
     alert("Save failed.");
@@ -114,9 +119,14 @@ const SettingsPage = () => {
 };
   
   return (
-    <div className="Ownsettings-container">
-      <Ownsidebar/>
-      <form onSubmit={handleSave} className="Ownsettings-form">
+  <div className="Ownsettings-container">
+  <Ownsidebar />
+
+  <div className={`Ownsettings-content-wrapper ${showSuccessMessage ? "blur" : ""}`}>
+    {showSuccessMessage && (
+  <div className="own-success-toast">✅ Settings saved successfully!</div>
+    )}
+    <form onSubmit={handleSave} className="Ownsettings-form">
         {/* Site Settings */}
         <h2 className="setting-section-title"><u>Site Settings</u></h2>
         <div className="setting-grid-three-columns">
@@ -185,6 +195,7 @@ const SettingsPage = () => {
 
         <button type="submit" className="setting-save-button">Save Settings</button>
       </form>
+    </div>
     </div>
   );
 };

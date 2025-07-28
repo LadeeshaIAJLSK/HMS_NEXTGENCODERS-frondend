@@ -47,18 +47,6 @@
   font-size: 14px;
 }
 
-.roomhome-icon-btn {
-  background-color: #008080;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  margin: 0 5px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .roomhome-icon-btn:hover {
   background-color: #006666;
@@ -72,9 +60,9 @@
 .roomhome-icon-btn {
   background-color: #008080;
   border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  padding: 0 !important;
   margin: 0 4px;
   cursor: pointer;
   display: inline-flex;
@@ -89,13 +77,10 @@
 
 /* Multicolored icon styles inspired by your uploaded image */
 .edit-icon {
-  font-size: 18px;
-  color: #e3b242; /* Vibrant orange */
-}
+    background-color: #0069d9 !important;
+  }
 
-.delete-icon {
-  font-size: 18px;
-  color: #c82333; /* Vivid red */
+.delete-icon { background-color: #c82333 !important;/* Vivid red */
 }
 
 .roomhome-add-btn {
@@ -206,8 +191,71 @@
   background-color: #008040;
 }
 
+.popup-success {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+  z-index: 9999;
+  background-color: rgb(222, 220, 220);
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+}
+
+.roomhome-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(240, 240, 240, 0.6); /* translucent light background */
+  backdrop-filter: blur(3px); /* actual blur effect */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.popup-box {
+  background: white;
+  border-radius: 12px;
+  padding: 30px 40px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+}
+
+.popup-icon {
+  font-size: 40px;
+  color: green;
+  margin-bottom: 10px;
+}
+
+.popup-ok {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .roomhome-blur {
-  filter: blur(2px);
+  filter: blur(3px);
   pointer-events: none;
   user-select: none;
 }
+
+.roomhome-container {
+  display: flex;
+}
+
+.roomhome-content {
+  flex: 1;
+  padding: 20px;
+}
+

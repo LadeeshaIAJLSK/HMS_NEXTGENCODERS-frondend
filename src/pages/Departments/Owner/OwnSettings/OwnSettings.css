@@ -5,7 +5,56 @@
   min-height: 100vh;
   padding: 1.5rem;
   background-color: #f8f9fa;
+  display: flex;
   box-sizing: border-box;
+}
+
+.Ownsettings-content-wrapper {
+  flex: 1;
+  position: relative;
+  padding: 20px;
+}
+
+.own-success-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #008081;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 9999;
+  font-weight: 500;
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* Success message style */
+.success-banner {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px 25px;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  z-index: 10;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
 /* Form wrapper styling */

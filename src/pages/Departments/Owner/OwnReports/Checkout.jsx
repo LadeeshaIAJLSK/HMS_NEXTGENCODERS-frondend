@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaTimes } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -13,12 +13,10 @@ const CheckoutPage = () => {
   const [entriesToShow, setEntriesToShow] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
-    mobile: "",
-    roomno: "",
+    guestFirstName: "",
     fromDate: "",
     toDate: "",
-    guestName: "",
-    checkoutBy: ""
+    city: "", // ✅ added city filter
   });
   const [selectedGuest, setSelectedGuest] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -42,29 +40,28 @@ const CheckoutPage = () => {
   };
 
   const handleSearch = () => {
-    const { mobile, roomno, guestName, checkoutBy, fromDate, toDate } = filters;
+    const { guestFirstName, fromDate, toDate, city } = filters;
     const filtered = originalData.filter((d) => {
-      const matchMobile = mobile ? d.mobile.includes(mobile) : true;
-      const matchRoomNo = roomno ? d.selectedRooms?.includes(roomno) : true;
-      const matchGuestName = guestName
-        ? d.fullName?.toLowerCase().includes(guestName.toLowerCase())
+      const matchGuest = guestFirstName
+        ? d.firstName?.toLowerCase().includes(guestFirstName.toLowerCase())
         : true;
-      const matchCheckoutBy = checkoutBy
-        ? d.checkoutByName?.toLowerCase().includes(checkoutBy.toLowerCase())
+
+      const matchCity = city
+        ? d.city?.toLowerCase().includes(city.toLowerCase())
         : true;
 
       const from = fromDate ? new Date(fromDate) : null;
       const to = toDate ? new Date(toDate) : null;
-      const checkInDate = new Date(d.checkIn);
-      const checkoutDate = new Date(d.checkoutDate);
+      const checkIn = new Date(d.checkIn);
+      const checkOut = new Date(d.checkOut);
 
       const matchDate =
         (!from && !to) ||
-        (!to && from && checkoutDate >= from) ||
-        (to && !from && checkInDate <= to) ||
-        (from && to && checkInDate <= to && checkoutDate >= from);
+        (!to && from && checkOut >= from) ||
+        (to && !from && checkIn <= to) ||
+        (from && to && checkIn <= to && checkOut >= from);
 
-      return matchMobile && matchRoomNo && matchGuestName && matchCheckoutBy && matchDate;
+      return matchGuest && matchCity && matchDate;
     });
 
     setData(filtered);
@@ -72,43 +69,34 @@ const CheckoutPage = () => {
   };
 
   const handleExport = (format) => {
-    if (data.length === 0) {
-      alert("No data to export.");
-      return;
-    }
-
+    if (data.length === 0) return alert("No data to export.");
     const exportData = data.map((item) => ({
-      GuestName: item.fullName,
+      GuestName: `${item.firstName} ${item.surname}`,
       Mobile: item.mobile,
-      RoomNo: item.selectedRooms?.join(", "),
+      City: item.city || "N/A", // ✅ include city
+      RoomNo: Array.isArray(item.selectedRooms)
+        ? item.selectedRooms.join(", ")
+        : item.selectedRooms || "N/A",
       CheckIn: new Date(item.checkIn).toLocaleDateString(),
-      CheckOut: new Date(item.checkoutDate).toLocaleDateString(),
-      CheckoutBy: item.checkoutByName || "N/A"
+      CheckOut: new Date(item.checkOut).toLocaleDateString(),
     }));
 
     if (format === "pdf") {
       const doc = new jsPDF();
       doc.setFontSize(14);
       doc.text("Checkout Report", 14, 15);
-
-      const columns = [
-        { header: "Guest Name", dataKey: "GuestName" },
-        { header: "Mobile", dataKey: "Mobile" },
-        { header: "Room No", dataKey: "RoomNo" },
-        { header: "Check-In", dataKey: "CheckIn" },
-        { header: "Check-Out", dataKey: "CheckOut" },
-        { header: "Checkout By", dataKey: "CheckoutBy" },
-      ];
-
       doc.autoTable({
         startY: 20,
-        columns,
+        columns: [
+          { header: "Guest Name", dataKey: "GuestName" },
+          { header: "Mobile", dataKey: "Mobile" },
+          { header: "City", dataKey: "City" },
+          { header: "Room No", dataKey: "RoomNo" },
+          { header: "Check-In", dataKey: "CheckIn" },
+          { header: "Check-Out", dataKey: "CheckOut" },
+        ],
         body: exportData,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [22, 160, 133] },
-        margin: { top: 20 },
       });
-
       doc.save("checkout_report.pdf");
     } else {
       const ws = XLSX.utils.json_to_sheet(exportData);
@@ -118,16 +106,15 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleView = (id) => {
-    axios
-      .get(`/api/checkout/${id}`)
-      .then((res) => {
-        setSelectedGuest(res.data);
-        setModalOpen(true);
-      })
-      .catch((err) => {
-        console.error("Error fetching guest details:", err);
-      });
+  const handleView = async (id) => {
+    try {
+      const res = await axios.get(`http://localhost:5004/api/checkouts/${id}`);
+      setSelectedGuest(res.data);
+      setModalOpen(true);
+    } catch (err) {
+      console.error("Error fetching guest details:", err);
+      alert("Could not fetch guest details");
+    }
   };
 
   const handleCloseModal = () => {
@@ -141,19 +128,19 @@ const CheckoutPage = () => {
   const totalPages = Math.ceil(data.length / entriesToShow);
 
   return (
-    <div className="checkout-report-wrapper">
+    <div className={`checkout-report-wrapper ${modalOpen ? "modal-active" : ""}`}>
       <Ownsidebar />
       <div className="checkout-report-container">
         <div className="checkout-filter-section">
           <h2>Filter Checkouts</h2>
           <div className="checkout-filter-grid">
             <div className="checkout-form-group">
-              <label>NIC</label>
-              <input name="mobile" type="text" onChange={handleFilterChange} />
+              <label>Guest First Name</label>
+              <input name="guestFirstName" type="text" onChange={handleFilterChange} />
             </div>
             <div className="checkout-form-group">
-              <label>Guest Name</label>
-              <input name="guestName" type="text" onChange={handleFilterChange} />
+              <label>City</label>
+              <input name="city" type="text" onChange={handleFilterChange} />
             </div>
             <div className="checkout-form-group">
               <label>Date From</label>
@@ -165,36 +152,17 @@ const CheckoutPage = () => {
             </div>
           </div>
           <div className="checkout-filter-buttons">
-            <button className="checkout-search-btn" onClick={handleSearch}>
-              Search
-            </button>
+            <button className="checkout-search-btn" onClick={handleSearch}>Search</button>
             <select className="checkout-export-btn" onChange={(e) => handleExport(e.target.value)}>
               <option value="">Export As...</option>
               <option value="pdf">PDF</option>
-              <option value="xlsx">Excel (.xlsx)</option>
+              <option value="xlsx">Excel</option>
               <option value="csv">CSV</option>
             </select>
           </div>
         </div>
 
         <div className="checkout-table-section">
-          <div className="checkout-table-controls">
-            <div>
-              Show
-              <select
-                value={entriesToShow}
-                onChange={(e) => setEntriesToShow(parseInt(e.target.value))}
-                className="checkout-entries-select"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-              entries
-            </div>
-          </div>
-
           <table className="checkout-table">
             <thead>
               <tr>
@@ -202,10 +170,10 @@ const CheckoutPage = () => {
                 <th>First Name</th>
                 <th>Surname</th>
                 <th>Mobile</th>
+                <th>City</th> {/* ✅ City column added */}
                 <th>Room No</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
-                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -213,44 +181,42 @@ const CheckoutPage = () => {
               {currentData.length > 0 ? (
                 currentData.map((guest, index) => (
                   <tr key={guest._id}>
-                    <td>{indexOfFirstEntry + index + 1}</td> {/* ✅ Row Number */}
+                    <td>{indexOfFirstEntry + index + 1}</td>
                     <td>{guest.firstName}</td>
                     <td>{guest.surname}</td>
                     <td>{guest.mobile}</td>
-                    <td>{guest.roomNumber || "N/A"}</td>
-                    <td>{guest.checkInDate?.split("T")[0]}</td>
-                    <td>{guest.checkoutDate?.split("T")[0]}</td>
-                    <td>{guest.status}</td>
+                    <td>{guest.city || "N/A"}</td> {/* ✅ show city */}
+                    <td>
+                      {Array.isArray(guest.selectedRooms)
+                        ? guest.selectedRooms.join(", ")
+                        : guest.selectedRooms || "N/A"}
+                    </td>
+                    <td>{guest.checkIn?.split("T")[0]}</td>
+                    <td>{guest.checkOut?.split("T")[0]}</td>
                     <td>
                       <button className="viewBtn" onClick={() => handleView(guest._id)}>
-                        <FaEye className="viewIcon" />
-                        View
+                        <FaEye className="viewIcon" /> View
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td colSpan="9">No checked out guests found.</td>
-                </tr>
+                <tr><td colSpan="9">No checked out guests found.</td></tr>
               )}
             </tbody>
           </table>
 
           <div className="checkout-pagination">
             <span>
-              Showing {data.length === 0 ? 0 : indexOfFirstEntry + 1} to {Math.min(indexOfLastEntry, data.length)} of {data.length} entries
+              Showing {data.length === 0 ? 0 : indexOfFirstEntry + 1} to{" "}
+              {Math.min(indexOfLastEntry, data.length)} of {data.length} entries
             </span>
             <div className="checkout-pagination-buttons">
               <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                 Previous
               </button>
               {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  className={currentPage === i + 1 ? "active" : ""}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
+                <button key={i} className={currentPage === i + 1 ? "active" : ""} onClick={() => setCurrentPage(i + 1)}>
                   {i + 1}
                 </button>
               ))}
@@ -259,23 +225,39 @@ const CheckoutPage = () => {
               </button>
             </div>
           </div>
-
-          {modalOpen && selectedGuest && (
-            <div className="modal-overlay">
-              <div className="modal">
-                <h3>Guest Details</h3>
-                <p><strong>Name:</strong> {selectedGuest?.firstName || "N/A"} {selectedGuest?.surname || ""}</p>
-                <p><strong>Mobile:</strong> {selectedGuest?.mobile || "N/A"}</p>
-                <p><strong>Email:</strong> {selectedGuest?.email || "N/A"}</p>
-                <p><strong>Room Number:</strong> {selectedGuest?.roomNumber || "N/A"}</p>
-                <p><strong>Check-In:</strong> {selectedGuest?.checkInDate?.split("T")[0] || "N/A"}</p>
-                <p><strong>Check-Out:</strong> {selectedGuest?.checkoutDate?.split("T")[0] || "N/A"}</p>
-                <p><strong>Status:</strong> {selectedGuest?.status || "N/A"}</p>
-                <button className="closeBtn" onClick={handleCloseModal}>Close</button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Modal */}
+        {modalOpen && selectedGuest && ( <div className="checkout-modal-overlay">
+    <div className="checkout-modal-content">
+      {/* Close "x" icon */}
+      <button className="modal-close-x" onClick={handleCloseModal} aria-label="Close modal">
+        <FaTimes />
+      </button>
+              <h3>Guest Details</h3>
+              <ul>
+                <li><strong>Full Name:</strong> {selectedGuest.firstName} {selectedGuest.middleName} {selectedGuest.surname}</li>
+                <li><strong>NIC:</strong> {selectedGuest.idNumber}</li>
+                <li><strong>Mobile:</strong> {selectedGuest.mobile}</li>
+                <li><strong>Email:</strong> {selectedGuest.email}</li>
+                <li><strong>Gender:</strong> {selectedGuest.gender}</li>
+                <li><strong>DOB:</strong> {selectedGuest.dob?.split("T")[0]}</li>
+                <li><strong>Nationality:</strong> {selectedGuest.nationality}</li>
+                <li><strong>City:</strong> {selectedGuest.city}</li>
+                <li><strong>Address:</strong> {selectedGuest.address}</li>
+                <li><strong>Adults:</strong> {selectedGuest.adults}</li>
+                <li><strong>Children:</strong> {selectedGuest.children}</li>
+                <li><strong>Room No:</strong> {Array.isArray(selectedGuest.selectedRooms) ? selectedGuest.selectedRooms.join(", ") : selectedGuest.selectedRooms || "N/A"}</li>
+                <li><strong>Reservation Type:</strong> {selectedGuest.reservationType}</li>
+                <li><strong>Check-In:</strong> {selectedGuest.checkIn?.split("T")[0]}</li>
+                <li><strong>Check-Out:</strong> {selectedGuest.checkOut?.split("T")[0]}</li>
+                <li><strong>Start Time:</strong> {selectedGuest.startTime}</li>
+                <li><strong>End Time:</strong> {selectedGuest.endTime}</li>
+                <li><strong>Status:</strong> {selectedGuest.status}</li>
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

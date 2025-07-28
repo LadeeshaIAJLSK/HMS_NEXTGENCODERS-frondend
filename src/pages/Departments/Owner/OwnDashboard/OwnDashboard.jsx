@@ -125,19 +125,21 @@ const OwnerDashboard = () => {
           </div>
 
           {/* 💰 Revenue Summary */}
-          <div className="metric-card">
-            <h3>Today's Revenue</h3>
-            <div className="metric-values">
-              <div>
-                <p>Rs. {receptionRevenue.toFixed(2)}</p>
-                <span>Reception</span>
-              </div>
-              <div>
-                <p>Rs. {restaurantRevenue.toFixed(2)}</p>
-                <span>Restaurant</span>
-              </div>
-            </div>
-          </div>
+          {/* 💰 Revenue Summary */}
+<div className="metric-card">
+  <h3>Today's Revenue</h3>
+  <div className="metric-values">
+    <div>
+      <p>{receptionRevenue ? `Rs. ${receptionRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
+      <span>Reception</span>
+    </div>
+    <div>
+      <p>{restaurantRevenue ? `Rs. ${restaurantRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
+      <span>Restaurant</span>
+    </div>
+  </div>
+</div>
+
         </section>
 
         {/* 📊 Room Occupancy Chart */}
