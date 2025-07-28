@@ -40,63 +40,80 @@
 }
 
 .roomhome-table th {
-  background-color: #212121;
+  background-color: #008080;
   color: white;
   text-transform: uppercase;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 14px;
 }
 
-.roomhome-edit-btn {
+.roomhome-icon-btn {
+  background-color: #008080;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  margin: 0 5px;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #ffc107;
-  color: #000;
-  text-decoration: none;
+  justify-content: center;
 }
 
-.roomhome-edit-btn:hover {
-  background-color: #e0a800;
+.roomhome-icon-btn:hover {
+  background-color: #006666;
 }
 
-.roomhome-delete-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #dc3545;
+.roomhome-icon {
   color: white;
-  margin-left: 0.5rem;
-  text-decoration: none;
+  font-size: 18px;
 }
 
-.roomhome-delete-btn:hover {
-  background-color: #b52a37;
+.roomhome-icon-btn {
+  background-color: #008080;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  margin: 0 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.roomhome-icon-btn:hover {
+  background-color: #006666;
+}
+
+/* Multicolored icon styles inspired by your uploaded image */
+.edit-icon {
+  font-size: 18px;
+  color: #e3b242; /* Vibrant orange */
+}
+
+.delete-icon {
+  font-size: 18px;
+  color: #c82333; /* Vivid red */
 }
 
 .roomhome-add-btn {
-  margin-top: 1.5rem;
-  background-color: #28a745;
-  color: white;
-  align-self: flex-start;
-  padding: 0.6rem 1rem;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
+  margin-right: auto;
+  display: block;
+  margin-top: 20px;
+  padding: 0.5rem 0.5rem;
+  background-color: #008080;
   border: none;
+  color: white;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .roomhome-add-btn:hover {
-  background-color: #218838;
+  background-color: #008083;
 }
 
 .roomhome-loading,
@@ -172,7 +189,7 @@
 }
 
 .roomhome-modal-content .save-btn {
-  background-color: #28a745;
+  background-color: #008080;
   color: white;
   padding: 0.6rem 1.5rem;
   font-size: 1rem;
@@ -186,7 +203,7 @@
 }
 
 .roomhome-modal-content .save-btn:hover {
-  background-color: #218838;
+  background-color: #008040;
 }
 
 .roomhome-blur {

@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
+import { FaEye } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./Checkout.css";
 
 const CheckoutPage = () => {
+  const [originalData, setOriginalData] = useState([]);
   const [data, setData] = useState([]);
   const [entriesToShow, setEntriesToShow] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
-    nic: "",
+    mobile: "",
     roomno: "",
     fromDate: "",
     toDate: "",
-    remarks: "",
-    CheckoutHandledBy: ""
+    guestName: "",
+    checkoutBy: ""
   });
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCheckouts();
@@ -25,7 +29,8 @@ const CheckoutPage = () => {
 
   const fetchCheckouts = async () => {
     try {
-      const response = await axios.get("http://localhost:5003/api/checkouts");
+      const response = await axios.get("http://localhost:5004/api/checkouts");
+      setOriginalData(response.data);
       setData(response.data);
     } catch (error) {
       console.error("Error fetching checkout data:", error);
@@ -37,27 +42,29 @@ const CheckoutPage = () => {
   };
 
   const handleSearch = () => {
-    const { nic, roomno, remarks, CheckoutHandledBy, fromDate, toDate } = filters;
-    const filtered = data.filter((d) => {
-      const matchNIC = nic ? d.nicNumber === nic : true;
-      const matchRoomNo = roomno ? d.roomno === parseInt(roomno) : true;
-      const matchRemarks = remarks && remarks !== "none" ? d.remarks === remarks : true;
-      const matchCheckoutBy = CheckoutHandledBy
-        ? d.CheckoutHandledBy.toLowerCase().includes(CheckoutHandledBy.toLowerCase())
+    const { mobile, roomno, guestName, checkoutBy, fromDate, toDate } = filters;
+    const filtered = originalData.filter((d) => {
+      const matchMobile = mobile ? d.mobile.includes(mobile) : true;
+      const matchRoomNo = roomno ? d.selectedRooms?.includes(roomno) : true;
+      const matchGuestName = guestName
+        ? d.fullName?.toLowerCase().includes(guestName.toLowerCase())
+        : true;
+      const matchCheckoutBy = checkoutBy
+        ? d.checkoutByName?.toLowerCase().includes(checkoutBy.toLowerCase())
         : true;
 
       const from = fromDate ? new Date(fromDate) : null;
       const to = toDate ? new Date(toDate) : null;
-      const dateFrom = new Date(d.dateFrom);
-      const dateTo = new Date(d.dateTo);
+      const checkInDate = new Date(d.checkIn);
+      const checkoutDate = new Date(d.checkoutDate);
 
       const matchDate =
         (!from && !to) ||
-        (!to && from && dateTo >= from) ||
-        (to && !from && dateFrom <= to) ||
-        (from && to && dateFrom <= to && dateTo >= from);
+        (!to && from && checkoutDate >= from) ||
+        (to && !from && checkInDate <= to) ||
+        (from && to && checkInDate <= to && checkoutDate >= from);
 
-      return matchNIC && matchRoomNo && matchRemarks && matchCheckoutBy && matchDate;
+      return matchMobile && matchRoomNo && matchGuestName && matchCheckoutBy && matchDate;
     });
 
     setData(filtered);
@@ -65,24 +72,43 @@ const CheckoutPage = () => {
   };
 
   const handleExport = (format) => {
+    if (data.length === 0) {
+      alert("No data to export.");
+      return;
+    }
+
     const exportData = data.map((item) => ({
-      "Guest ID": item.guestId,
-      "NIC Number": item.nicNumber,
-      "Room-No": item.roomno,
-      "Date From": new Date(item.dateFrom).toLocaleDateString(),
-      "Date To": new Date(item.dateTo).toLocaleDateString(),
-      Remarks: item.remarks,
-      "Checkout Handled By": item.CheckoutHandledBy
+      GuestName: item.fullName,
+      Mobile: item.mobile,
+      RoomNo: item.selectedRooms?.join(", "),
+      CheckIn: new Date(item.checkIn).toLocaleDateString(),
+      CheckOut: new Date(item.checkoutDate).toLocaleDateString(),
+      CheckoutBy: item.checkoutByName || "N/A"
     }));
 
     if (format === "pdf") {
       const doc = new jsPDF();
-      doc.text("Checkout Report", 14, 16);
+      doc.setFontSize(14);
+      doc.text("Checkout Report", 14, 15);
+
+      const columns = [
+        { header: "Guest Name", dataKey: "GuestName" },
+        { header: "Mobile", dataKey: "Mobile" },
+        { header: "Room No", dataKey: "RoomNo" },
+        { header: "Check-In", dataKey: "CheckIn" },
+        { header: "Check-Out", dataKey: "CheckOut" },
+        { header: "Checkout By", dataKey: "CheckoutBy" },
+      ];
+
       doc.autoTable({
-        head: [Object.keys(exportData[0])],
-        body: exportData.map((row) => Object.values(row)),
-        startY: 20
+        startY: 20,
+        columns,
+        body: exportData,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [22, 160, 133] },
+        margin: { top: 20 },
       });
+
       doc.save("checkout_report.pdf");
     } else {
       const ws = XLSX.utils.json_to_sheet(exportData);
@@ -92,28 +118,21 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleView = async (id) => {
-    try {
-      const response = await axios.get(`http://localhost:5003/api/checkouts/${id}`);
-      const data = response.data;
+  const handleView = (id) => {
+    axios
+      .get(`/api/checkout/${id}`)
+      .then((res) => {
+        setSelectedGuest(res.data);
+        setModalOpen(true);
+      })
+      .catch((err) => {
+        console.error("Error fetching guest details:", err);
+      });
+  };
 
-      const detailString = `
-Guest ID: ${data.guestId}
-Guest Name: ${data.guestName}
-NIC: ${data.nicNumber}
-Phone: ${data.guestPhone}
-Email: ${data.guestEmail}
-Room No: ${data.roomno}
-Date From: ${new Date(data.dateFrom).toLocaleDateString()}
-Date To: ${new Date(data.dateTo).toLocaleDateString()}
-Remarks: ${data.remarks}
-Checkout Handled By: ${data.CheckoutHandledBy}
-      `;
-
-      alert(detailString);
-    } catch (error) {
-      console.error("Error fetching details:", error);
-    }
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedGuest(null);
   };
 
   const indexOfLastEntry = currentPage * entriesToShow;
@@ -129,6 +148,14 @@ Checkout Handled By: ${data.CheckoutHandledBy}
           <h2>Filter Checkouts</h2>
           <div className="checkout-filter-grid">
             <div className="checkout-form-group">
+              <label>NIC</label>
+              <input name="mobile" type="text" onChange={handleFilterChange} />
+            </div>
+            <div className="checkout-form-group">
+              <label>Guest Name</label>
+              <input name="guestName" type="text" onChange={handleFilterChange} />
+            </div>
+            <div className="checkout-form-group">
               <label>Date From</label>
               <input name="fromDate" type="date" onChange={handleFilterChange} />
             </div>
@@ -136,22 +163,11 @@ Checkout Handled By: ${data.CheckoutHandledBy}
               <label>Date To</label>
               <input name="toDate" type="date" onChange={handleFilterChange} />
             </div>
-            <div className="checkout-form-group">
-              <label>Remarks</label>
-              <select name="remarks" onChange={handleFilterChange}>
-                <option value="none">None</option>
-                <option value="Late Checkout">Late Checkout</option>
-                <option value="VIP Guest">VIP Guest</option>
-                <option value="Discount Applied">Discount Applied</option>
-              </select>
-            </div>
-            <div className="checkout-form-group">
-              <label>Checkout Handled By</label>
-              <input name="CheckoutHandledBy" type="text" onChange={handleFilterChange} />
-            </div>
           </div>
           <div className="checkout-filter-buttons">
-            <button className="checkout-search-btn" onClick={handleSearch}>Search</button>
+            <button className="checkout-search-btn" onClick={handleSearch}>
+              Search
+            </button>
             <select className="checkout-export-btn" onChange={(e) => handleExport(e.target.value)}>
               <option value="">Export As...</option>
               <option value="pdf">PDF</option>
@@ -170,10 +186,10 @@ Checkout Handled By: ${data.CheckoutHandledBy}
                 onChange={(e) => setEntriesToShow(parseInt(e.target.value))}
                 className="checkout-entries-select"
               >
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
               </select>
               entries
             </div>
@@ -183,40 +199,47 @@ Checkout Handled By: ${data.CheckoutHandledBy}
             <thead>
               <tr>
                 <th>#</th>
-                <th>Guest ID</th>
-                <th>NIC Number</th>
-                <th>Room-No</th>
-                <th>Date From</th>
-                <th>Date To</th>
-                <th>Remarks</th>
-                <th>Checkout Handled by</th>
+                <th>First Name</th>
+                <th>Surname</th>
+                <th>Mobile</th>
+                <th>Room No</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {currentData.map((item, index) => (
-                <tr key={index}>
-                  <td>{indexOfFirstEntry + index + 1}</td>
-                  <td>{item.guestId}</td>
-                  <td>{item.nicNumber}</td>
-                  <td>{item.roomno}</td>
-                  <td>{new Date(item.dateFrom).toLocaleDateString()}</td>
-                  <td>{new Date(item.dateTo).toLocaleDateString()}</td>
-                  <td>{item.remarks}</td>
-                  <td>{item.CheckoutHandledBy}</td>
-                  <td>
-                    <button className="checkout-view-button" onClick={() => handleView(item._id)}>
-                      View
-                    </button>
-                  </td>
+              {currentData.length > 0 ? (
+                currentData.map((guest, index) => (
+                  <tr key={guest._id}>
+                    <td>{indexOfFirstEntry + index + 1}</td> {/* ✅ Row Number */}
+                    <td>{guest.firstName}</td>
+                    <td>{guest.surname}</td>
+                    <td>{guest.mobile}</td>
+                    <td>{guest.roomNumber || "N/A"}</td>
+                    <td>{guest.checkInDate?.split("T")[0]}</td>
+                    <td>{guest.checkoutDate?.split("T")[0]}</td>
+                    <td>{guest.status}</td>
+                    <td>
+                      <button className="viewBtn" onClick={() => handleView(guest._id)}>
+                        <FaEye className="viewIcon" />
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="9">No checked out guests found.</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
 
           <div className="checkout-pagination">
             <span>
-              Showing {indexOfFirstEntry + 1} to {Math.min(indexOfLastEntry, data.length)} of {data.length} entries
+              Showing {data.length === 0 ? 0 : indexOfFirstEntry + 1} to {Math.min(indexOfLastEntry, data.length)} of {data.length} entries
             </span>
             <div className="checkout-pagination-buttons">
               <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
@@ -236,6 +259,22 @@ Checkout Handled By: ${data.CheckoutHandledBy}
               </button>
             </div>
           </div>
+
+          {modalOpen && selectedGuest && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h3>Guest Details</h3>
+                <p><strong>Name:</strong> {selectedGuest?.firstName || "N/A"} {selectedGuest?.surname || ""}</p>
+                <p><strong>Mobile:</strong> {selectedGuest?.mobile || "N/A"}</p>
+                <p><strong>Email:</strong> {selectedGuest?.email || "N/A"}</p>
+                <p><strong>Room Number:</strong> {selectedGuest?.roomNumber || "N/A"}</p>
+                <p><strong>Check-In:</strong> {selectedGuest?.checkInDate?.split("T")[0] || "N/A"}</p>
+                <p><strong>Check-Out:</strong> {selectedGuest?.checkoutDate?.split("T")[0] || "N/A"}</p>
+                <p><strong>Status:</strong> {selectedGuest?.status || "N/A"}</p>
+                <button className="closeBtn" onClick={handleCloseModal}>Close</button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

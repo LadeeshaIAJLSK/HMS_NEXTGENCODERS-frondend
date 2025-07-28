@@ -64,7 +64,7 @@ const SettingsPage = () => {
 
   // Fetch settings on mount
   useEffect(() => {
-    axios.get("http://localhost:5003/api/settings")
+    axios.get("http://localhost:5004/api/settings")
       .then(res => setSettings(res.data))
       .catch(err => {
         console.error("Error fetching settings:", err);
@@ -94,7 +94,7 @@ const SettingsPage = () => {
       formData.append("logo", siteLogo);
     }
 
-    const response = await axios.put("http://localhost:5003/api/settings", formData, {
+    const response = await axios.put("http://localhost:5004/api/settings", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

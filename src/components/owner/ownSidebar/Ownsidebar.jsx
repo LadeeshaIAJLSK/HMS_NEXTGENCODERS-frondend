@@ -62,6 +62,9 @@ const Sidebar = () => {
             ⚙️ &nbsp;Settings
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/">⏻ &nbsp;Logout </NavLink>
+        </li>
       </ul>
     </div>
   );

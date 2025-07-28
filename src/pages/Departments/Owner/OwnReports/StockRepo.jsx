@@ -4,7 +4,7 @@ import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 import "./StockRepo.css";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import "jspdf-autotable";  // Just import the plugin to patch jsPDF
 
 const StockReport = () => {
   const [stockData, setStockData] = useState([]);
@@ -25,7 +25,7 @@ const StockReport = () => {
 
   const fetchStockData = async () => {
     try {
-      const res = await axios.get("http://localhost:5003/api/stocks");
+      const res = await axios.get("http://localhost:5004/api/stocks");
       setStockData(res.data);
       setFilteredData(res.data);
     } catch (err) {
@@ -74,10 +74,14 @@ const StockReport = () => {
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
 
   const handleExport = (format) => {
-    if (!filteredData.length) return alert("No data to export.");
+    if (!filteredData.length) {
+      alert("No data to export.");
+      return;
+    }
 
     if (format === "pdf") {
       const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
+
       const tableColumn = ["Product No", "Product Name", "Quantity", "Price", "Date", "Department", "Stock Type"];
       const tableRows = filteredData.map(row => [
         row.productNo,
@@ -88,9 +92,20 @@ const StockReport = () => {
         row.department,
         row.stockType
       ]);
+
       doc.setFontSize(15);
       doc.text("Stock Report", 40, 40);
-      doc.autoTable({ head: [tableColumn], body: tableRows, startY: 60, theme: "grid", headStyles: { fillColor: [100, 100, 255] } });
+
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 60,
+        theme: "grid",
+        headStyles: { fillColor: [100, 100, 255] },
+        styles: { fontSize: 9 },
+        margin: { top: 60 }
+      });
+
       doc.save("stock_report.pdf");
     } else {
       const data = filteredData.map(row => ({
@@ -102,6 +117,7 @@ const StockReport = () => {
         Department: row.department,
         "Stock Type": row.stockType
       }));
+
       const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
@@ -172,9 +188,10 @@ const StockReport = () => {
           <div>
             Show{" "}
             <select value={entriesPerPage} onChange={handleEntriesChange} className="stock-entries-select">
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
+              <option value={5}>5</option>
+              <option value={10}>10</option>    
+              <option value={15}>15</option>
+              <option value={20}>20</option>
             </select>{" "}
             entries
           </div>

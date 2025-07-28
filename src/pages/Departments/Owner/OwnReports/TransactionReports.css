@@ -83,7 +83,7 @@
 
 /* Export button color */
 .transaction-export-btn {
-  background-color: #4169e1;
+  background-color: #008080;
   color: #fbf9f9;
 }
 
@@ -128,8 +128,11 @@
 
 /* Header background */
 .transaction-table th {
-  background-color: #e0f7fa;
-  color: #333;
+  background-color: #008080;
+  color: #f7f7f7;
+  text-transform: uppercase;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
 }
 
 /* Row hover effect */
@@ -153,7 +156,7 @@
 .transaction-pagination-buttons button {
   padding: 6px 12px;
   border: 1px solid #ccc;
-  background: #3f5df3;
+  background: #008080;
   color:rgb(251, 247, 247);
   border-radius: 4px;
   cursor: pointer;
@@ -161,9 +164,9 @@
 
 /* Active page highlight */
 .transaction-pagination-buttons .active {
-  background-color: teal;
-  color: rgb(255, 254, 254);
-  border: 1px solid teal;
+  background-color: #008040;
+  color: #fff;
+  border: 1px solid #008080;
 }
 
 /* Summary totals section */
@@ -193,7 +196,7 @@
 }
 
 .transaction-net-amount {
-  color: teal;
+  color: rgb(37, 10, 215);
   font-weight: bold;
 }
   

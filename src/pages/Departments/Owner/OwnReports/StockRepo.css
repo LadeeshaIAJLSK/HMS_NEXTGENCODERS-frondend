@@ -81,7 +81,7 @@
 
 /* Export button */
 .stock-export-btn {
-  background-color: #4169e1;
+  background-color: #008080;
   color: #fff;
   padding: 8px 18px;
   font-size: 14px;
@@ -109,20 +109,41 @@
 .stock-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 10px;
-}
-
-.stock-table thead {
-  background-color: #e0f7fa;
+  margin-bottom: 5px;
 }
 
 .stock-table th,
 .stock-table td {
+  text-align:left;
   padding: 12px 15px;
-  text-align: left;
   font-size: 14px;
   border-bottom: 1px solid #ddd;
 }
+
+/* Header background */
+  .stock-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 5px;
+}
+
+.stock-table th,
+.stock-table td {
+  text-align: left;
+  padding: 12px 15px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Header background */
+.stock-table th {
+  background-color: #008080;
+  color: #f7f7f7;
+  text-transform: uppercase;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
 
 .stock-table tr:hover {
   background-color: #f1f1f1;
@@ -164,7 +185,7 @@
 .Stock-pagination-buttons button {
   padding: 6px 12px;
   border: 1px solid #ccc;
-  background: #3f5df3;
+  background: #008080;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
@@ -173,12 +194,12 @@
 }
 
 .Stock-pagination-buttons button:hover {
-  background-color: #254fd3;
+  background-color: #008080;
 }
 
 /* Active page style */
 .Stock-pagination-buttons .active {
-  background-color: teal;
+  background-color: #008040;
   color: #fff;
-  border: 1px solid teal;
+  border: 1px solid #008080;
 }

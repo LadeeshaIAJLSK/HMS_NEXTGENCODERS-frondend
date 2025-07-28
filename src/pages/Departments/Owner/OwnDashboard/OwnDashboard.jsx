@@ -1,56 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
-  PieChart, Pie, Cell, Tooltip,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
-  LineChart, Line
-} from 'recharts';
-import './OwnDashboard.css';
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  LineChart,
+  Line,
+} from "recharts";
+import "./OwnDashboard.css";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 
-// Pie chart colors
-const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'];
+const COLORS = ["#FF6384", "#36A2EB", "#d1a83f", "#9e15a0"];
 
 const OwnerDashboard = () => {
   const [receptionData, setReceptionData] = useState([]);
-  const [editData, setEditData] = useState(null);
   const [todayCheckIns, setTodayCheckIns] = useState(0);
   const [todayCheckOuts, setTodayCheckOuts] = useState(0);
+  const [receptionRevenue, setReceptionRevenue] = useState(0);
+  const [restaurantRevenue, setRestaurantRevenue] = useState(0);
   const [salesData, setSalesData] = useState([]);
   const [period, setPeriod] = useState("yearly");
 
+  const [receptionCounts, setReceptionCounts] = useState({
+    booked: 0,
+    occupied: 0,
+    vacant: 0,
+    outOfService: 0,
+  });
+
   const fetchReceptionData = async () => {
     try {
-      const res = await axios.get('http://localhost:5003/api/reception/latest');
+      const res = await axios.get("http://localhost:5004/api/dashboard/latest");
       const data = res.data;
 
-      if (!data) {
-        console.warn('No reception data found');
-        return;
-      }
+      setTodayCheckIns(data.todayCheckIns || 0);
+      setTodayCheckOuts(data.todayCheckOuts || 0);
+      setReceptionRevenue(data.receptionRevenue || 0);
+      setRestaurantRevenue(data.restaurantRevenue || 0);
 
-      const formattedData = [
-        { name: 'Booked', value: data.booked },
-        { name: 'Occupied', value: data.occupied },
-        { name: 'Vacant', value: data.vacant },
-        { name: 'Out of Service', value: data.outOfService }
-      ];
+      setReceptionCounts({
+        booked: data.booked || 0,
+        occupied: data.occupied || 0,
+        vacant: data.vacant || 0,
+        outOfService: data.outOfService || 0,
+      });
 
-      setReceptionData(formattedData);
-      setTodayCheckIns(data.todayCheckIns);
-      setTodayCheckOuts(data.todayCheckOuts);
-      setEditData(data);
-    } catch (err) {
-      console.error('Error fetching reception data:', err);
+      setReceptionData([
+        { name: "Booked", value: data.booked },
+        { name: "Occupied", value: data.occupied },
+        { name: "Vacant", value: data.vacant },
+        { name: "Out of Service", value: data.outOfService },
+      ]);
+    } catch (error) {
+      console.error("Error fetching reception data:", error);
     }
   };
 
   const fetchSalesData = async (selectedPeriod) => {
     try {
-      const res = await axios.get(`http://localhost:5003/api/sales?period=${selectedPeriod}`);
+      const res = await axios.get(
+        `http://localhost:5004/api/sales?period=${selectedPeriod}`
+      );
       setSalesData(res.data);
     } catch (err) {
-      console.error('Error fetching sales data:', err);
+      console.error("Error fetching sales data:", err);
+    }
+  };
+
+  const storeBackupData = async () => {
+    try {
+      const date = prompt("Enter date for backup (YYYY-MM-DD):", new Date().toISOString().split("T")[0]);
+      if (!date) return;
+
+      await axios.post("http://localhost:5004/api/dashboard/backup", {
+        date,
+        todayCheckIns,
+        todayCheckOuts,
+        booked: receptionCounts.booked,
+        occupied: receptionCounts.occupied,
+        vacant: receptionCounts.vacant,
+        outOfService: receptionCounts.outOfService,
+        receptionRevenue,
+        restaurantRevenue,
+        chartData: receptionData,
+      });
+
+      alert("Backup stored successfully!");
+    } catch (err) {
+      console.error("Failed to store backup:", err);
+      alert("Failed to store backup.");
     }
   };
 
@@ -59,41 +104,57 @@ const OwnerDashboard = () => {
     fetchSalesData(period);
   }, [period]);
 
-  const handleSalesFilterChange = (e) => {
-    const selectedPeriod = e.target.value;
-    setPeriod(selectedPeriod);
-  };
-
-  const handleUpdate = async () => {
-    try {
-      await axios.post('http://localhost:5003/api/reception', editData);
-      fetchReceptionData();  // Refresh charts
-    } catch (err) {
-      console.error('Update failed:', err);
-    }
-  };
-
   return (
     <>
       <Ownsidebar />
-      <div className="Owndashboard-container">
-        <div className="dash-metrics-row">
-          <div className="dash-metric-box">
-            <div className="dash-metric-value">{todayCheckIns}</div>
-            <div className="dash-metric-label">Today Check-Ins</div>
+      <main className="dashboard-container">
+        {/* 🧍‍♂️ Guest Activity Summary */}
+        <section className="metrics-row">
+          <div className="metric-card">
+            <h3>Today's Guest Activity</h3>
+            <div className="metric-values">
+              <div>
+                <p>{todayCheckIns}</p>
+                <span>Check-Ins</span>
+              </div>
+              <div>
+                <p>{todayCheckOuts}</p>
+                <span>Check-Outs</span>
+              </div>
+            </div>
           </div>
-          <div className="dash-metric-box">
-            <div className="dash-metric-value">{todayCheckOuts}</div>
-            <div className="dash-metric-label">Today Check-Outs</div>
-          </div>
-        </div>
 
-        <div className="dash-chart-box">
-          <div className="dash-chart-header">Reception Status Overview</div>
-          <div className="chart-table-row">
-            <div className="chart-column">
-              <PieChart width={250} height={270}>
-                <Pie data={receptionData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
+          {/* 💰 Revenue Summary */}
+          <div className="metric-card">
+            <h3>Today's Revenue</h3>
+            <div className="metric-values">
+              <div>
+                <p>Rs. {receptionRevenue.toFixed(2)}</p>
+                <span>Reception</span>
+              </div>
+              <div>
+                <p>Rs. {restaurantRevenue.toFixed(2)}</p>
+                <span>Restaurant</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 📊 Room Occupancy Chart */}
+        <section className="chart-section">
+          <h2>Room Occupancy Overview</h2>
+          <div className="chart-row fixed-chart-row">
+            <div className="chart pie-container">
+              <PieChart width={300} height={300}>
+                <Pie
+                  data={receptionData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label
+                >
                   {receptionData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -101,45 +162,45 @@ const OwnerDashboard = () => {
                 <Tooltip />
               </PieChart>
             </div>
-            <div className="chart-column">
-              <LineChart width={450} height={270} data={receptionData}>
+            <div className="chart line-container">
+              <LineChart width={470} height={300} data={receptionData}>
                 <CartesianGrid strokeDasharray="4 4" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="value" stroke="#4BC0C0" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="value" stroke="#008080" activeDot={{ r: 8 }} />
               </LineChart>
             </div>
           </div>
+          <button className="backup-btn" onClick={storeBackupData}>Store Backup</button>
+        </section>
 
-          <div className="dash-update-button-container">
-            <button className="dash-update-label" onClick={handleUpdate}>Update</button>
+        {/* 💹 Sales Overview */}
+        <section className="chart-section">
+          <div className="sales-header">
+            <h2>Sales Overview</h2>
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="period-select"
+            >
+              <option value="yearly">Yearly</option>
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+              <option value="daily">Daily</option>
+            </select>
           </div>
-        </div>
-
-        <div className="dash-chart-row">
-          <div className="dash-chart-box">
-            <div className="dash-chart-header">
-              Sales
-              <select value={period} onChange={handleSalesFilterChange}>
-                <option value="yearly">Yearly</option>
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="daily">Daily</option>
-              </select>
-            </div>
-            <BarChart width={900} height={400} data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="sales" fill="#153279" />
-            </BarChart>
-          </div>
-        </div>
-      </div>
+          <BarChart width={900} height={400} data={salesData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="sales" fill="#008080" />
+          </BarChart>
+        </section>
+      </main>
     </>
   );
 };

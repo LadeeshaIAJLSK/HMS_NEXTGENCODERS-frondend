@@ -3,7 +3,7 @@ import axios from "axios";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable"; // ✅ Correct import
 import "./TransactionReports.css";
 
 const TransactionReport = () => {
@@ -28,7 +28,7 @@ const TransactionReport = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await axios.get("http://localhost:5003/api/transactions");
+      const response = await axios.get("http://localhost:5004/api/transactions");
       setAllTransactions(response.data);
       setFilteredTransactions(response.data);
       calculateTotals(response.data);
@@ -95,23 +95,25 @@ const TransactionReport = () => {
 
   const handleExport = (format) => {
     const exportData = filteredTransactions.map((t) => ({
-  "Transaction ID": t.transactionId,
-  Activity: t.activity,
-  Department: t.department, // 👈 Add this line
-  "Transaction Type": t.transactionType,
-  "Payment Mode": t.paymentMode,
-  Date: new Date(t.date).toLocaleDateString(),
-  "Total Amount": t.totalAmount,
-}));
+      "Transaction ID": t.transactionId,
+      Activity: t.activity,
+      Department: t.department,
+      "Transaction Type": t.transactionType,
+      "Payment Mode": t.paymentMode,
+      Date: new Date(t.date).toLocaleDateString(),
+      "Total Amount": t.totalAmount,
+    }));
 
     if (format === "pdf") {
       const doc = new jsPDF("landscape");
-      doc.text("Transaction Report", 14, 20);
-      doc.autoTable({
+      doc.text("Transaction Report", 14, 15);
+
+      autoTable(doc, {
         head: [Object.keys(exportData[0])],
         body: exportData.map((row) => Object.values(row)),
-        startY: 30
+        startY: 25,
       });
+
       doc.save("transaction_report.pdf");
     } else {
       const ws = XLSX.utils.json_to_sheet(exportData);
@@ -125,6 +127,7 @@ const TransactionReport = () => {
     <div className="transaction-report-wrapper">
       <Ownsidebar />
       <div className="transaction-report-container">
+        {/* Filter Section */}
         <div className="transaction-filter-section">
           <h2>Filter Transaction History</h2>
           <div className="transaction-filter-grid">
@@ -184,19 +187,21 @@ const TransactionReport = () => {
           </div>
         </div>
 
+        {/* Table Controls */}
         <div className="transaction-table-controls">
           <div>
             Show
             <select className="transaction-entries-select" value={entriesPerPage} onChange={handleEntriesChange}>
-              <option value="10">6</option>
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
+              <option value={5}>5</option>
+              <option value={10}>10</option>    
+              <option value={15}>15</option>
+              <option value={20}>20</option>
             </select>
             entries
           </div>
         </div>
 
+        {/* Table */}
         <div className="transaction-table-section">
           <table className="transaction-table">
             <thead>
@@ -204,29 +209,30 @@ const TransactionReport = () => {
                 <th>#</th>
                 <th>Transaction ID</th>
                 <th>Activity</th>
-                <th>Department</th> {/*Add this line */}
+                <th>Department</th>
                 <th>Transaction Type</th>
                 <th>Payment Mode</th>
                 <th>Date</th>
                 <th>Total Amount</th>
-             </tr>
-           </thead>
+              </tr>
+            </thead>
             <tbody>
               {currentTransactions.map((transaction, index) => (
                 <tr key={transaction._id}>
                   <td>{indexOfFirstEntry + index + 1}</td>
                   <td>{transaction.transactionId}</td>
                   <td>{transaction.activity}</td>
-                  <td>{transaction.department}</td> {/*  Add this line */}
+                  <td>{transaction.department}</td>
                   <td>{transaction.transactionType}</td>
                   <td>{transaction.paymentMode}</td>
                   <td>{new Date(transaction.date).toLocaleDateString()}</td>
                   <td>{transaction.totalAmount.toFixed(2)}</td>
                 </tr>
               ))}
-           </tbody>
+            </tbody>
           </table>
 
+          {/* Pagination */}
           <div className="transaction-pagination">
             <span>
               Showing {indexOfFirstEntry + 1} to{" "}
@@ -253,6 +259,7 @@ const TransactionReport = () => {
           </div>
         </div>
 
+        {/* Totals */}
         <div className="transaction-summary-section">
           <div>Total Income: <span className="transaction-income">Rs. {totalIncome.toFixed(2)}</span></div>
           <div>Total Expense: <span className="transaction-expense">Rs. {totalExpense.toFixed(2)}</span></div>

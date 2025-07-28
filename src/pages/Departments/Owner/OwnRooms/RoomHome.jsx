@@ -27,7 +27,7 @@ const Home = () => {
 
   const fetchRooms = () => {
     axios
-      .get("http://localhost:5003/api/rooms")
+      .get("http://localhost:5004/api/rooms")
       .then((res) => {
         if (res.data.success) {
           setRooms(res.data.rooms);
@@ -44,7 +44,7 @@ const Home = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this room?")) {
       try {
-        await axios.delete(`http://localhost:5003/api/rooms/${id}`);
+        await axios.delete(`http://localhost:5004/api/rooms/${id}`);
         setRooms((prev) => prev.filter((room) => room._id !== id));
         setAllRooms((prev) => prev.filter((room) => room._id !== id));
         alert("Room deleted successfully.");
@@ -89,10 +89,10 @@ const Home = () => {
     e.preventDefault();
     try {
       if (editMode) {
-        await axios.put(`http://localhost:5003/api/rooms/${editingRoomId}`, formRoom);
+        await axios.put(`http://localhost:5004/api/rooms/${editingRoomId}`, formRoom);
         alert("Room updated successfully!");
       } else {
-        await axios.post("http://localhost:5003/api/rooms", formRoom);
+        await axios.post("http://localhost:5004/api/rooms", formRoom);
         alert("Room added successfully!");
       }
       setShowModal(false);
@@ -149,12 +149,12 @@ const Home = () => {
                     <td>{room.RClass || "No Class"}</td>
                     <td>{room.Price ? `$${room.Price}` : "No Price"}</td>
                     <td>
-                     <button className={styles["roomhome-edit-btn"]}onClick={() => openEditModal(room)}>
-                        <FaEdit style={{ color: "#000" }} /> <span style={{ color: "#000" }}>Edit</span>
-                    </button>
-                    <button className={styles["roomhome-delete-btn"]}onClick={() => handleDelete(room._id)}>
-                        <FaTrashAlt style={{ color: "white" }} /> <span style={{ color: "white" }}>Delete</span>
-                    </button>
+                     <button className={styles["roomhome-icon-btn"]} onClick={() => openEditModal(room)}>
+                           <FaEdit className={styles["edit-icon"]} />
+                      </button>
+                      <button className={styles["roomhome-icon-btn"]} onClick={() => handleDelete(room._id)}>
+                            <FaTrashAlt className={styles["delete-icon"]} />
+                      </button>
                     </td>
                   </tr>
                 ))}
