@@ -1556,113 +1556,246 @@
   margin-top: 20px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .reservation-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  
-  .header-left {
-    width: 100%;
-  }
-  
-  .status-badge {
-    align-self: flex-start;
-    margin-left: 0;
-    margin-top: 8px;
-  }
-  
-  .checkout-indicator {
-    margin-left: 0;
-    margin-top: 8px;
-  }
-  
-  .detail-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
+/* Restaurant Orders Section */
+.restaurant-orders {
+  background: #ffffff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid rgba(0, 66, 30, 0.1);
+  overflow: hidden;
+  margin: 24px 0;
 }
 
-/* Enhanced Status Cards */
-.status-card {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 2px solid;
-  margin-top: 24px;
+.restaurant-header {
+  background: var(--gradient-secondary);
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.status-card.payment-required {
-  border-color: #ffc107;
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-}
-
-.status-card.ready-checkout {
-  border-color: #28a745;
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-}
-
-/* Animation for status changes */
-.fade-in {
-  animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Loading state for checked out reservations */
-.checked-out-card .loading-container {
-  background-color: #f8f9fa;
-  border: 2px dashed #dee2e6;
-}
-
-/* Update existing styles for better checkout display */
-.section-header {
+.restaurant-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.restaurant-body {
+  padding: 24px;
+}
+
+.order-item {
+  background: #ffffff;
+  border: 1px solid rgba(0, 66, 30, 0.1);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: var(--transition);
+}
+
+.order-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.order-header {
+  display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #e9ecef;
-  color: #2c3e50;
-  font-size: 18px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.order-id {
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.order-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.order-status.completed {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.order-details {
+  display: grid;
+  gap: 12px;
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.order-item-row:hover {
+  background: #f0f2f5;
+}
+
+.item-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-quantity {
+  background: var(--primary-color);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
-/* Ensure proper spacing in checked out state */
-.checked-out-card .info-value,
-.checked-out-card .room-number,
-.checked-out-card .payment-amount {
-  color: #6c757d;
+.item-name {
+  font-weight: 500;
+  color: var(--dark-color);
 }
 
-.checked-out-card .section-header {
-  color: #6c757d;
+.item-price {
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
-/* Print-friendly styles for receipts */
-@media print {
-  .checked-out-card {
-    background-color: white !important;
-    border: none !important;
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.order-total {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.total-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.total-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.order-date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Restaurant Summary Card */
+.restaurant-summary {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0fff0 100%);
+  border: 1px solid var(--success-color);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-top: 24px;
+}
+
+.summary-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--success-color);
+  margin-bottom: 16px;
+}
+
+.summary-content {
+  display: grid;
+  gap: 12px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.summary-total {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--success-color);
+  border-top: 2px solid rgba(0, 66, 30, 0.1);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+/* Empty State */
+.no-orders {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.no-orders-icon {
+  color: #bdc3c7;
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.no-orders-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.no-orders-subtext {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
   }
-  
-  .status-badge,
-  .checkout-indicator,
-  .post-checkout-actions {
-    display: none !important;
+
+  .order-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .item-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
+
+
+
+

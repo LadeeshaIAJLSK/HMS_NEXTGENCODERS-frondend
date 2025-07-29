@@ -133,13 +133,50 @@ const fetchRoomStatus = async () => {
   }
 };;
 
+  const fetchRestaurantOrders = async (reservations) => {
+    try {
+      const response = await axios.get("http://localhost:8000/orders");
+      const orders = response.data;
+
+      // Create a map of total pending order amounts by room number
+      const pendingOrdersByRoom = orders.reduce((acc, order) => {
+        if (order.status === "payment pending" && order.guestInfo?.roomNo) {
+          const roomNo = order.guestInfo.roomNo;
+          acc[roomNo] = (acc[roomNo] || 0) + (order.total || 0);
+        }
+        return acc;
+      }, {});
+
+      // Update reservations with pending order amounts
+      return reservations.map(reservation => {
+        const roomNo = reservation.selectedRooms?.[0]; // Assuming first room in array
+        const pendingOrderAmount = pendingOrdersByRoom[roomNo] || 0;
+        return {
+          ...reservation,
+          pendingOrderAmount,
+          totalBill: (reservation.totalAmount || 0) + pendingOrderAmount
+        };
+      });
+    } catch (error) {
+      console.error("Error fetching restaurant orders:", error);
+      return reservations; // Return original reservations if fetch fails
+    }
+  };
+
   const calculateDayRevenue = (reservations, date) => {
     return reservations
       .filter(reservation => {
         const checkInDate = new Date(reservation.checkIn).toISOString().split('T')[0];
         return checkInDate === date;
       })
-      .reduce((total, reservation) => total + (reservation.totalAmount || 0), 0);
+      .reduce((total, reservation) => {
+        // For day-out reservations, use only paidAmount
+        // For room reservations, use paidAmount + advancePayment
+        const amount = reservation.reservationType === 'dayOut' 
+          ? reservation.paidAmount || 0
+          : (reservation.paidAmount || 0) + (reservation.advancePayment || 0);
+        return total + amount;
+      }, 0);
   };
 
   const calculateWeekRevenue = (reservations) => {
@@ -151,7 +188,12 @@ const fetchRoomStatus = async () => {
         const checkInDate = new Date(reservation.checkIn);
         return checkInDate >= weekAgo && checkInDate <= today;
       })
-      .reduce((total, reservation) => total + (reservation.totalAmount || 0), 0);
+      .reduce((total, reservation) => {
+        const amount = reservation.reservationType === 'dayOut' 
+          ? reservation.paidAmount || 0
+          : (reservation.paidAmount || 0) + (reservation.advancePayment || 0);
+        return total + amount;
+      }, 0);
   };
 
   const calculateMonthRevenue = (reservations) => {
@@ -163,7 +205,12 @@ const fetchRoomStatus = async () => {
         const checkInDate = new Date(reservation.checkIn);
         return checkInDate >= monthAgo && checkInDate <= today;
       })
-      .reduce((total, reservation) => total + (reservation.totalAmount || 0), 0);
+      .reduce((total, reservation) => {
+        const amount = reservation.reservationType === 'dayOut' 
+          ? reservation.paidAmount || 0
+          : (reservation.paidAmount || 0) + (reservation.advancePayment || 0);
+        return total + amount;
+      }, 0);
   };
 
   const formatCurrency = (amount) => {
@@ -268,7 +315,7 @@ const fetchRoomStatus = async () => {
       <div className="dashboard-header">
         <div className="header-left">
           <h1 className="dashboard-title">Hotel Dashboard</h1>
-          <p className="dashboard-subtitle">Real-time overview of your property</p>
+          <p className="dashboard-subtitle">All  guest and room info in one place</p>
         </div>
         <ClockCalendar />
       </div>

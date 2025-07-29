@@ -13,6 +13,18 @@ import { Form } from 'react-router-dom';
 const FormSection = () => {
   const form = useCheckInForm();
 
+  // Calculate duration from check-in and check-out dates
+  const calculateDuration = () => {
+    const checkIn = new Date(form.formData.checkIn);
+    const checkOut = new Date(form.formData.checkOut);
+    
+    if (!form.formData.checkIn || !form.formData.checkOut) return 1;
+    
+    const diffTime = Math.abs(checkOut - checkIn);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(1, diffDays); // Ensure minimum 1 night
+  };
+
   return (
     <div className="checkin-form-scope">
       <form onSubmit={form.handleSubmit}>
@@ -53,17 +65,8 @@ const FormSection = () => {
         />
         
         <RoomSelection 
-          rooms={form.rooms}
-          selectedRooms={form.selectedRooms}
-          roomTypeFilter={form.roomTypeFilter}
-          roomClassFilter={form.roomClassFilter}
-          searchQuery={form.searchQuery}
-          uniqueTypes={form.uniqueTypes}
-          uniqueClasses={form.uniqueClasses}
-          handleRoomSelect={form.handleRoomSelect}
-          setRoomTypeFilter={form.setRoomTypeFilter}
-          setRoomClassFilter={form.setRoomClassFilter}
-          setSearchQuery={form.setSearchQuery}
+          {...form}
+          duration={calculateDuration()}
         />
         
         <PaymentInfo 

@@ -20,50 +20,68 @@ const CardPaymentForm = ({ onPaymentSuccess, amount }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      setError('Payment system not initialized');
+      return;
+    }
+
+    if (!amount || amount <= 0) {
+      setError('Please enter a valid payment amount');
+      return;
+    }
     
     setProcessing(true);
     setError(null);
 
-    const cardElement = elements.getElement(CardElement);
-
     try {
-      // Create payment method
+      const cardElement = elements.getElement(CardElement);
+
       const { error, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
       });
 
       if (error) {
-        setError(error.message);
-        setProcessing(false);
-        return;
+        throw new Error(error.message);
       }
 
-      // Send payment method to your backend
-      const response = await fetch('/api/process-payment', {
+      // Update the fetch URL to match your backend route
+      const response = await fetch('http://localhost:8000/api/process-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          amount: amount * 100, // Convert to cents
+          amount: amount // Send the amount as is, backend will convert to cents
         }),
       });
 
       const result = await response.json();
 
+      if (result.requires_action) {
+        // Handle 3D Secure authentication if required
+        const { error: confirmError } = await stripe.confirmCardPayment(
+          result.client_secret
+        );
+        
+        if (confirmError) {
+          throw new Error(confirmError.message);
+        }
+      }
+
       if (result.success) {
+        cardElement.clear();
         onPaymentSuccess(result);
       } else {
-        setError(result.error);
+        throw new Error(result.error || 'Payment failed');
       }
     } catch (err) {
-      setError('Payment failed. Please try again.');
+      console.error('Payment error:', err);
+      setError(err.message || 'Payment failed. Please try again.');
+    } finally {
+      setProcessing(false);
     }
-
-    setProcessing(false);
   };
 
   const cardStyle = {

@@ -1,36 +1,41 @@
 /* CSS Variables */
 :root {
-  --primary-color: #00421e;
-  --secondary-color: #008080;
-  --accent-color: #e74c3c;
-  --light-color: #ecf0f1;
-  --dark-color: #020e1b;
-  --success-color: #00431c;
-  --warning-color: #f39c12;
-  --danger-color: #e74c3c;
-  --info-color: #3498db;
+  --primary-color: #00665c; /* deep teal (used for text/headings/buttons) */
+  --secondary-color: #008080; /* sidebar/main accent */
+  --accent-color: #f97316; /* orange highlight (adjusted for elegance) */
+  --light-color: #f4f8f9; /* soft background */
+  --dark-color: #0b1f26; /* modern deep navy/blue-gray */
+  --success-color: #198754; /* Bootstrap-like green */
+  --warning-color: #f39c12; /* warm amber */
+  --danger-color: #e74c3c; /* red */
+  --info-color: #3498db; /* calm blue */
+
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --box-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --gradient-primary: linear-gradient(135deg, #00421e 0%, #00572a 100%);
-  --gradient-secondary: linear-gradient(135deg, #008080 0%, #20b2aa 100%);
-  --gradient-success: linear-gradient(135deg, #00431c 0%, #27ae60 100%);
-  --gradient-warning: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #008080 0%, #20b2aa 100%);
+  --gradient-secondary: linear-gradient(135deg, #20b2aa 0%, #40e0d0 100%);
+  --gradient-success: linear-gradient(135deg, #198754 0%, #28a745 100%);
+  --gradient-warning: linear-gradient(135deg, #f39c12 0%, #f59e0b 100%);
   --gradient-info: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   --gradient-danger: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
 }
 
+
 /* Main Dashboard Container */
 .dashboard-container {
   max-width: 1400px;
-  margin: 0 auto;
+  margin-right:35px ;
+  margin-left: 0px;
   padding: 24px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e3f2fd 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
   min-height: 100vh;
   font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
-  color: #2c3e50;
+  color: #dae5f0;
 }
 
 .dashboard-container * {

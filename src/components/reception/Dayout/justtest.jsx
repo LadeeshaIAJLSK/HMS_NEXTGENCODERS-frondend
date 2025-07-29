@@ -1,656 +1,1146 @@
-import React from 'react';
-import { countries } from "../FormSection1/countries";
-import useDayoutForm from './useDayoutForm';
-import './DayoutReservation.css';
+import React, { useState, useEffect } from "react";
+import axios from 'axios'; // Add this import
+import { Calculator, Receipt, CreditCard, DollarSign, AlertCircle, CheckCircle, Clock, User, MapPin, Calendar, Users, Bed, FileText, Download, LogOut, UtensilsCrossed, ShoppingCart } from "lucide-react";
+import "./ViewReservationDetails.css";
 
-const DayoutReservation = () => {
-  const {
-    formData,
-    customerType,
-    searchTerm,
-    searchResults,
-    showSearchResults,
-    persons,
-    packages,
-    selectedPackages,
-    packageCategoryFilter,
-    searchQuery,
-    uniqueCategories,
-    selectedCountry,
-    emailError,
-    selectedFiles,
-    fileInputRef,
-    handleFormChange,
-    setCustomerType,
-    setSearchTerm,
-    handleCustomerSearch,
-    handleCustomerSelect,
-    setSelectedCountry,
-    handleAddPerson,
-    handleRemovePerson,
-    handlePersonChange,
-    handlePackageSelect,
-    setPackageCategoryFilter,
-    setSearchQuery,
-    handleFileChange,
-    handleSubmit,
-    calculateTotalAmount
-  } = useDayoutForm();
+const ViewReservationDetails = ({ 
+  selectedReservation, 
+  onBackToEdit,
+  onSuccess,
+  onError,
+  onCheckoutComplete
+}) => {
+  const [roomDetails, setRoomDetails] = useState([]);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [restaurantOrders, setRestaurantOrders] = useState([]); // New state for restaurant orders
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [cashReceived, setCashReceived] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [paymentNotes, setPaymentNotes] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
+  const [wantBill, setWantBill] = useState(true);
+  const [showCashCalculator, setShowCashCalculator] = useState(false);
+  
+  // Add state for tracking total paid amount
+  const [totalPaidAmount, setTotalPaidAmount] = useState(0);
 
-  // Helper function to format date for HTML input
-  const formatDateForInput = (dateValue) => {
-    if (!dateValue) return '';
-    
+  const [formData, setFormData] = useState({
+    checkIn: "",
+    checkOut: "",
+    duration: "",
+    adults: "1",
+    kids: "0",
+    firstName: "",
+    mobile: "",
+    email: "",
+    middleName: "",
+    surname: "",
+    dob: "",
+    address: "",
+    city: "",
+    gender: "",
+    idType: "",
+    idNumber: "",
+  });
+
+  // Function to fetch restaurant orders
+  const fetchRestaurantOrders = async () => {
     try {
-      const date = new Date(dateValue);
-      if (isNaN(date.getTime())) return '';
+      console.log("Fetching restaurant orders for guest:", selectedReservation.guestInfo?.guestId);
+      console.log("Room numbers:", selectedReservation.selectedRooms);
       
-      // Convert to YYYY-MM-DD format
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const response = await axios.get('http://localhost:8000/orders');
+      const allOrders = response.data;
       
-      return `${year}-${month}-${day}`;
+      // Filter orders that match guest ID and room number, and have payment pending status
+      const matchingOrders = allOrders.filter(order => {
+        const guestMatches = order.guestInfo?.guestId === selectedReservation.guestInfo?.guestId;
+        const roomMatches = selectedReservation.selectedRooms?.includes(order.guestInfo?.roomNo);
+        const paymentPending = order.status === "payment pending";
+        
+        console.log("Order check:", {
+          orderId: order._id,
+          orderGuestId: order.guestInfo?.guestId,
+          reservationGuestId: selectedReservation.guestInfo?.guestId,
+          orderRoom: order.guestInfo?.roomNo,
+          reservationRooms: selectedReservation.selectedRooms,
+          orderStatus: order.status,
+          guestMatches,
+          roomMatches,
+          paymentPending
+        });
+        
+        return guestMatches && roomMatches && paymentPending;
+      });
+      
+      console.log("Matching restaurant orders:", matchingOrders);
+      setRestaurantOrders(matchingOrders);
+      
     } catch (error) {
-      console.error('Date formatting error:', error);
-      return '';
+      console.error("Error fetching restaurant orders:", error);
+      // Don't show error to user as restaurant orders are optional
+      setRestaurantOrders([]);
     }
   };
 
-  const filteredPackages = packages.filter(pkg => {
-    const matchesCategory = packageCategoryFilter === "all" || pkg.category === packageCategoryFilter;
-    const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         pkg.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  // Calculate total restaurant charges
+  const calculateRestaurantCharges = () => {
+    return restaurantOrders.reduce((total, order) => {
+      return total + (order.total || 0);
+    }, 0);
+  };
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      if (!selectedReservation) return;
+      
+      setLoading(true);
+      try {
+        console.log("Fetching details for reservation:", selectedReservation._id);
+        
+        // TODO: Replace with actual API call
+        const roomsData = [
+          { RoomNo: "101", RType: "Standard", RClass: "Economy", RPrice: 50 },
+          { RoomNo: "102", RType: "Deluxe", RClass: "Business", RPrice: 75 },
+          { RoomNo: "201", RType: "Suite", RClass: "Premium", RPrice: 120 },
+          { RoomNo: "1078", RType: "Standard", RClass: "Economy", RPrice: 75 }, // Added for demo
+        ];
+        
+        // Filter booked rooms
+        const bookedRooms = roomsData.filter(room => 
+          selectedReservation.selectedRooms?.includes(room.RoomNo)
+        );
+        
+        setRoomDetails(bookedRooms);
+        
+        // Initialize payment history from reservation data
+        const payments = [];
+        if (selectedReservation.paidAmount > 0) {
+          payments.push({
+            date: selectedReservation.createdAt || new Date(),
+            amount: selectedReservation.paidAmount,
+            method: selectedReservation.paymentMethod || "Cash",
+            notes: selectedReservation.paymentNotes || "Initial payment",
+            cashReceived: selectedReservation.cashReceived || selectedReservation.paidAmount,
+            change: selectedReservation.change || 0
+          });
+        }
+        
+        setPaymentHistory(payments);
+        setTotalPaidAmount(selectedReservation.paidAmount || 0);
+        
+        // Fetch restaurant orders
+        await fetchRestaurantOrders();
+        
+      } catch (err) {
+        console.error("Error fetching details:", err);
+        onError("Error loading reservation details");
+        setRoomDetails([]);
+        setPaymentHistory([]);
+        setRestaurantOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchDetails();
+    
+    // Set form data with fallbacks
+    if (selectedReservation) {
+      setFormData({
+        checkIn: selectedReservation.checkIn ? selectedReservation.checkIn.split('T')[0] : "",
+        checkOut: selectedReservation.checkOut ? selectedReservation.checkOut.split('T')[0] : "",
+        duration: selectedReservation.duration || "",
+        adults: selectedReservation.adults || "1",
+        kids: selectedReservation.kids || "0",
+        firstName: selectedReservation.firstName || "",
+        mobile: selectedReservation.mobile || "",
+        email: selectedReservation.email || "",
+        middleName: selectedReservation.middleName || "",
+        surname: selectedReservation.surname || "",
+        dob: selectedReservation.dob ? selectedReservation.dob.split('T')[0] : "",
+        address: selectedReservation.address || "",
+        city: selectedReservation.city || "",
+        gender: selectedReservation.gender || "",
+        idType: selectedReservation.idType || "",
+        idNumber: selectedReservation.idNumber || "",
+      });
+    }
+  }, [selectedReservation]);
+
+  const calculateTotalRoomCharges = () => {
+    if (!roomDetails.length || !formData.duration) return 0;
+    
+    return roomDetails.reduce((total, room) => {
+      const roomPrice = room.RPrice || room.Price || 0;
+      return total + (roomPrice * parseInt(formData.duration));
+    }, 0);
+  };
+
+  const calculateChange = () => {
+    const received = parseFloat(cashReceived) || 0;
+    const amount = parseFloat(paymentAmount) || 0;
+    return received - amount;
+  };
+
+  const handlePayment = async () => {
+    const amount = parseFloat(paymentAmount);
+    const received = parseFloat(cashReceived) || amount;
+    
+    if (!amount || amount <= 0) {
+      onError("Please enter a valid payment amount");
+      return;
+    }
+    
+    if (paymentMethod === "Cash" && received < amount) {
+      onError("Cash received cannot be less than the payment amount");
+      return;
+    }
+    
+    const totalDue = getBalanceDue();
+    if (amount > totalDue) {
+      onError("Payment amount cannot exceed the amount due");
+      return;
+    }
+    
+    try {
+      const change = paymentMethod === "Cash" ? received - amount : 0;
+      
+      // TODO: Replace with actual API call
+      console.log("Recording payment:", { 
+        reservationId: selectedReservation._id,
+        amount, 
+        paymentMethod, 
+        paymentNotes,
+        cashReceived: received,
+        change 
+      });
+      
+      // Update local state
+      const newPayment = {
+        date: new Date(),
+        amount: amount,
+        method: paymentMethod,
+        notes: paymentNotes || "Payment recorded",
+        cashReceived: received,
+        change: change
+      };
+      
+      setPaymentHistory(prev => [...prev, newPayment]);
+      setTotalPaidAmount(prev => prev + amount);
+      
+      if (change > 0) {
+        onSuccess(`Payment recorded! Please give $${change.toFixed(2)} change to the guest.`);
+      } else {
+        onSuccess("Payment recorded successfully!");
+      }
+      
+      setPaymentAmount("");
+      setCashReceived("");
+      setPaymentNotes("");
+      setShowCashCalculator(false);
+      
+    } catch (err) {
+      console.error("Error recording payment:", err);
+      onError("Error recording payment. Please try again.");
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (getBalanceDue() > 0) {
+      onError("Cannot checkout with outstanding balance. Please complete payment first.");
+      return;
+    }
+    
+    setShowCheckoutDialog(true);
+  };
+
+  // Single confirmCheckout function with API integration
+  const confirmCheckout = async () => {
+    try {
+      const balance = getBalanceDue();
+      const paymentStatus = balance <= 0 ? 'Captured' : 'Pending';
+
+      // API call to update checkout with payment status
+      const response = await axios.put(
+        `http://localhost:8000/api/reservations/${selectedReservation._id}/checkout`,
+        {
+          paymentStatus: paymentStatus,
+          paidAmount: getTotalPaid(),
+          totalAmount: getTotalAmount()
+        }
+      );
+
+      // Update restaurant orders to paid status if any exist
+      if (restaurantOrders.length > 0) {
+        try {
+          for (const order of restaurantOrders) {
+            await axios.put(`http://localhost:8000/orders/${order._id}`, {
+              status: "paid"
+            });
+          }
+          console.log("Updated restaurant orders to paid status");
+        } catch (orderError) {
+          console.error("Error updating restaurant orders:", orderError);
+          // Don't fail checkout if restaurant order update fails
+        }
+      }
+
+      if (wantBill) {
+        generateBill();
+      }
+      
+      onSuccess("Guest checked out successfully! Rooms are now vacant.");
+      if (onCheckoutComplete) onCheckoutComplete();
+      setShowCheckoutDialog(false);
+      onBackToEdit();
+      
+    } catch (err) {
+      console.error("Error during checkout:", err);
+      onError("Error during checkout. Please try again.");
+    }
+  };
+
+  const getTotalPaid = () => {
+    return totalPaidAmount;
+  };
+
+  const getTotalAmount = () => {
+    const roomCharges = selectedReservation?.totalAmount || calculateTotalRoomCharges();
+    const restaurantCharges = calculateRestaurantCharges();
+    return roomCharges + restaurantCharges;
+  };
+
+  const getBalanceDue = () => {
+    return getTotalAmount() - getTotalPaid();
+  };
+
+  const getPaymentStatus = () => {
+    const balance = getBalanceDue();
+    if (balance < 0) return "Overpaid";
+    if (balance === 0) return "Fully Paid";
+    if (getTotalPaid() > 0) return "Partially Paid";
+    return "Not Paid";
+  };
+
+  const getPaymentStatusClass = () => {
+    const balance = getBalanceDue();
+    if (balance < 0) return "overpaid";
+    if (balance === 0) return "fully-paid";
+    if (getTotalPaid() > 0) return "partially-paid";
+    return "not-paid";
+  };
+
+  const generateBill = () => {
+    const roomCharges = calculateTotalRoomCharges();
+    const restaurantCharges = calculateRestaurantCharges();
+    
+    const bill = {
+      reservationId: selectedReservation._id,
+      guestName: `${formData.firstName} ${formData.middleName} ${formData.surname}`.trim(),
+      checkIn: formData.checkIn,
+      checkOut: formData.checkOut,
+      duration: formData.duration,
+      rooms: roomDetails.map(room => ({
+        roomNo: room.RoomNo,
+        type: room.RType,
+        class: room.RClass,
+        pricePerNight: room.RPrice || room.Price || 0,
+        total: (room.RPrice || room.Price || 0) * parseInt(formData.duration)
+      })),
+      restaurantOrders: restaurantOrders,
+      roomCharges: roomCharges,
+      restaurantCharges: restaurantCharges,
+      totalAmount: getTotalAmount(),
+      totalPaid: getTotalPaid(),
+      balance: getBalanceDue(),
+      paymentHistory: paymentHistory,
+      generatedAt: new Date().toLocaleString()
+    };
+
+    const billContent = `
+═══════════════════════════════════════════════════════════
+                    GRAND HOTEL RECEIPT
+═══════════════════════════════════════════════════════════
+
+GUEST INFORMATION
+─────────────────────────────────────────────────────────
+Name: ${bill.guestName}
+Phone: ${formData.mobile}
+Email: ${formData.email || 'N/A'}
+Check-in: ${bill.checkIn}
+Check-out: ${bill.checkOut}
+Duration: ${bill.duration} nights
+Guests: ${formData.adults} Adults, ${formData.kids} Kids
+
+ROOM CHARGES
+─────────────────────────────────────────────────────────
+${bill.rooms.map(room => 
+  `Room ${room.roomNo} (${room.type} - ${room.class})\n` +
+  `  Rate: $${room.pricePerNight.toFixed(2)} × ${formData.duration} nights = $${room.total.toFixed(2)}`
+).join('\n')}
+
+Room Subtotal: $${bill.roomCharges.toFixed(2)}
+
+${bill.restaurantOrders.length > 0 ? `
+RESTAURANT CHARGES
+─────────────────────────────────────────────────────────
+${bill.restaurantOrders.map(order => 
+  `Order #${order._id.slice(-6)} - Room ${order.guestInfo?.roomNo}\n` +
+  `  ${order.items.map(item => `${item.name} × ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`).join('\n  ')}\n` +
+  `  Order Total: $${order.total.toFixed(2)}`
+).join('\n')}
+
+Restaurant Subtotal: $${bill.restaurantCharges.toFixed(2)}
+` : ''}
+
+PAYMENT SUMMARY
+─────────────────────────────────────────────────────────
+${bill.roomCharges > 0 ? `Room Charges: $${bill.roomCharges.toFixed(2)}` : ''}
+${bill.restaurantCharges > 0 ? `Restaurant Charges: $${bill.restaurantCharges.toFixed(2)}` : ''}
+─────────────────────────────────────────────────────────
+Total Bill Amount: $${bill.totalAmount.toFixed(2)}
+Total Paid: $${bill.totalPaid.toFixed(2)}
+${bill.balance > 0 ? `Balance Due: $${bill.balance.toFixed(2)}` : 
+  bill.balance < 0 ? `Credit Balance: $${Math.abs(bill.balance).toFixed(2)}` : 
+  'Status: ✓ PAID IN FULL'}
+
+PAYMENT DETAILS
+─────────────────────────────────────────────────────────
+${bill.paymentHistory.map(payment => {
+  let line = `${new Date(payment.date).toLocaleDateString()} - $${payment.amount.toFixed(2)} (${payment.method})`;
+  if (payment.method === 'Cash' && payment.cashReceived > payment.amount) {
+    line += `\n  Cash Received: $${payment.cashReceived.toFixed(2)} | Change Given: $${payment.change.toFixed(2)}`;
+  }
+  if (payment.notes) line += `\n  Notes: ${payment.notes}`;
+  return line;
+}).join('\n')}
+
+─────────────────────────────────────────────────────────
+Generated: ${bill.generatedAt}
+Reservation ID: ${bill.reservationId}
+Thank you for staying with us!
+═══════════════════════════════════════════════════════════
+    `;
+
+    // Download as text file
+    const blob = new Blob([billContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Receipt_${bill.guestName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const quickPayFull = () => {
+    const due = getBalanceDue();
+    setPaymentAmount(due.toString());
+    setCashReceived(due.toString());
+  };
+
+  if (loading) {
+    return (
+      <div className="view-reservation-scope">
+        <div className="reservation-details-container">
+          <div className="reservation-card">
+            <div className="loading-container">
+              <Clock className="loading-spinner" />
+              <p className="loading-text">Loading reservation details...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if reservation is checked out
+  const isCheckedOut = selectedReservation?.status === 'CheckedOut';
+  
+  // Get status badge component
+  const getStatusBadge = () => {
+    const status = selectedReservation?.status;
+    let badgeClass = '';
+    let icon = null;
+    let label = '';
+    
+    switch (status) {
+      case 'CheckedOut':
+        badgeClass = 'status-badge-checkedout';
+        icon = <LogOut className="w-4 h-4" />;
+        label = 'Checked Out';
+        break;
+      case 'Confirmed':
+        badgeClass = 'status-badge-confirmed';
+        icon = <CheckCircle className="w-4 h-4" />;
+        label = 'Confirmed';
+        break;
+      case 'CheckedIn':
+        badgeClass = 'status-badge-checkedin';
+        icon = <User className="w-4 h-4" />;
+        label = 'Checked In';
+        break;
+      case 'Pending':
+        badgeClass = 'status-badge-pending';
+        icon = <Clock className="w-4 h-4" />;
+        label = 'Pending';
+        break;
+      default:
+        badgeClass = 'status-badge-default';
+        icon = <AlertCircle className="w-4 h-4" />;
+        label = status || 'Unknown';
+    }
+    
+    return (
+      <span className={`status-badge ${badgeClass}`}>
+        {icon}
+        {label}
+      </span>
+    );
+  };
 
   return (
-    <div className="dayout-form-scope">
-      <div className="dayout-container">
-        <h2 className="dayout-main-heading">🏖️ Day Out Reservation</h2>
-        
-        <form onSubmit={handleSubmit} className="dayout-form">
-          {/* Date and Guest Information */}
-          <div className="dayout-form-section">
-            <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">📅 Visit Information</h5>
-              <div className="dayout-form-grid">
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Visit Date *</label>
-                  <input
-                    type="date"
-                    className="dayout-form-input"
-                    id="checkIn"
-                    value={formatDateForInput(formData.checkIn)}
-                    onChange={handleFormChange}
-                    required
-                  />
+    <div className="view-reservation-scope">
+      <div className="reservation-details-container">
+        <div className={`reservation-card fade-in ${isCheckedOut ? 'checked-out-card' : ''}`}>
+          <div className="reservation-header">
+            <div className="header-left">
+              <h2>
+                <User />
+                
+                {isCheckedOut && (
+                  <span className="checkout-indicator">
+                    
+                    COMPLETED
+                  </span>
+                )}
+              </h2>
+              {getStatusBadge()}
+              {isCheckedOut && selectedReservation.checkoutDate && (
+                <div className="checkout-info">
+                  <Clock className="w-4 h-4" />
+                  Checked out on: {new Date(selectedReservation.checkoutDate).toLocaleDateString()}
                 </div>
+              )}
+            </div>
+            <button onClick={onBackToEdit} className="back-button">
+              ← Back to {isCheckedOut ? 'List' : 'Edit'}
+            </button>
+          </div>
 
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Start Time *</label>
-                  <input
-                    type="time"
-                    className="dayout-form-input"
-                    id="startTime"
-                    value={formData.startTime || ''}
-                    onChange={handleFormChange}
-                    required
-                  />
+          <div className="details-grid">
+            {/* Guest Information */}
+            <div className="section-card guest-info-card slide-up">
+              <h3 className="section-header">
+                <User />
+                Guest Information
+              </h3>
+              <div className="info-grid">
+                <div className="info-item">
+                  <span className="info-label">Name:</span>
+                  <span className="info-value font-semibold">
+                    {formData.firstName} {formData.middleName} {formData.surname}
+                  </span>
                 </div>
-
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">End Time *</label>
-                  <input
-                    type="time"
-                    className="dayout-form-input"
-                    id="endTime"
-                    value={formData.endTime || ''}
-                    onChange={handleFormChange}
-                    required
-                  />
+                <div className="info-item">
+                  <span className="info-label">Phone:</span>
+                  <span className="info-value">{formData.mobile}</span>
                 </div>
-
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Adults *</label>
-                  <select
-                    className="dayout-form-select"
-                    id="adults"
-                    value={formData.adults}
-                    onChange={handleFormChange}
-                    required
-                  >
-                    {[...Array(10)].map((_, i) => (
-                      <option key={`adults-${i + 1}`} value={i + 1}>{i + 1}</option>
-                    ))}
-                  </select>
+                <div className="info-item">
+                  <span className="info-label">Email:</span>
+                  <span className="info-value">{formData.email || "N/A"}</span>
                 </div>
-
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Kids</label>
-                  <select
-                    className="dayout-form-select"
-                    id="kids"
-                    value={formData.kids}
-                    onChange={handleFormChange}
-                  >
-                    {[...Array(11)].map((_, i) => (
-                      <option key={`kids-${i}`} value={i}>{i}</option>
-                    ))}
-                  </select>
+                <div className="info-item">
+                  <span className="info-label">Check-In:</span>
+                  <span className="info-value">{formData.checkIn}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Check-Out:</span>
+                  <span className="info-value">{formData.checkOut}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Duration:</span>
+                  <span className="info-value">{formData.duration} nights</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Guests:</span>
+                  <span className="info-value">{formData.adults} Adults, {formData.kids} Kids</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">ID:</span>
+                  <span className="info-value">{formData.idType}: {formData.idNumber}</span>
                 </div>
               </div>
             </div>
+
+            {/* Booked Rooms */}
+            <div className="section-card rooms-card slide-up">
+              <h3 className="section-header">
+                <Bed />
+                Booked Rooms
+              </h3>
+              {roomDetails.length > 0 ? (
+                <div>
+                  {roomDetails.map(room => {
+                    const roomPrice = room.RPrice || room.Price || 0;
+                    const totalPrice = roomPrice * parseInt(formData.duration || 1);
+                    return (
+                      <div key={room.RoomNo} className="room-item">
+                        <div className="room-header">
+                          <div>
+                            <h4 className="room-number">Room {room.RoomNo}</h4>
+                            <p className="room-type">{room.RType} - {room.RClass}</p>
+                            <p className="room-rate">${roomPrice.toFixed(2)} per night</p>
+                          </div>
+                          <div className="room-price">
+                            <p className="room-total">${totalPrice.toFixed(2)}</p>
+                            <p className="room-rate">{formData.duration} nights</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div className="total-charges">
+                    <div className="total-charges-label">Room Charges Subtotal:</div>
+                    <div className="total-charges-amount">
+                      ${calculateTotalRoomCharges().toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <Bed className="empty-icon" />
+                  <p className="empty-title">No room details available</p>
+                  <p className="empty-description">
+                    Selected rooms: {selectedReservation?.selectedRooms?.join(', ') || 'None'}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Customer Type Selection */}
-          <div className="dayout-form-section">
-            <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">👤 Customer Information</h5>
-              
-              <div className="dayout-customer-type-options">
-                <label className="dayout-radio-label">
-                  <input
-                    type="radio"
-                    name="customerType"
-                    checked={customerType === "new"}
-                    onChange={() => setCustomerType("new")}
-                    className="dayout-radio-input"
-                  />
-                  <span>➕ New Customer</span>
-                </label>
-
-                <label className="dayout-radio-label">
-                  <input
-                    type="radio"
-                    name="customerType"
-                    checked={customerType === "existing"}
-                    onChange={() => setCustomerType("existing")}
-                    className="dayout-radio-input"
-                  />
-                  <span>🔍 Existing Customer</span>
-                </label>
-              </div>
-
-              {/* Existing Customer Search */}
-              {customerType === "existing" && (
-                <div className="dayout-search-section">
-                  <div className="dayout-search-controls">
-                    <input
-                      type="text"
-                      className="dayout-form-input"
-                      placeholder="Search by name, mobile, or email..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="dayout-btn dayout-btn-info"
-                      onClick={handleCustomerSearch}
-                    >
-                      🔍 Search
-                    </button>
-                  </div>
-                  
-                  {/* Search Results */}
-                  {showSearchResults && (
-                    <div className="dayout-search-results">
-                      <h6>Search Results:</h6>
-                      {searchResults.length === 0 ? (
-                        <p>No customers found</p>
-                      ) : (
-                        <div className="dayout-results-list">
-                          {searchResults.map((customer) => (
-                            <button
-                              key={customer._id}
-                              type="button"
-                              className="dayout-result-item"
-                              onClick={() => handleCustomerSelect(customer)}
-                            >
-                              <strong>{customer.firstName} {customer.surname}</strong>
-                              <br />
-                              📱 {customer.mobile} | 📧 {customer.email}
-                            </button>
-                          ))}
+          {/* Restaurant Orders Section */}
+          {restaurantOrders.length > 0 && (
+            <div className="details-grid full-width">
+              <div className="section-card restaurant-card slide-up">
+                <h3 className="section-header">
+                  <UtensilsCrossed />
+                  Restaurant Orders (Pending Payment)
+                </h3>
+                <div className="restaurant-orders-container">
+                  {restaurantOrders.map(order => (
+                    <div key={order._id} className="restaurant-order-item">
+                      <div className="order-header">
+                        <div className="order-info">
+                          <h4 className="order-id">Order #{order._id.slice(-6)}</h4>
+                          <p className="order-details">
+                            Room {order.guestInfo?.roomNo} • {order.orderType}
+                          </p>
+                          <p className="order-date">
+                            {new Date(order.createdAt).toLocaleDateString()} at{' '}
+                            {new Date(order.createdAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                        <div className="order-total">
+                          <span className="order-amount">${order.total.toFixed(2)}</span>
+                          <span className="order-status pending">Payment Pending</span>
+                        </div>
+                      </div>
+                      <div className="order-items">
+                        {order.items.map((item, index) => (
+                          <div key={index} className="order-item">
+                            <span className="item-name">{item.name}</span>
+                            <span className="item-quantity">× {item.quantity}</span>
+                            <span className="item-price">${(item.price * item.quantity).toFixed(2)}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {order.note && (
+                        <div className="order-note">
+                          <strong>Note:</strong> {order.note}
                         </div>
                       )}
                     </div>
-                  )}
+                  ))}
+                  <div className="restaurant-total">
+                    <div className="total-charges-label">Restaurant Charges Subtotal:</div>
+                    <div className="total-charges-amount restaurant">
+                      ${calculateRestaurantCharges().toFixed(2)}
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+            </div>
+          )}
 
-              {/* Customer Details Form */}
-              <div className="dayout-form-grid">
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">First Name *</label>
-                  <input
-                    type="text"
-                    className="dayout-form-input"
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={handleFormChange}
-                    required
-                  />
+          {/* Enhanced Payment Summary */}
+          <div className="details-grid full-width">
+            <div className="section-card payment-card slide-up">
+              <h3 className="section-header">
+                <DollarSign />
+                Payment Summary
+              </h3>
+              <div className="payment-breakdown">
+                <div className="breakdown-item">
+                  <span className="breakdown-label">Room Charges:</span>
+                  <span className="breakdown-value">${calculateTotalRoomCharges().toFixed(2)}</span>
                 </div>
-
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Middle Name</label>
-                  <input
-                    type="text"
-                    className="dayout-form-input"
-                    id="middleName"
-                    value={formData.middleName}
-                    onChange={handleFormChange}
-                  />
-                </div>
-
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Surname</label>
-                  <input
-                    type="text"
-                    className="dayout-form-input"
-                    id="surname"
-                    value={formData.surname}
-                    onChange={handleFormChange}
-                  />
+                {calculateRestaurantCharges() > 0 && (
+                  <div className="breakdown-item restaurant">
+                    <span className="breakdown-label">Restaurant Charges:</span>
+                    <span className="breakdown-value">${calculateRestaurantCharges().toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="breakdown-divider"></div>
+              </div>
+              <div className="payment-summary-grid">
+                <div className="payment-summary-item total">
+                  <div className="payment-summary-label">Total Bill</div>
+                  <div className="payment-summary-value neutral">${getTotalAmount().toFixed(2)}</div>
                 </div>
                 
-                <div className="dayout-form-group dayout-mobile-group">
-                  <label className="dayout-form-label">Mobile *</label>
-                  <div className="dayout-input-group">
-                    <select
-                      className="dayout-form-select dayout-country-select"
-                      value={selectedCountry?.value || ''}
-                      onChange={(e) => {
-                        const country = countries.find(c => c.value === e.target.value);
-                        setSelectedCountry(country);
-                      }}
-                    >
-                      <option value="">Country</option>
-                      {countries.map((country, index) => (
-                        <option key={`country-${index}-${country.value}`} value={country.value}>
-                          {country.label}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="tel"
-                      className="dayout-form-input"
-                      id="mobile"
-                      value={formData.mobile.split(' ')[1] || formData.mobile}
-                      onChange={handleFormChange}
-                      required
-                    />
+                <div className="payment-summary-item paid">
+                  <div className="payment-summary-label">Total Paid</div>
+                  <div className="payment-summary-value positive">${getTotalPaid().toFixed(2)}</div>
+                </div>
+                
+                <div className="payment-summary-item due">
+                  <div className="payment-summary-label">Balance Due</div>
+                  <div className={`payment-summary-value ${
+                    getBalanceDue() > 0 ? 'negative' : 
+                    getBalanceDue() < 0 ? 'overpaid' : 
+                    'positive'
+                  }`}>
+                    ${Math.abs(getBalanceDue()).toFixed(2)}
                   </div>
                 </div>
                 
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Email</label>
-                  <input
-                    type="email"
-                    className={`dayout-form-input ${emailError ? 'dayout-form-input-error' : ''}`}
-                    id="email"
-                    value={formData.email}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Date of Birth</label>
-                  <input
-                    type="date"
-                    className="dayout-form-input"
-                    id="dob"
-                    value={formatDateForInput(formData.dob)}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Gender</label>
-                  <select
-                    className="dayout-form-select"
-                    id="gender"
-                    value={formData.gender}
-                    onChange={handleFormChange}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">City</label>
-                  <input
-                    type="text"
-                    className="dayout-form-input"
-                    id="city"
-                    value={formData.city}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                
-                <div className="dayout-form-group dayout-form-group-full">
-                  <label className="dayout-form-label">Address *</label>
-                  <textarea
-                    className="dayout-form-textarea"
-                    id="address"
-                    value={formData.address}
-                    onChange={handleFormChange}
-                    rows="2"
-                    required
-                  />
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">ID Type *</label>
-                  <select
-                    className="dayout-form-select"
-                    id="idType"
-                    value={formData.idType}
-                    onChange={handleFormChange}
-                    required
-                  >
-                    <option value="">Select ID Type</option>
-                    <option value="Passport">Passport</option>
-                    <option value="Driving License">Driving License</option>
-                    <option value="National ID">National ID</option>
-                    <option value="Aadhar Card">Aadhar Card</option>
-                    <option value="Voter ID">Voter ID</option>
-                  </select>
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">ID Number *</label>
-                  <input
-                    type="text"
-                    className="dayout-form-input"
-                    id="idNumber"
-                    value={formData.idNumber}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </div>
-                
-                <div className="dayout-form-group dayout-form-group-full">
-                  <label className="dayout-form-label">Upload ID Files</label>
-                  <input
-                    type="file"
-                    className="dayout-form-input dayout-file-input"
-                    ref={fileInputRef}
-                    multiple
-                    accept="image/*,.pdf"
-                    onChange={handleFileChange}
-                  />
-                  <div className="dayout-form-text">
-                    Upload images or PDF files of identification documents
-                  </div>
+                <div className="payment-summary-item status">
+                  <div className="payment-summary-label">Status</div>
+                  <span className={`payment-status-badge ${getPaymentStatusClass()}`}>
+                    {getPaymentStatus()}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Other Persons */}
-          <div className="dayout-form-section">
-            <div className="dayout-form-container">
-              <div className="dayout-section-header">
-                <h5 className="dayout-form-heading">👥 Other Persons</h5>
-                <button
-                  type="button"
-                  className="dayout-btn dayout-btn-success"
-                  onClick={handleAddPerson}
-                >
-                  ➕ Add Person
-                </button>
-              </div>
+          <div className="details-grid">
+            {/* Payment History */}
+            <div className="section-card slide-up">
+              <h3 className="section-header">
+                <Receipt />
+                Payment History
+              </h3>
+              {paymentHistory.length > 0 ? (
+                <div>
+                  {paymentHistory.map((payment, index) => (
+                    <div key={index} className="payment-history-item">
+                      <div className="payment-history-header">
+                        <div>
+                          <p className="payment-amount">${payment.amount.toFixed(2)}</p>
+                          <p className="payment-date">{new Date(payment.date).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                          <span className="payment-method-badge">
+                            {payment.method}
+                          </span>
+                        </div>
+                      </div>
+                      {payment.method === 'Cash' && payment.cashReceived > payment.amount && (
+                        <div className="cash-details">
+                          <p className="cash-details-text">
+                            Cash Received: ${payment.cashReceived.toFixed(2)} | 
+                            Change Given: ${payment.change.toFixed(2)}
+                          </p>
+                        </div>
+                      )}
+                      {payment.notes && (
+                        <p className="payment-notes">{payment.notes}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <Receipt className="empty-icon" />
+                  <p className="empty-title">No payment history available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Enhanced Record Payment - Disabled if checked out */}
+            <div className={`section-card slide-up ${isCheckedOut ? 'disabled-section' : ''}`}>
+              <h3 className="section-header">
+                <CreditCard />
+                Record Payment
+                {isCheckedOut && <span className="disabled-label">(Reservation Completed)</span>}
+              </h3>
               
-              {persons.map((person, index) => (
-                <div key={`person-${index}`} className="dayout-person-card">
-                  <div className="dayout-person-header">
-                    <h6>Person {index + 1}</h6>
-                    {persons.length > 1 && (
-                      <button
-                        type="button"
-                        className="dayout-btn dayout-btn-danger"
-                        onClick={() => handleRemovePerson(index)}
-                      >
-                        ✖️ Remove
+              {isCheckedOut ? (
+                <div className="disabled-message">
+                  <LogOut className="w-8 h-8 text-gray-400" />
+                  <p className="text-gray-600">
+                    This reservation has been checked out. No further payments can be recorded.
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Final Status: {getPaymentStatus()}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {getBalanceDue() > 0 && (
+                    <div className="quick-pay-section">
+                      <p className="quick-pay-text">
+                        Amount Due: ${getBalanceDue().toFixed(2)}
+                        {calculateRestaurantCharges() > 0 && (
+                          <span className="restaurant-note">
+                            (Includes ${calculateRestaurantCharges().toFixed(2)} restaurant charges)
+                          </span>
+                        )}
+                      </p>
+                      <button onClick={quickPayFull} className="quick-pay-button">
+                        Pay Full Amount
                       </button>
-                    )}
-                  </div>
-                  <div className="dayout-form-grid">
-                    <div className="dayout-form-group">
-                      <label className="dayout-form-label">Name</label>
+                    </div>
+                  )}
+                  
+                  <div className="payment-form">
+                    <div className="payment-form-field">
+                      <label className="payment-form-label">
+                        Payment Amount ($)
+                      </label>
                       <input
-                        type="text"
-                        className="dayout-form-input"
-                        value={person.name}
-                        onChange={(e) => handlePersonChange(index, 'name', e.target.value)}
+                        type="number"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        className="payment-form-input"
+                        min="0.01"
+                        step="0.01"
+                        placeholder={`Max: ${getBalanceDue().toFixed(2)}`}
                       />
                     </div>
-                    <div className="dayout-form-group">
-                      <label className="dayout-form-label">Gender</label>
+                    
+                    <div className="payment-form-field">
+                      <label className="payment-form-label">
+                        Payment Method
+                      </label>
                       <select
-                        className="dayout-form-select"
-                        value={person.gender}
-                        onChange={(e) => handlePersonChange(index, 'gender', e.target.value)}
+                        value={paymentMethod}
+                        onChange={(e) => {
+                          setPaymentMethod(e.target.value);
+                          setShowCashCalculator(e.target.value === "Cash");
+                        }}
+                        className="payment-form-select"
                       >
-                        <option value="">Select</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
                         <option value="Other">Other</option>
                       </select>
                     </div>
-                    <div className="dayout-form-group">
-                      <label className="dayout-form-label">Age</label>
-                      <input
-                        type="number"
-                        className="dayout-form-input"
-                        value={person.age}
-                        onChange={(e) => handlePersonChange(index, 'age', e.target.value)}
+
+                    {/* Cash Calculator */}
+                    {(paymentMethod === "Cash" || showCashCalculator) && (
+                      <div className="cash-calculator">
+                        <h4 className="cash-calculator-header">
+                          <Calculator />
+                          Cash Calculator
+                        </h4>
+                        <div className="payment-form-field">
+                          <label className="payment-form-label">
+                            Cash Received from Guest ($)
+                          </label>
+                          <input
+                            type="number"
+                            value={cashReceived}
+                            onChange={(e) => setCashReceived(e.target.value)}
+                            className="payment-form-input"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="e.g., 500 (for $500 bill)"
+                          />
+                        </div>
+                        {cashReceived && paymentAmount && (
+                          <div className="change-display">
+                            <span className="change-label">Change to Give:</span>
+                            <span className={`change-amount ${
+                              calculateChange() >= 0 ? 'positive' : 'negative'
+                            }`}>
+                              ${Math.abs(calculateChange()).toFixed(2)}
+                              {calculateChange() < 0 && ' (Insufficient Cash)'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    <div className="payment-form-field">
+                      <label className="payment-form-label">
+                        Notes
+                      </label>
+                      <textarea
+                        value={paymentNotes}
+                        onChange={(e) => setPaymentNotes(e.target.value)}
+                        className="payment-form-textarea"
+                        placeholder="Optional notes"
                       />
                     </div>
-                    <div className="dayout-form-group">
-                      <label className="dayout-form-label">ID Type</label>
-                      <select
-                        className="dayout-form-select"
-                        value={person.idType}
-                        onChange={(e) => handlePersonChange(index, 'idType', e.target.value)}
-                      >
-                        <option value="">Select</option>
-                        <option value="Passport">Passport</option>
-                        <option value="Driving License">Driving License</option>
-                        <option value="National ID">National ID</option>
-                        <option value="Aadhar Card">Aadhar Card</option>
-                        <option value="Voter ID">Voter ID</option>
-                      </select>
-                    </div>
-                    <div className="dayout-form-group">
-                      <label className="dayout-form-label">ID Number</label>
-                      <input
-                        type="text"
-                        className="dayout-form-input"
-                        value={person.idNo}
-                        onChange={(e) => handlePersonChange(index, 'idNo', e.target.value)}
-                      />
-                    </div>
+                    
+                    <button
+                      onClick={handlePayment}
+                      className="btn btn-secondary btn-full-width"
+                      disabled={!paymentAmount || parseFloat(paymentAmount) <= 0 || 
+                                (paymentMethod === "Cash" && parseFloat(cashReceived) < parseFloat(paymentAmount))}
+                    >
+                      <DollarSign />
+                      Record Payment
+                    </button>
+                    
+                    {paymentMethod === "Cash" && cashReceived && paymentAmount && calculateChange() > 0 && (
+                      <div className="alert warning mt-3">
+                        💡 Remember to give ${calculateChange().toFixed(2)} change to the guest!
+                      </div>
+                    )}
+                    
+                    {getBalanceDue() <= 0 && (
+                      <div className="alert success mt-3">
+                        <CheckCircle />
+                        {getBalanceDue() < 0 ? 
+                          `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
+                          'Payment is complete - Ready for checkout!'
+                        }
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                </>
+              )}
             </div>
           </div>
 
-          {/* Package Selection */}
-          <div className="dayout-form-section">
-            <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">📦 Package Selection</h5>
-              
-              {/* Package Filters */}
-              <div className="dayout-filter-section">
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Search Packages</label>
-                  <input
-                    type="text"
-                    className="dayout-form-input"
-                    placeholder="Search packages..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+          {/* Bill Generation Section */}
+          <div className="bill-section">
+            <div className="section-card bill-card slide-up">
+              <h3 className="section-header">
+                <FileText />
+                Generate Bill
+              </h3>
+              <p className="bill-description">
+                Download a detailed receipt for this reservation
+                {restaurantOrders.length > 0 && " (includes restaurant orders)"}
+              </p>
+              <button onClick={generateBill} className="btn btn-info">
+                <Download />
+                Download Receipt
+              </button>
+            </div>
+          </div>
+
+          {/* Checkout Section - Modified for checked out reservations */}
+          <div className="mt-6">
+            {isCheckedOut ? (
+              <div className="status-card checkout-complete">
+                <div className="status-icon complete">
+                  <CheckCircle />
                 </div>
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Category</label>
-                  <select
-                    className="dayout-form-select"
-                    value={packageCategoryFilter}
-                    onChange={(e) => setPackageCategoryFilter(e.target.value)}
-                  >
-                    <option value="all">All Categories</option>
-                    {uniqueCategories.map((category, index) => (
-                      <option key={`category-${index}-${category}`} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Selected Packages</label>
-                  <div className="dayout-selected-count">
-                    {selectedPackages.length} package(s) selected
+                <h3 className="status-title complete">
+                  ✅ Checkout Complete
+                </h3>
+                <div className="checkout-summary">
+                  <p className="status-description">
+                    This guest has been successfully checked out.
+                  </p>
+                  <div className="checkout-details-summary">
+                    <div className="detail-row">
+                      <span>Room Charges:</span>
+                      <span className="amount">${calculateTotalRoomCharges().toFixed(2)}</span>
+                    </div>
+                    {calculateRestaurantCharges() > 0 && (
+                      <div className="detail-row">
+                        <span>Restaurant Charges:</span>
+                        <span className="amount">${calculateRestaurantCharges().toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="detail-row total">
+                      <span>Final Bill Amount:</span>
+                      <span className="amount">${getTotalAmount().toFixed(2)}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span>Total Paid:</span>
+                      <span className="amount">${getTotalPaid().toFixed(2)}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span>Final Status:</span>
+                      <span className={`payment-status ${getPaymentStatusClass()}`}>
+                        {getPaymentStatus()}
+                      </span>
+                    </div>
+                    {selectedReservation.checkoutDate && (
+                      <div className="detail-row">
+                        <span>Checkout Date:</span>
+                        <span>{new Date(selectedReservation.checkoutDate).toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="post-checkout-actions">
+                    <button onClick={generateBill} className="btn btn-info">
+                      <Download />
+                      Download Final Receipt
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Available Packages */}
-              <div className="dayout-packages-grid">
-                {filteredPackages.length === 0 ? (
-                  <div className="dayout-no-packages">
-                    <p>No packages available</p>
+            ) : (
+              <>
+                {getBalanceDue() > 0 ? (
+                  <div className="status-card payment-required">
+                    <div className="status-icon warning">
+                      <AlertCircle />
+                    </div>
+                    <h3 className="status-title warning">
+                      Payment Required Before Checkout
+                    </h3>
+                    <p className="status-description">
+                      Outstanding Balance: 
+                      {restaurantOrders.length > 0 && (
+                        <span className="restaurant-indicator">
+                          <UtensilsCrossed className="w-4 h-4 inline mx-1" />
+                          Includes restaurant orders
+                        </span>
+                      )}
+                    </p>
+                    <div className="status-amount">${getBalanceDue().toFixed(2)}</div>
+                    <button
+                      onClick={() => {
+                        document.querySelector('.payment-form-input')?.focus();
+                      }}
+                      className="btn btn-warning"
+                    >
+                      <DollarSign />
+                      Complete Payment (${getBalanceDue().toFixed(2)} Due)
+                    </button>
                   </div>
                 ) : (
-                  filteredPackages.map(pkg => (
-                    <div 
-                      key={pkg._id} 
-                      className={`dayout-package-card ${selectedPackages.includes(pkg._id) ? 'dayout-package-selected' : ''}`}
-                      onClick={() => handlePackageSelect(pkg._id)}
-                    >
-                      <div className="dayout-package-header">
-                        <h6 className="dayout-package-title">{pkg.name}</h6>
-                        <input
-                          type="checkbox"
-                          className="dayout-checkbox"
-                          checked={selectedPackages.includes(pkg._id)}
-                          onChange={() => {}}
-                        />
-                      </div>
-                      <p className="dayout-package-description">{pkg.description}</p>
-                      <p className="dayout-package-category">
-                        <strong>Category:</strong> {pkg.category}
-                      </p>
-                      <p className="dayout-package-price">
-                        <strong>Rs {pkg.pricePerChild}</strong> per child
-                      </p>
-                      {pkg.features && pkg.features.length > 0 && (
-                        <div className="dayout-package-features">
-                          <small>Features:</small>
-                          <ul>
-                            {pkg.features.slice(0, 2).map((feature, index) => (
-                              <li key={`feature-${index}`}>• {feature}</li>
-                            ))}
-                            {pkg.features.length > 2 && (
-                              <li>... +{pkg.features.length - 2} more</li>
-                            )}
-                          </ul>
-                        </div>
-                      )}
+                  <div className="status-card ready-checkout">
+                    <div className="status-icon success">
+                      <CheckCircle />
                     </div>
-                  ))
+                    <h3 className="status-title success">
+                      {getBalanceDue() < 0 ? 
+                        `Guest Overpaid - Credit: ${Math.abs(getBalanceDue()).toFixed(2)}` :
+                        'Payment Complete - Ready for Checkout'
+                      }
+                    </h3>
+                    <p className="status-description">
+                      {getBalanceDue() < 0 ? 
+                        'Consider refunding the excess amount to the guest' :
+                        'All payments have been received'}
+                      {restaurantOrders.length > 0 && (
+                        <span className="restaurant-note">
+                          <br />Restaurant orders will be marked as paid upon checkout
+                        </span>
+                      )}
+                    </p>
+                    <button onClick={handleCheckout} className="btn btn-success">
+                      <LogOut />
+                      Proceed to Checkout
+                      {restaurantOrders.length > 0 && (
+                        <span className="checkout-restaurant-note">
+                          ({restaurantOrders.length} restaurant order{restaurantOrders.length > 1 ? 's' : ''})
+                        </span>
+                      )}
+                    </button>
+                  </div>
                 )}
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
-          {/* Payment Information */}
-          <div className="dayout-form-section">
-            <div className="dayout-form-container">
-              <h5 className="dayout-form-heading">💳 Payment Information</h5>
-              <div className="dayout-form-grid">
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Total Amount</label>
-                  <div className="dayout-input-group">
-                    <span className="dayout-input-prefix">Rs</span>
+          {/* Checkout Confirmation Dialog */}
+          {showCheckoutDialog && (
+            <div className="modal-overlay">
+              <div className="modal-content slide-up">
+                <div className="modal-header">
+                  <LogOut />
+                  <h3 className="modal-title">Checkout Confirmation</h3>
+                </div>
+                
+                <div className="modal-body">
+                  <p>
+                    Are you sure you want to checkout <strong>{formData.firstName} {formData.surname}</strong>?
+                  </p>
+                  
+                  <div className="checkout-details">
+                    <h4>This will:</h4>
+                    <ul>
+                      <li>Mark all booked rooms as vacant</li>
+                      <li>Complete the reservation</li>
+                      <li>Update room availability</li>
+                      {restaurantOrders.length > 0 && (
+                        <li className="restaurant-item">
+                          <UtensilsCrossed className="w-4 h-4 inline mr-1" />
+                          Mark {restaurantOrders.length} restaurant order{restaurantOrders.length > 1 ? 's' : ''} as paid
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+
+                  {restaurantOrders.length > 0 && (
+                    <div className="restaurant-summary">
+                      <h4>Restaurant Orders Summary:</h4>
+                      {restaurantOrders.map(order => (
+                        <div key={order._id} className="mini-order-item">
+                          <span>Order #{order._id.slice(-6)} - Room {order.guestInfo?.roomNo}</span>
+                          <span>${order.total.toFixed(2)}</span>
+                        </div>
+                      ))}
+                      <div className="mini-order-total">
+                        <strong>Restaurant Total: ${calculateRestaurantCharges().toFixed(2)}</strong>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="checkbox-container">
                     <input
-                      type="number"
-                      className="dayout-form-input dayout-readonly"
-                      value={formData.totalAmount}
-                      readOnly
+                      type="checkbox"
+                      id="wantBill"
+                      checked={wantBill}
+                      onChange={(e) => setWantBill(e.target.checked)}
+                      className="checkbox-input"
                     />
+                    <label htmlFor="wantBill" className="checkbox-label">
+                      Generate and download receipt for guest
+                    </label>
                   </div>
                 </div>
                 
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Advance Payment</label>
-                  <div className="dayout-input-group">
-                    <span className="dayout-input-prefix">Rs</span>
-                    <input
-                      type="number"
-                      className="dayout-form-input"
-                      id="advancePayment"
-                      value={formData.advancePayment}
-                      onChange={handleFormChange}
-                      min="0"
-                      max={formData.totalAmount}
-                    />
-                  </div>
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Payment Method</label>
-                  <select
-                    className="dayout-form-select"
-                    id="paymentMethod"
-                    value={formData.paymentMethod}
-                    onChange={handleFormChange}
+                <div className="modal-footer">
+                  <button
+                    onClick={() => setShowCheckoutDialog(false)}
+                    className="btn btn-secondary"
                   >
-                    <option value="">Select Payment Method</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Debit Card">Debit Card</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="UPI">UPI</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                
-                <div className="dayout-form-group">
-                  <label className="dayout-form-label">Payment Notes</label>
-                  <textarea
-                    className="dayout-form-textarea"
-                    id="paymentNotes"
-                    value={formData.paymentNotes}
-                    onChange={handleFormChange}
-                    rows="2"
-                    placeholder="Any additional payment notes..."
-                  />
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmCheckout}
+                    className="btn btn-primary"
+                  >
+                    <CheckCircle />
+                    Confirm Checkout
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="dayout-form-actions">
-            <button type="button" className="dayout-btn dayout-btn-secondary">
-              Cancel
-            </button>
-            <button type="submit" className="dayout-btn dayout-btn-primary">
-              🏖️ Create Day Out Reservation
-            </button>
-          </div>
-        </form>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default DayoutReservation;
+export default ViewReservationDetails;

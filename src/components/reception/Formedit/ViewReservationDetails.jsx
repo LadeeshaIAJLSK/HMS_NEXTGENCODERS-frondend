@@ -21,6 +21,7 @@ const ViewReservationDetails = ({
   const [wantBill, setWantBill] = useState(true);
   const [showCashCalculator, setShowCashCalculator] = useState(false);
   
+  
   // Add state for tracking total paid amount
   const [totalPaidAmount, setTotalPaidAmount] = useState(0);
 
@@ -42,6 +43,10 @@ const ViewReservationDetails = ({
     idType: "",
     idNumber: "",
   });
+
+  // Add restaurant orders state
+  const [restaurantOrders, setRestaurantOrders] = useState([]);
+  const [restaurantTotal, setRestaurantTotal] = useState(0);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -115,6 +120,46 @@ const ViewReservationDetails = ({
       });
     }
   }, [selectedReservation]);
+
+  // Fetch restaurant orders for the guest
+  useEffect(() => {
+    const fetchRestaurantOrders = async () => {
+      if (!selectedReservation || !formData.firstName) return;
+      
+      try {
+        const response = await axios.get('http://localhost:8000/orders');
+        const orders = response.data;
+        
+        // Filter orders based on multiple criteria
+        const guestOrders = orders.filter(order => {
+          // Check if guest ID matches
+          const hasMatchingId = order.guestInfo?.guestId === selectedReservation._id;
+          
+          // Check if name matches (case insensitive)
+          const guestName = `${formData.firstName} ${formData.surname}`.toLowerCase();
+          const orderGuestName = order.guestInfo?.guestName?.toLowerCase() || '';
+          const hasMatchingName = orderGuestName.includes(guestName);
+          
+          // Check if room number matches
+          const hasMatchingRoom = order.guestInfo?.roomNo === selectedReservation.selectedRooms[0];
+          
+          // Return true if either ID matches OR both name and room match
+          return hasMatchingId || (hasMatchingName && hasMatchingRoom);
+        });
+
+        setRestaurantOrders(guestOrders);
+        
+        // Calculate total from restaurant orders
+        const total = guestOrders.reduce((sum, order) => sum + order.total, 0);
+        setRestaurantTotal(total);
+        
+      } catch (err) {
+        console.error("Error fetching restaurant orders:", err);
+      }
+    };
+
+    fetchRestaurantOrders();
+  }, [selectedReservation, formData.firstName, formData.surname]);
 
   const calculateTotalRoomCharges = () => {
     if (!roomDetails.length || !formData.duration) return 0;
@@ -239,7 +284,8 @@ const ViewReservationDetails = ({
   };
 
   const getTotalAmount = () => {
-    return selectedReservation?.totalAmount || calculateTotalRoomCharges();
+    const roomCharges = selectedReservation?.totalAmount || calculateTotalRoomCharges();
+    return roomCharges + restaurantTotal;
   };
 
   const getBalanceDue = () => {
@@ -527,6 +573,76 @@ Thank you for staying with us!
                 </div>
               )}
             </div>
+
+            {/* Restaurant Orders */}
+            <div className="section-card restaurant-orders-card slide-up">
+              <h3 className="section-header">
+                
+                Restaurant Orders
+              </h3>
+              
+              {restaurantOrders.length > 0 ? (
+                <div className="restaurant-orders-list">
+                  {restaurantOrders.map((order) => (
+                    <div key={order._id} className="restaurant-order-item">
+                      <div className="order-header">
+                        <div className="order-info">
+                          <span className="order-number">Order #{order.orderNo}</span>
+                          <span className={`order-status ${order.status.replace(/\s+/g, '-').toLowerCase()}`}>
+                            {order.status}
+                          </span>
+                        </div>
+                        <div className="order-date">
+                          {new Date(order.createdAt).toLocaleString()}
+                        </div>
+                      </div>
+
+                      <div className="order-items-list">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="order-item">
+                            <div className="item-name">{item.name}</div>
+                            <div className="item-details">
+                              <span className="item-quantity">x{item.quantity}</span>
+                              <span className="item-price">${item.price.toFixed(2)}</span>
+                              <span className="item-total">${item.amount.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="order-footer">
+                        <div className="order-type">
+                          <span className="label">Type:</span>
+                          <span className="value">{order.orderType}</span>
+                        </div>
+                        <div className="order-total">
+                          <span className="label">Total:</span>
+                          <span className="value">${order.total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="restaurant-summary">
+                    <div className="summary-header">Restaurant Orders Summary</div>
+                    <div className="summary-total">
+                      <span className="label">Total Restaurant Charges:</span>
+                      <span className="value">${restaurantTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="empty-icon" viewBox="0 0 20 20" fill="red">
+                    <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z"/>
+                  </svg>
+                  <p className="empty-title">No Restaurant Orders</p>
+                  <p className="empty-description">
+                    This guest hasn't placed any restaurant orders during their stay
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Enhanced Payment Summary */}
@@ -747,7 +863,7 @@ Thank you for staying with us!
                         <CheckCircle />
                         {getBalanceDue() < 0 ? 
                           `Guest has overpaid by ${Math.abs(getBalanceDue()).toFixed(2)}` : 
-                          'Payment is complete - Ready for checkout!'
+                          'Payment recorded successfully!'
                         }
                       </div>
                     )}

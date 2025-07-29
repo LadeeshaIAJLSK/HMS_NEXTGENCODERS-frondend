@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const RoomSelection = ({
   rooms,
@@ -11,8 +11,18 @@ const RoomSelection = ({
   handleRoomSelect,
   setRoomTypeFilter,
   setRoomClassFilter,
-  setSearchQuery
+  setSearchQuery,
+  duration // Add duration prop
 }) => {
+  // Calculate total price for selected rooms
+  const totalPrice = useMemo(() => {
+    return selectedRooms.reduce((total, roomNo) => {
+      const room = rooms.find(r => r.RoomNo === roomNo);
+      const price = room?.RPrice || room?.Price || 0;
+      return total + (parseFloat(price) || 0);
+    }, 0) * (duration || 1);
+  }, [selectedRooms, rooms, duration]);
+
   // Filter rooms based on the current filter criteria
   const filteredRooms = rooms.filter(room => {
     // Convert room number to string for comparison
@@ -120,6 +130,27 @@ const RoomSelection = ({
             )}
           </tbody>
         </table>
+
+        {/* Add Price Summary Section */}
+        {selectedRooms.length > 0 && (
+          <div className="price-summary">
+            <h3>Price Summary</h3>
+            <div className="summary-details">
+              <div className="summary-row">
+                <span>Selected Rooms:</span>
+                <span>{selectedRooms.length}</span>
+              </div>
+              <div className="summary-row">
+                <span>Duration:</span>
+                <span>{duration || 1} night(s)</span>
+              </div>
+              <div className="summary-row total">
+                <span>Total Amount:</span>
+                <span className="total-price">Rs. {totalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
