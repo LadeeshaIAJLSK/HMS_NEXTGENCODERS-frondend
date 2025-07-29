@@ -251,8 +251,6 @@ const CheckoutPage = () => {
                 <li><strong>Reservation Type:</strong> {selectedGuest.reservationType}</li>
                 <li><strong>Check-In:</strong> {selectedGuest.checkIn?.split("T")[0]}</li>
                 <li><strong>Check-Out:</strong> {selectedGuest.checkOut?.split("T")[0]}</li>
-                <li><strong>Start Time:</strong> {selectedGuest.startTime}</li>
-                <li><strong>End Time:</strong> {selectedGuest.endTime}</li>
                 <li><strong>Status:</strong> {selectedGuest.status}</li>
               </ul>
             </div>

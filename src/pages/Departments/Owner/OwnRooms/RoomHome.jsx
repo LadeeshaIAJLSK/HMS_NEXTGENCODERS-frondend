@@ -180,10 +180,10 @@ const handleSubmit = async (e) => {
                     <td>{room.Price ? `$${room.Price}` : "No Price"}</td>
                     <td>
                       <button className={styles["roomhome-icon-btn"]} onClick={() => openEditModal(room)}>
-                        <FaEdit className={styles["edit-icon"]} />
+                        ✏️
                       </button>
                       <button className={styles["roomhome-icon-btn"]} onClick={() => handleDelete(room._id)}>
-                        <FaTrashAlt className={styles["delete-icon"]} />
+                        🗑️
                       </button>
                     </td>
                   </tr>

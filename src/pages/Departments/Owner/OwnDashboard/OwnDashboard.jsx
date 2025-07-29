@@ -35,6 +35,8 @@ const OwnerDashboard = () => {
     outOfService: 0,
   });
 
+  const [showPopup, setShowPopup] = useState(false);
+
   const fetchReceptionData = async () => {
     try {
       const res = await axios.get("http://localhost:5004/api/dashboard/latest");
@@ -76,8 +78,7 @@ const OwnerDashboard = () => {
 
   const storeBackupData = async () => {
     try {
-      const date = prompt("Enter date for backup (YYYY-MM-DD):", new Date().toISOString().split("T")[0]);
-      if (!date) return;
+      const date = new Date().toISOString().split("T")[0];
 
       await axios.post("http://localhost:5004/api/dashboard/backup", {
         date,
@@ -92,10 +93,9 @@ const OwnerDashboard = () => {
         chartData: receptionData,
       });
 
-      alert("Backup stored successfully!");
+      setShowPopup(true);
     } catch (err) {
       console.error("Failed to store backup:", err);
-      alert("Failed to store backup.");
     }
   };
 
@@ -107,8 +107,7 @@ const OwnerDashboard = () => {
   return (
     <>
       <Ownsidebar />
-      <main className="dashboard-container">
-        {/* 🧍‍♂️ Guest Activity Summary */}
+      <main className={`dashboard-container ${showPopup ? "dashboard-blur" : ""}`}>
         <section className="metrics-row">
           <div className="metric-card">
             <h3>Today's Guest Activity</h3>
@@ -124,25 +123,21 @@ const OwnerDashboard = () => {
             </div>
           </div>
 
-          {/* 💰 Revenue Summary */}
-          {/* 💰 Revenue Summary */}
-<div className="metric-card">
-  <h3>Today's Revenue</h3>
-  <div className="metric-values">
-    <div>
-      <p>{receptionRevenue ? `Rs. ${receptionRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
-      <span>Reception</span>
-    </div>
-    <div>
-      <p>{restaurantRevenue ? `Rs. ${restaurantRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
-      <span>Restaurant</span>
-    </div>
-  </div>
-</div>
-
+          <div className="metric-card">
+            <h3>Today's Revenue</h3>
+            <div className="metric-values">
+              <div>
+                <p>{receptionRevenue ? `Rs. ${receptionRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
+                <span>Reception</span>
+              </div>
+              <div>
+                <p>{restaurantRevenue ? `Rs. ${restaurantRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
+                <span>Restaurant</span>
+              </div>
+            </div>
+          </div>
         </section>
 
-        {/* 📊 Room Occupancy Chart */}
         <section className="chart-section">
           <h2>Room Occupancy Overview</h2>
           <div className="chart-row fixed-chart-row">
@@ -178,7 +173,6 @@ const OwnerDashboard = () => {
           <button className="backup-btn" onClick={storeBackupData}>Store Backup</button>
         </section>
 
-        {/* 💹 Sales Overview */}
         <section className="chart-section">
           <div className="sales-header">
             <h2>Sales Overview</h2>
@@ -203,6 +197,17 @@ const OwnerDashboard = () => {
           </BarChart>
         </section>
       </main>
+
+      {showPopup && (
+        <div className="dashboard-popup-success">
+          <div className="dashboard-popup-box">
+            <div className="dashboard-popup-icon">✅</div>
+            <h3>Stored Successfully!</h3>
+            <p>Dashboard backup has been stored.</p>
+            <button className="dashboard-popup-ok" onClick={() => setShowPopup(false)}>OK</button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
