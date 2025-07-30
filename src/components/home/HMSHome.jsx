@@ -206,7 +206,7 @@ const HMSHome = () => {
       >
         <button
           onClick={() => navigate("/package-management")}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+className="bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
         >
           <svg
             className="w-5 h-5"
@@ -226,7 +226,7 @@ const HMSHome = () => {
         {ownerPackages.length !== packages.length && (
           <button
             onClick={() => navigate("/cart")}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+className="bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
           >
             <svg
               className="w-5 h-5"
@@ -264,10 +264,10 @@ const HMSHome = () => {
           className="relative z-10 h-full flex flex-col items-center justify-center text-white text-center px-4"
         >
           <h1 className="text-6xl font-bold mb-6 tracking-tight">
-            Nexus Hotel Management System
+            NexStay Hotel Management System
           </h1>
           <p className="text-2xl max-w-3xl mb-8 text-gray-200">
-            Elevate your hotel operations with Nexus HMS - Where luxury meets
+            Elevate your hotel operations with NexStay HMS - Where luxury meets
             efficiency
           </p>
           <motion.button
@@ -278,7 +278,7 @@ const HMSHome = () => {
                 .getElementById("packages")
                 .scrollIntoView({ behavior: "smooth" })
             }
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-lg"
+className="bg-blue-800 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg text-lg"
           >
             Explore Packages
           </motion.button>
@@ -296,7 +296,7 @@ const HMSHome = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Nexus HMS?
+              Why Choose NexStay HMS?
             </h2>
             <p className="text-xl text-gray-600">
               Experience the next generation of hotel management solutions
@@ -348,9 +348,9 @@ const HMSHome = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className="p-8 bg-blue-50 rounded-2xl hover:bg-blue-100 transition-colors duration-300"
+className="p-8 bg-[#e0f5f5] rounded-2xl hover:bg-[#cceeee] transition-colors duration-300"
               >
-                <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-6 transform hover:scale-110 transition-transform duration-300">
+<div className="w-16 h-16 bg-[#008080] rounded-xl flex items-center justify-center mb-6 transform hover:scale-110 transition-transform duration-300">
                   <svg
                     className="w-8 h-8 text-white"
                     fill="none"
@@ -388,7 +388,7 @@ const HMSHome = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nexus HMS Packages
+              NexStay HMS Packages
             </h2>
             <p className="text-xl text-gray-600">
               Choose from our specialized packages to enhance your hotel's
@@ -460,7 +460,7 @@ const HMSHome = () => {
                     </ul>
                     <div className="mt-auto pt-4 border-t border-gray-100">
                       <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-blue-600">
+<span className="text-xl font-bold text-[#008080]">
                           ${pkg.price}
                         </span>
                         {isPackagePurchased(pkg.id) ? (
@@ -476,7 +476,7 @@ const HMSHome = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleAddtoMyCart(pkg)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white text-base font-semibold py-2 px-4 rounded-lg transition-colors duration-300 shadow hover:shadow-md"
+className="bg-[#008080] hover:bg-[#006666] text-white text-base font-semibold py-2 px-4 rounded-lg transition-colors duration-300 shadow hover:shadow-md"
                           >
                             Add to Carts
                           </motion.button>
@@ -492,7 +492,8 @@ const HMSHome = () => {
       </div>
 
       {/* Contact Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-20 px-4 sm:px-6 lg:px-8">
+<div className="bg-gradient-to-r from-[#1e3a8a] to-[#065f46] text-white py-20 px-4 sm:px-6 lg:px-8">
+
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -501,7 +502,7 @@ const HMSHome = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold mb-6">
-              Ready to Transform Your Hotel with Nexus HMS?
+              Ready to Transform Your Hotel with NexStay HMS?
             </h2>
             <p className="text-2xl mb-12 text-gray-200">
               Experience the future of hotel management with our comprehensive

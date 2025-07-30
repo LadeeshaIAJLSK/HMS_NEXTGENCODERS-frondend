@@ -121,12 +121,13 @@ const Cart = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Your Cart</h1>
-          <button
+          {/* <button
             onClick={() => navigate("/hms-home")}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-[#008080] hover:text-[#004d4d]"
+
           >
             Browse More Packages
-          </button>
+          </button> */}
 
           <LogoutButton onLogout={() => navigate("/login")} />
         </div>
@@ -141,7 +142,7 @@ const Cart = () => {
             </p>
             <button
               onClick={() => navigate("/hms-home")}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+className="bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2 px-6 rounded-lg transition-colors"
             >
               Browse Packages
             </button>
@@ -167,7 +168,8 @@ const Cart = () => {
                       <p className="text-sm text-gray-600">
                         Quantity: {item.quantity}
                       </p>
-                      <p className="text-lg font-bold text-blue-600">
+                      <p className="text-lg font-bold text-[#008080]">
+
                         ${item.price}
                       </p>
                     </div>
@@ -186,7 +188,8 @@ const Cart = () => {
                 <span className="text-lg font-semibold text-gray-900">
                   Total:
                 </span>
-                <span className="text-2xl font-bold text-blue-600">
+                <span className="text-2xl font-bold text-[#008080]">
+
                   ${cartTotalPrice}
                 </span>
               </div>
@@ -194,7 +197,7 @@ const Cart = () => {
                 <button
                   onClick={handlePurchaseCartItem}
                   disabled={isProcessing}
-                  className={`w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
+className={`w-full bg-gradient-to-r from-[#008080] to-[#006666] hover:from-[#006666] hover:to-[#004d4d] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
                     isProcessing ? "opacity-75 cursor-not-allowed" : ""
                   }`}
                 >

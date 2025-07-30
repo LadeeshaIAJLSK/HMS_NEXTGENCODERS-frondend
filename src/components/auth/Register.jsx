@@ -50,7 +50,7 @@ const Register = () => {
         <div className="md:w-1/2 relative hidden md:block">
           <div className="absolute inset-0 bg-cover bg-center" 
                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3')" }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-blue-800/90"></div>
+<div className="absolute inset-0 bg-gradient-to-br from-[#1e2a78]/90 to-[#006b57]/90"></div>
           </div>
           <div className="relative p-8 text-white h-full flex flex-col justify-center">
             <h2 className="text-4xl font-bold mb-6">Join Our Network</h2>
@@ -107,7 +107,7 @@ const Register = () => {
                   name="name"
                   type="text"
                   required
-                  className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#008080] placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#008080] focus:border-[#008080] focus:z-10 sm:text-sm"
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
@@ -132,7 +132,7 @@ const Register = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#008080] placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#008080] focus:border-[#008080] focus:z-10 sm:text-sm"
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
@@ -155,7 +155,7 @@ const Register = () => {
                   name="password"
                   type="password"
                   required
-                  className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#008080] focus:border-[#008080] focus:z-10 sm:text-sm"
                   placeholder="Create a password"
                   value={formData.password}
                   onChange={handleChange}
@@ -178,7 +178,7 @@ const Register = () => {
                   name="confirmPassword"
                   type="password"
                   required
-                  className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+className="pl-10 appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#008080] focus:border-[#008080] focus:z-10 sm:text-sm"
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -190,7 +190,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#008080] hover:bg-[#006666] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#008080] transition-colors disabled:opacity-50"
               >
                 {loading ? (
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -203,7 +203,8 @@ const Register = () => {
             </div>
 
             <div className="text-center">
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+              <Link to="/login" className="font-medium text-[#008080] hover:text-[#00a3a3] transition-colors">
+
                 Already have an account? Sign in
               </Link>
             </div>

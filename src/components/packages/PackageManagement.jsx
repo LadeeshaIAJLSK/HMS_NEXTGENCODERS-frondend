@@ -135,7 +135,7 @@ const PackageManagement = () => {
                 <img src="/favicon.svg" alt="Nexus Hotel" className="w-6 h-6" />
                 <span>
                   Powered by{" "}
-                  <span className="font-semibold text-gray-800">Nexus</span>
+                  <span className="font-semibold text-gray-800">NexStay</span>
                 </span>
               </div>
 
@@ -188,7 +188,7 @@ const PackageManagement = () => {
                 <>
                   <button
                     onClick={() => navigate("/hms-home")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+className="bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
                   >
                     <svg
                       className="w-5 h-5"
@@ -429,7 +429,7 @@ const PackageManagement = () => {
                   <p className="text-gray-600 mt-2">{pkg.description}</p>
                   {role === "OWNER" && (
                     <div className="mt-4 flex justify-between items-center">
-                      <span className="text-lg font-bold text-blue-600">
+<span className="text-lg font-bold text-[#008080]">
                         ${pkg.price}
                       </span>
                       <span className="text-sm text-gray-500">
@@ -446,7 +446,7 @@ const PackageManagement = () => {
         <div className="flex mt-5">
           {role === "OWNER" && (
             <button
-              className="bg-blue-600 hover:bg-blue-700 mt-8 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+className="bg-[#008080] hover:bg-[#006666] mt-8 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
               onClick={() => {
                 setEditingEmployee(null);
                 setIsDialogOpen(true);
