@@ -10,7 +10,7 @@ import "./Checkout.css";
 const CheckoutPage = () => {
   const [originalData, setOriginalData] = useState([]);
   const [data, setData] = useState([]);
-  const [entriesToShow, setEntriesToShow] = useState(5);
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     guestFirstName: "",
@@ -33,6 +33,11 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error("Error fetching checkout data:", error);
     }
+  };
+
+  const handleEntriesChange = (e) => {
+    setEntriesPerPage(parseInt(e.target.value));
+    setCurrentPage(1);
   };
 
   const handleFilterChange = (e) => {
@@ -122,10 +127,10 @@ const CheckoutPage = () => {
     setSelectedGuest(null);
   };
 
-  const indexOfLastEntry = currentPage * entriesToShow;
-  const indexOfFirstEntry = indexOfLastEntry - entriesToShow;
-  const currentData = data.slice(indexOfFirstEntry, indexOfLastEntry);
-  const totalPages = Math.ceil(data.length / entriesToShow);
+ const indexOfLastEntry = currentPage * entriesPerPage;
+const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
+const currentData = data.slice(indexOfFirstEntry, indexOfLastEntry);
+const totalPages = Math.ceil(data.length / entriesPerPage);
 
   return (
     <div className={`checkout-report-wrapper ${modalOpen ? "modal-active" : ""}`}>
@@ -159,6 +164,19 @@ const CheckoutPage = () => {
               <option value="xlsx">Excel</option>
               <option value="csv">CSV</option>
             </select>
+          </div>
+        </div>
+
+         <div className="checkout-table-controls">
+          <div>
+            Show{" "}
+            <select value={entriesPerPage} onChange={handleEntriesChange} className="checkout-entries-select">
+              <option value={5}>5</option>
+              <option value={10}>10</option>    
+              <option value={15}>15</option>
+              <option value={20}>20</option>
+            </select>{" "}
+            entries
           </div>
         </div>
 

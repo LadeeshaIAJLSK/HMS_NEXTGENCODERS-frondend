@@ -95,7 +95,6 @@ const OwnerDashboard = () => {
         outOfService: receptionCounts.outOfService,
         receptionRevenue,
         restaurantRevenue,
-        chartData: receptionData,
       });
 
       setShowPopup(true);
