@@ -1,7 +1,7 @@
 // Updated RoomHome.jsx to use a custom popup message box instead of alert()
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import {FaPlus } from "react-icons/fa";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 import styles from "./RoomHome.module.css";
 

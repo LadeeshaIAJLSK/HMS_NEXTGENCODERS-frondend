@@ -25,6 +25,7 @@ const OwnerDashboard = () => {
   const [todayCheckOuts, setTodayCheckOuts] = useState(0);
   const [receptionRevenue, setReceptionRevenue] = useState(0);
   const [restaurantRevenue, setRestaurantRevenue] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const [salesData, setSalesData] = useState([]);
   const [period, setPeriod] = useState("yearly");
 
@@ -46,6 +47,10 @@ const OwnerDashboard = () => {
       setTodayCheckOuts(data.todayCheckOuts || 0);
       setReceptionRevenue(data.receptionRevenue || 0);
       setRestaurantRevenue(data.restaurantRevenue || 0);
+
+      setTotalRevenue(
+        (data.receptionRevenue || 0) + (data.restaurantRevenue || 0)
+      );
 
       setReceptionCounts({
         booked: data.booked || 0,
@@ -104,12 +109,16 @@ const OwnerDashboard = () => {
     fetchSalesData(period);
   }, [period]);
 
+  useEffect(() => {
+    setTotalRevenue(receptionRevenue + restaurantRevenue);
+  }, [receptionRevenue, restaurantRevenue]);
+
   return (
     <>
       <Ownsidebar />
       <main className={`dashboard-container ${showPopup ? "dashboard-blur" : ""}`}>
         <section className="metrics-row">
-          <div className="metric-card">
+          <div className="metric-card small-card">
             <h3>Today's Guest Activity</h3>
             <div className="metric-values">
               <div>
@@ -123,7 +132,7 @@ const OwnerDashboard = () => {
             </div>
           </div>
 
-          <div className="metric-card">
+          <div className="metric-card large-card">
             <h3>Today's Revenue</h3>
             <div className="metric-values">
               <div>
@@ -133,6 +142,10 @@ const OwnerDashboard = () => {
               <div>
                 <p>{restaurantRevenue ? `Rs. ${restaurantRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
                 <span>Restaurant</span>
+              </div>
+              <div>
+                <p>{`Rs. ${totalRevenue.toFixed(2)}`}</p>
+                <span>Total</span>
               </div>
             </div>
           </div>
