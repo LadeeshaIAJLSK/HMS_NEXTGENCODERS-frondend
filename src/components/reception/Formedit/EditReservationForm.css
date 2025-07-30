@@ -1,11 +1,11 @@
 /* Scoped CSS for EditReservationForm component only */
 .edit-reservation-form-scope {
-  --primary-color: #00421e;
+  --primary-color: #008080;
   --secondary-color: #008080;
   --accent-color: #e74c3c;
   --light-color: #ecf0f1;
   --dark-color: #020e1b;
-  --success-color: #00431c;
+  --success-color: #008080;
   --warning-color: #f39c12;
   --danger-color: #e74c3c;
   --border-radius: 6px;
@@ -13,7 +13,7 @@
   --transition: all 0.3s ease;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #072902;
+  color: #000000;
   padding: 20px;
 }
 
@@ -299,12 +299,12 @@
 }
 
 .edit-reservation-form-scope .rooms-table th {
-  background-color: #00421e !important;
+  background-color: #008080 !important;
   color: white !important;
   font-weight: 600 !important;
   font-size: 0.95rem !important;
   padding: 1rem !important;
-  border: 1px solid #00421e !important;
+  border: 1px solid #ffffff !important;
   text-align: left !important;
 }
 
@@ -345,6 +345,8 @@
   border-left: 4px solid #0891b2 !important;
 }
 
+
+
 .edit-reservation-form-scope .selected-rooms h3 {
   margin: 0 !important;
   color: #0c4a6e !important;
@@ -375,15 +377,15 @@
   margin-top: 1rem !important;
 }
 
-.edit-reservation-form-scope .editperson-table {
+.edit-reservation-form-scope .person-table {
   width: 100% !important;
   border-collapse: collapse !important;
   min-width: 800px !important;
   border: 1px solid #e2e8f0 !important;
 }
 
-.edit-reservation-form-scope .editperson-table th {
-  background-color: #00421e !important;
+.edit-reservation-form-scope .person-table th {
+  background-color: #004216 !important;
   color: white !important;
   font-weight: 600 !important;
   font-size: 0.95rem !important;
@@ -392,7 +394,7 @@
   text-align: left !important;
 }
 
-.edit-reservation-form-scope .editperson-table td {
+.edit-reservation-form-scope .person-table td {
   padding: 0.75rem !important;
   border: 1px solid #e2e8f0 !important;
   background-color: #fff !important;
@@ -458,27 +460,27 @@
 
 /* Fix table header font consistency */
 .edit-reservation-form-scope .editperson-table th {
-  background-color: #00421e !important;
+  background-color: #008080 !important;
   color: white !important;
   font-weight: 600 !important;
   font-size: 0.95rem !important;
   padding: 1rem !important;
-  border: 1px solid #00421e !important;
+  border: 1px solid #fdfffe !important;
   text-align: left !important;
   font-style: normal !important;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
 /* Override any inherited font styling */
-.edit-reservation-form-scope .editperson-table,
-.edit-reservation-form-scope .editperson-table * {
+.edit-reservation-form-scope .person-table,
+.edit-reservation-form-scope .person-table * {
   font-style: normal !important;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
 /* Fix title font styling */
 .edit-reservation-form-scope .editform-form-heading {
-  color: #2d3748 !important;
+  color: #008080 !important;
   font-size: 1.4rem !important;
   font-weight: 600 !important;
   font-style: normal !important;
@@ -506,7 +508,7 @@
 }
 
 .edit-reservation-form-scope .add-btn {
-  background-color: #00431c !important;
+  background-color: #008080 !important;
   color: white !important;
 }
 

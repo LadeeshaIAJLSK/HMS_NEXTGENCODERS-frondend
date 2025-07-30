@@ -266,7 +266,7 @@ const DayoutReservation = () => {
                             >
                               <strong>{customer.firstName} {customer.surname}</strong>
                               <br />
-                              📱 {customer.mobile} | 📧 {customer.email}
+                               {customer.mobile} |  {customer.email}
                             </button>
                           ))}
                         </div>

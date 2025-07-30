@@ -423,27 +423,27 @@ Thank you for staying with us!
     switch (status) {
       case 'CheckedOut':
         badgeClass = 'status-badge-checkedout';
-        icon = <LogOut className="w-4 h-4" />;
+        
         label = 'Checked Out';
         break;
       case 'Confirmed':
         badgeClass = 'status-badge-confirmed';
-        icon = <CheckCircle className="w-4 h-4" />;
+        
         label = 'Confirmed';
         break;
       case 'CheckedIn':
         badgeClass = 'status-badge-checkedin';
-        icon = <User className="w-4 h-4" />;
+        
         label = 'Checked In';
         break;
       case 'Pending':
         badgeClass = 'status-badge-pending';
-        icon = <Clock className="w-4 h-4" />;
+        
         label = 'Pending';
         break;
       default:
         badgeClass = 'status-badge-default';
-        icon = <AlertCircle className="w-4 h-4" />;
+        
         label = status || 'Unknown';
     }
     
@@ -474,13 +474,13 @@ Thank you for staying with us!
               {getStatusBadge()}
               {isCheckedOut && selectedReservation.checkoutDate && (
                 <div className="checkout-info">
-                  <Clock className="w-4 h-4" />
+                  
                   Checked out on: {new Date(selectedReservation.checkoutDate).toLocaleDateString()}
                 </div>
               )}
             </div>
             <button onClick={onBackToEdit} className="back-button">
-              ← Back to {isCheckedOut ? 'List' : 'Edit'}
+              Back to {isCheckedOut ? 'List' : 'Edit'}
             </button>
           </div>
 
@@ -602,9 +602,9 @@ Thank you for staying with us!
                           <div key={idx} className="order-item">
                             <div className="item-name">{item.name}</div>
                             <div className="item-details">
-                              <span className="item-quantity">x{item.quantity}</span>
-                              <span className="item-price">${item.price.toFixed(2)}</span>
-                              <span className="item-total">${item.amount.toFixed(2)}</span>
+                              <span className="item-quantity">{item.quantity} x</span>
+                              <span className="item-price">Rs.{item.price.toFixed(2)}</span>
+                              <span className="item-total"> = Rs.{item.amount.toFixed(2)}</span>
                             </div>
                           </div>
                         ))}
@@ -617,7 +617,7 @@ Thank you for staying with us!
                         </div>
                         <div className="order-total">
                           <span className="label">Total:</span>
-                          <span className="value">${order.total.toFixed(2)}</span>
+                          <span className="value">Rs.{order.total.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
@@ -627,7 +627,7 @@ Thank you for staying with us!
                     <div className="summary-header">Restaurant Orders Summary</div>
                     <div className="summary-total">
                       <span className="label">Total Restaurant Charges:</span>
-                      <span className="value">${restaurantTotal.toFixed(2)}</span>
+                      <span className="value"> Rs.{restaurantTotal.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -655,12 +655,12 @@ Thank you for staying with us!
               <div className="payment-summary-grid">
                 <div className="payment-summary-item total">
                   <div className="payment-summary-label">Total Bill</div>
-                  <div className="payment-summary-value neutral">${getTotalAmount().toFixed(2)}</div>
+                  <div className="payment-summary-value neutral">Rs.{getTotalAmount().toFixed(2)}</div>
                 </div>
                 
                 <div className="payment-summary-item paid">
                   <div className="payment-summary-label">Total Paid</div>
-                  <div className="payment-summary-value positive">${getTotalPaid().toFixed(2)}</div>
+                  <div className="payment-summary-value positive">Rs.{getTotalPaid().toFixed(2)}</div>
                 </div>
                 
                 <div className="payment-summary-item due">
@@ -670,7 +670,7 @@ Thank you for staying with us!
                     getBalanceDue() < 0 ? 'overpaid' : 
                     'positive'
                   }`}>
-                    ${Math.abs(getBalanceDue()).toFixed(2)}
+                    Rs.{Math.abs(getBalanceDue()).toFixed(2)}
                   </div>
                 </div>
                 
@@ -751,7 +751,7 @@ Thank you for staying with us!
                   {getBalanceDue() > 0 && (
                     <div className="quick-pay-section">
                       <p className="quick-pay-text">
-                        Amount Due: ${getBalanceDue().toFixed(2)}
+                        Amount Due: Rs.{getBalanceDue().toFixed(2)}
                       </p>
                       <button onClick={quickPayFull} className="quick-pay-button">
                         Pay Full Amount
@@ -762,7 +762,7 @@ Thank you for staying with us!
                   <div className="payment-form">
                     <div className="payment-form-field">
                       <label className="payment-form-label">
-                        Payment Amount ($)
+                        Payment Amount (Rs)
                       </label>
                       <input
                         type="number"
@@ -804,7 +804,7 @@ Thank you for staying with us!
                         </h4>
                         <div className="payment-form-field">
                           <label className="payment-form-label">
-                            Cash Received from Guest ($)
+                            Cash Received from Guest (Rs)
                           </label>
                           <input
                             type="number"
@@ -822,7 +822,7 @@ Thank you for staying with us!
                             <span className={`change-amount ${
                               calculateChange() >= 0 ? 'positive' : 'negative'
                             }`}>
-                              ${Math.abs(calculateChange()).toFixed(2)}
+                              Rs.{Math.abs(calculateChange()).toFixed(2)}
                               {calculateChange() < 0 && ' (Insufficient Cash)'}
                             </span>
                           </div>
@@ -898,7 +898,7 @@ Thank you for staying with us!
                   <CheckCircle />
                 </div>
                 <h3 className="status-title complete">
-                  ✅ Checkout Complete
+                   Checkout Complete
                 </h3>
                 <div className="checkout-summary">
                   <p className="status-description">
@@ -948,7 +948,7 @@ Thank you for staying with us!
                     <p className="status-description">
                       Outstanding Balance: 
                     </p>
-                    <div className="status-amount">${getBalanceDue().toFixed(2)}</div>
+                    <div className="status-amount">Rs.{getBalanceDue().toFixed(2)}</div>
                     <button
                       onClick={() => {
                         document.querySelector('.payment-form-input')?.focus();
@@ -956,7 +956,7 @@ Thank you for staying with us!
                       className="btn btn-warning"
                     >
                       <DollarSign />
-                      Complete Payment (${getBalanceDue().toFixed(2)} Due)
+                      Complete Payment (Rs.{getBalanceDue().toFixed(2)} Due)
                     </button>
                   </div>
                 ) : (

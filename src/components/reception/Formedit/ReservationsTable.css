@@ -16,15 +16,15 @@
 
 .reservations-table {
   /* CSS Variables matching ViewReservationDetails */
-  --primary-color: #00421e;
-  --secondary-color: #008080;
+  --primary-color: #008080;
+  --secondary-color: hsl(44, 85%, 44%);
   --accent-color: #e74c3c;
   --light-color: #ecf0f1;
   --dark-color: #020e1b;
   --success-color: #00431c;
-  --warning-color: #f39c12;
+  --warning-color: #010252;
   --danger-color: #e74c3c;
-  --info-color: #3498db;
+  --info-color: #008080;
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -40,18 +40,15 @@
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #072902;
+  color: #0da708;
   border: 1px solid rgba(0, 66, 30, 0.1);
   transition: var(--transition);
 }
 
-.reservations-table:hover {
-  box-shadow: 0 8px 25px rgba(0, 66, 30, 0.12);
-  transform: translateY(-2px);
-}
+
 
 .reservations-table:hover {
-  box-shadow: 0 8px 25px rgba(0, 66, 30, 0.12);
+  box-shadow: 0 8px 25px rgba(187, 22, 104, 0.12);
   transform: translateY(-2px);
 }
 
@@ -108,7 +105,7 @@
 }
 
 .reservations-table tbody tr:hover {
-  background: #e3f2fd !important;
+  background: #e6ecec !important;
   transform: none;
   box-shadow: none;
 }
@@ -153,7 +150,7 @@
 }
 
 .reservations-table tbody td:first-child {
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  
   font-weight: 600;
   color: #6b7280;
   background: none;
@@ -165,17 +162,8 @@
   color: #111827;
 }
 
-.reservations-table tbody td:nth-child(3) {
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
-  color: #374151;
-  font-weight: 500;
-}
 
-.reservations-table tbody td:nth-child(4),
-.reservations-table tbody td:nth-child(5) {
-  color: var(--secondary-color);
-  font-weight: 600;
-}
+
 
 /* Action Buttons Container */
 .reservations-table .action-buttons {
@@ -222,22 +210,18 @@
 
 /* Edit Button */
 .reservations-table .action-buttons button:first-child {
-  background: var(--primary-color);
+  background: #040a63;
   color: #ffffff;
   border: none;
   border-radius: 6px;
 }
 
 .reservations-table .action-buttons button:first-child:hover {
-  background: #005a29;
+  background: #0c6599;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 66, 30, 0.3);
+  
 }
 
-.reservations-table .action-buttons button:first-child:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 67, 28, 0.3);
-}
 
 /* View Button */
 .reservations-table .action-buttons button:last-child {
@@ -248,46 +232,31 @@
 }
 
 .reservations-table .action-buttons button:last-child:hover {
-  background: #20b2aa;
+  background: #a09d05;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 128, 128, 0.3);
+
 }
 
 .reservations-table .action-buttons button:last-child:active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 128, 128, 0.3);
+  
 }
 
 /* Active Button States */
 .reservations-table .active-edit-btn {
   background: var(--warning-color) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 10px rgba(243, 156, 18, 0.4) !important;
+  box-shadow: 0 0 10px rgba(18, 108, 243, 0.4) !important;
 }
 
 .reservations-table .active-view-btn {
-  background: #8b5cf6 !important;
+ 
   color: #ffffff !important;
   box-shadow: 0 0 10px rgba(139, 92, 246, 0.4) !important;
 }
 
-@keyframes activeEditPulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(243, 156, 18, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
-  }
-}
 
-@keyframes activeViewPulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
-  }
-}
+
 
 /* Loading and Empty States */
 .reservations-table .loading-message,
@@ -484,38 +453,3 @@
   }
 }
 
-/* Additional Theme Enhancements */
-.reservations-table tbody tr:nth-child(even) {
-  background: linear-gradient(90deg, rgba(0, 66, 30, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
-}
-
-.reservations-table tbody tr:nth-child(even):hover {
-  background: linear-gradient(90deg, #f8fffe 0%, #f0f9f7 100%);
-}
-
-/* Special styling for first column (ID) */
-.reservations-table tbody td:first-child {
-  position: relative;
-}
-
-.reservations-table tbody td:first-child::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 10%;
-  height: 80%;
-  width: 1px;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 66, 30, 0.3) 50%, transparent 100%);
-}
-
-/* Hover effects for data cells */
-.reservations-table tbody td:nth-child(3):hover {
-  background: linear-gradient(90deg, rgba(0, 67, 28, 0.05), transparent);
-  cursor: pointer;
-}
-
-.reservations-table tbody td:nth-child(4):hover,
-.reservations-table tbody td:nth-child(5):hover {
-  background: linear-gradient(90deg, rgba(0, 128, 128, 0.05), transparent);
-  cursor: pointer;
-}

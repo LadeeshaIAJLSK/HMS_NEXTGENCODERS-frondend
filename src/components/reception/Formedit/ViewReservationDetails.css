@@ -1,18 +1,18 @@
 /* ViewReservationDetails.css */
 .view-reservation-scope {
-  --primary-color: #00421e;
+  --primary-color: #008080;
   --secondary-color: #008080;
   --accent-color: #e74c3c;
   --light-color: #ecf0f1;
   --dark-color: #020e1b;
-  --success-color: #00431c;
+  --success-color: #008080;
   --warning-color: #f39c12;
   --danger-color: #e74c3c;
   --info-color: #3498db;
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --gradient-primary: linear-gradient(135deg, #00421e 0%, #005a29 100%);
+  --gradient-primary: linear-gradient(135deg, #008080 0%, #20b2aa 100%);
   --gradient-secondary: linear-gradient(135deg, #008080 0%, #20b2aa 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
@@ -81,7 +81,7 @@
 .view-reservation-scope .back-button {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(9, 4, 80, 0.3);
   padding: 10px 20px;
   border-radius: 25px;
   font-weight: 600;
@@ -140,21 +140,21 @@
 /* Guest Information Card */
 .view-reservation-scope .guest-info-card {
   background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
-  border-left: 5px solid var(--info-color);
+  
 }
 
 .view-reservation-scope .guest-info-card::before {
-  background: linear-gradient(90deg, var(--info-color) 0%, #5dade2 100%);
+  background: linear-gradient(90deg, #0e1572 0%, #010b2c 100%);
 }
 
 /* Rooms Card */
 .view-reservation-scope .rooms-card {
   background: linear-gradient(135deg, #e8f5e8 0%, #f0fff0 100%);
-  border-left: 5px solid var(--success-color);
+ 
 }
 
 .view-reservation-scope .rooms-card::before {
-  background: linear-gradient(90deg, var(--success-color) 0%, #27ae60 100%);
+  background: linear-gradient(90deg, #27ae9c 0%, #27ae9c 100%);
 }
 
 /* Payment Card */
@@ -894,10 +894,12 @@
 /* Bill Generation */
 .view-reservation-scope .bill-section {
   margin-top: 24px;
+  margin-left: 24px;
+  margin-right: 24px;
 }
 
 .view-reservation-scope .bill-card {
-  background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
   border: 1px solid var(--info-color);
   border-radius: 8px;
   padding: 20px;
@@ -968,7 +970,7 @@
 
 .view-reservation-scope .loading-text {
   font-size: 1.1rem;
-  color: #666;
+  color: #666666;
   margin-top: 12px;
 }
 
@@ -1420,7 +1422,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #6c757d;
+  color: #fafafa;
+  font-weight: 600;
   font-size: 14px;
 }
 
@@ -1476,12 +1479,12 @@
 /* Checkout Complete Status Card */
 .checkout-complete {
   background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  border: 2px solid #28a745;
-  color: #155724;
+  border: 2px solid #109b31;
+  color: #008080;
 }
 
 .status-icon.complete {
-  background-color: #28a745;
+  background-color: #008080;
   color: white;
   width: 60px;
   height: 60px;
@@ -1526,11 +1529,11 @@
 
 .detail-row .amount {
   font-weight: bold;
-  color: #28a745;
+  color: #008080;
 }
 
 .payment-status.fully-paid {
-  color: #28a745;
+  color: #008080;
   font-weight: bold;
 }
 
@@ -1665,12 +1668,12 @@
 }
 
 .item-quantity {
-  background: var(--primary-color);
-  color: white;
+  background: white;
+  color: #008080;
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size:1rem;
+  font-weight: 800;
 }
 
 .item-name {
@@ -1680,6 +1683,11 @@
 
 .item-price {
   font-weight: 600;
+  color: var(--primary-color);
+}
+
+.item-total{
+   font-weight: 600;
   color: var(--primary-color);
 }
 

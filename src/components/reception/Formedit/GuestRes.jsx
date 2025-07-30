@@ -371,7 +371,7 @@ const GuestRes = () => {
 
   return (
     <div className="edit-reservation-container">
-      <h1 className="page-title">Manage Reservations</h1>
+      <h1 className="page-title"><br></br></h1>
       
       {/* Type Filter */}
       <div className="mb-3">

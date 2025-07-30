@@ -1,21 +1,22 @@
 /* Scoped CSS for CheckInForm1 component only */
 .checkin-form-scope {
-  --primary-color: #00421e;
-  --secondary-color: #008080;
-  --accent-color: #e74c3c;
-  --light-color: #ecf0f1;
-  --dark-color: #020e1b;
-  --success-color: #00431c;
-  --warning-color: #f39c12;
-  --danger-color: #e74c3c;
+  --primary-color: #008080;         /* Sidebar color - Teal */
+  --secondary-color: #00a99d;       /* Softer teal for contrast */
+  --accent-color: #00bfa6;          /* Bright teal for buttons/links */
+  --light-color: #e6f7f7;           /* Light teal background */
+  --dark-color: #004d4d;            /* Dark teal for text or headers */
+  --success-color: #00796b;         /* Greenish-teal for success */
+  --warning-color: #f5a623;         /* Soft amber warning */
+  --danger-color: #e74c3c;          /* Red for danger/alerts */
   --border-radius: 6px;
   --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #072902;
+  color: #003d3d;                   /* Deep teal text */
   padding: 20px;
 }
+
 
 .checkin-form-scope * {
   box-sizing: border-box;

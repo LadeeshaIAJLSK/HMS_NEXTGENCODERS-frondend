@@ -4,13 +4,13 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #fffdfd;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .rooms-header {
-  color: #1a1c1a;
+  color: #008080;
   text-align: center;
   margin-bottom: 30px;
   font-size: 28px;
@@ -25,11 +25,11 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 3px 15px rgba(8, 73, 2, 0.08);
-  background-color: white;
+  background-color: #ffffff;
 }
 
 .category-header {
-  background-color: #034e17; /* Dark green */
+  background-color: #008080; /* Dark green */
   color: white;
   padding: 15px 20px;
   display: flex;
@@ -40,7 +40,7 @@
 }
 
 .category-header:hover {
-  background-color: #004d00; /* Darker green */
+  background-color: #00a99d; /* Darker green */
 }
 
 .category-header h3 {
@@ -84,7 +84,7 @@
   text-align: left;
   font-weight: 600;
   color: #2c3e50;
-  border-bottom: 2px solid #006400; /* Dark green */
+  border-bottom: 2px solid #006457; /* Dark green */
 }
 
 .room-table td {
@@ -148,7 +148,7 @@
 
 .room-type {
   text-transform: capitalize;
-  color: #006400; /* Dark green */
+  color: #006421; /* Dark green */
   font-weight: 500;
 }
 
@@ -187,17 +187,8 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.view-btn {
-  background-color: #006400; /* Dark green */
-  color: white;
-}
-
-.view-btn:hover {
-  background-color: #004d00;
-}
-
 .edit-btn {
-  background-color: #f39c12;
+  background-color: #053b6d;
   color: white;
 }
 
@@ -309,7 +300,7 @@
 }
 
 .filter-btn.active {
-  background-color: #006400; /* Dark green */
+  background-color: #0e7769; /* Dark green */
   color: white;
   font-weight: 600;
 }

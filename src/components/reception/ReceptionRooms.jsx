@@ -213,7 +213,6 @@ export default function ReceptionRooms() {
                     <tr>
                       <th>Room No</th>
                       <th>Type</th>
-                      <th>Guest</th>
                       <th>Status</th>
                       <th>Price</th>
                       <th>Actions</th>
@@ -224,9 +223,6 @@ export default function ReceptionRooms() {
                       <tr key={room._id} className="room-row">
                         <td className="room-number">{room.RoomNo}</td>
                         <td className="room-type">{room.RType}</td>
-                        <td className="room-guest">
-                          {room.Guest || <span className="empty-guest">Vacant</span>}
-                        </td>
                         <td>
                           {editingRoom?._id === room._id ? (
                             <select
@@ -257,15 +253,12 @@ export default function ReceptionRooms() {
                               Cancel
                             </button>
                           ) : (
-                            <>
-                              <button className="action-btn view-btn">View</button>
-                              <button 
-                                className="action-btn edit-btn"
-                                onClick={() => startEditing(room)}
-                              >
-                                Edit
-                              </button>
-                            </>
+                            <button 
+                              className="action-btn edit-btn"
+                              onClick={() => startEditing(room)}
+                            >
+                              Edit
+                            </button>
                           )}
                         </td>
                       </tr>
