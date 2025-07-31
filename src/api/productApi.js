@@ -1,11 +1,56 @@
 const BASE_URL = "http://localhost:8000/products";
 
+// Helper function to check if server is available
+const checkServerConnection = async () => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    
+    const response = await fetch("http://localhost:8000/health", {
+      signal: controller.signal,
+      method: 'HEAD'
+    });
+    
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Enhanced fetch with better error handling
+const fetchWithErrorHandling = async (url, options = {}) => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out - server may be down');
+    }
+    if (error.message.includes('fetch')) {
+      throw new Error('Cannot connect to server - make sure backend is running on http://localhost:8000');
+    }
+    throw error;
+  }
+};
+
 export const fetchProducts = async () => {
   try {
-    const res = await fetch(BASE_URL);
-    if (!res.ok) {
-      throw new Error(`Error fetching products: ${res.status}`);
-    }
+    const res = await fetchWithErrorHandling(BASE_URL);
     return res.json();
   } catch (error) {
     console.error("Failed to fetch products:", error);
@@ -15,10 +60,7 @@ export const fetchProducts = async () => {
 
 export const fetchProductsByCategory = async (categoryId) => {
   try {
-    const res = await fetch(`${BASE_URL}/category/${categoryId}`);
-    if (!res.ok) {
-      throw new Error(`Error fetching products by category: ${res.status}`);
-    }
+    const res = await fetchWithErrorHandling(`${BASE_URL}/category/${categoryId}`);
     return res.json();
   } catch (error) {
     console.error(`Failed to fetch products for category ${categoryId}:`, error);
@@ -28,16 +70,11 @@ export const fetchProductsByCategory = async (categoryId) => {
 
 export const addProduct = async (product) => {
   try {
-    const res = await fetch(BASE_URL, {
+    const res = await fetchWithErrorHandling(BASE_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(product),
     });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `Error adding product: ${res.status}`);
-    }
     
     return res.json();
   } catch (error) {
@@ -48,16 +85,11 @@ export const addProduct = async (product) => {
 
 export const updateProduct = async (id, product) => {
   try {
-    const res = await fetch(`${BASE_URL}/${id}`, {
+    const res = await fetchWithErrorHandling(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(product),
     });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `Error updating product: ${res.status}`);
-    }
     
     return res.json();
   } catch (error) {
@@ -68,12 +100,9 @@ export const updateProduct = async (id, product) => {
 
 export const deleteProduct = async (id) => {
   try {
-    const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `Error deleting product: ${res.status}`);
-    }
+    const res = await fetchWithErrorHandling(`${BASE_URL}/${id}`, { 
+      method: "DELETE" 
+    });
     
     return res.json();
   } catch (error) {
@@ -82,19 +111,13 @@ export const deleteProduct = async (id) => {
   }
 };
 
-// New functions for stock management
 export const updateProductStock = async (id, quantity) => {
   try {
-    const res = await fetch(`${BASE_URL}/${id}/stock`, {
+    const res = await fetchWithErrorHandling(`${BASE_URL}/${id}/stock`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity }),
     });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `Error updating product stock: ${res.status}`);
-    }
     
     return res.json();
   } catch (error) {
@@ -105,10 +128,13 @@ export const updateProductStock = async (id, quantity) => {
 
 export const getLowStockProducts = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/low-stock`);
-    if (!res.ok) {
-      throw new Error(`Error fetching low stock products: ${res.status}`);
+    // Check if server is available first
+    const serverAvailable = await checkServerConnection();
+    if (!serverAvailable) {
+      throw new Error('Backend server is not available. Please start the server on http://localhost:8000');
     }
+    
+    const res = await fetchWithErrorHandling(`${BASE_URL}/low-stock`);
     return res.json();
   } catch (error) {
     console.error("Failed to fetch low stock products:", error);
@@ -118,16 +144,11 @@ export const getLowStockProducts = async () => {
 
 export const updateMultipleProductStock = async (stockUpdates) => {
   try {
-    const res = await fetch(`${BASE_URL}/update-stock`, {
+    const res = await fetchWithErrorHandling(`${BASE_URL}/update-stock`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ stockUpdates }),
     });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `Error updating multiple product stock: ${res.status}`);
-    }
     
     return res.json();
   } catch (error) {
