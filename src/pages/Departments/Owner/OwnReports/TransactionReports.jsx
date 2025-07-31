@@ -182,7 +182,6 @@ const TransactionReport = () => {
               <option value="">Export As...</option>
               <option value="pdf">PDF</option>
               <option value="xlsx">Excel (.xlsx)</option>
-              <option value="csv">CSV</option>
             </select>
           </div>
         </div>

@@ -17,7 +17,7 @@ import {
 import "./OwnDashboard.css";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 
-const COLORS = ["#FF6384", "#36A2EB", "#f6f630ff", "#9e15a0"];
+const COLORS = ["#FF6384", "#36A2EB", "#acb351ff", "#9e15a0"];
 
 const OwnerDashboard = () => {
   const [receptionData, setReceptionData] = useState([]);

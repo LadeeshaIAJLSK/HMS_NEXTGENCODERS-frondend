@@ -161,8 +161,7 @@ const totalPages = Math.ceil(data.length / entriesPerPage);
             <select className="checkout-export-btn" onChange={(e) => handleExport(e.target.value)}>
               <option value="">Export As...</option>
               <option value="pdf">PDF</option>
-              <option value="xlsx">Excel</option>
-              <option value="csv">CSV</option>
+              <option value="xlsx">Excel(.xlsx)</option>
             </select>
           </div>
         </div>
