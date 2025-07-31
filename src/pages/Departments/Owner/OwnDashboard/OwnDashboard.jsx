@@ -115,11 +115,11 @@ const OwnerDashboard = () => {
   return (
     <>
       <Ownsidebar />
-      <main className={`dashboard-container ${showPopup ? "dashboard-blur" : ""}`}>
-        <section className="metrics-row">
-          <div className="metric-card small-card">
+      <main className={`Owndashboard-container ${showPopup ? "Owndashboard-blur" : ""}`}>
+        <section className="Owndashboard-metrics-row">
+          <div className="Owndashboard-metric-card small-card">
             <h3>Today's Guest Activity</h3>
-            <div className="metric-values">
+            <div className="Owndashboard-metric-values">
               <div>
                 <p>{todayCheckIns}</p>
                 <span>Check-Ins</span>
@@ -131,9 +131,9 @@ const OwnerDashboard = () => {
             </div>
           </div>
 
-          <div className="metric-card large-card">
+          <div className="Owndashboard-metric-card large-card">
             <h3>Today's Revenue</h3>
-            <div className="metric-values">
+            <div className="Owndashboard-metric-values">
               <div>
                 <p>{receptionRevenue ? `Rs. ${receptionRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
                 <span>Reception</span>
@@ -150,10 +150,10 @@ const OwnerDashboard = () => {
           </div>
         </section>
 
-        <section className="chart-section">
+        <section className="Owndashboard-chart-section">
           <h2>Room Occupancy Overview</h2>
-          <div className="chart-row fixed-chart-row">
-            <div className="chart pie-container">
+          <div className="Owndashboard-chart-row fixed-chart-row">
+            <div className="Owndashboard-chart pie-container">
               <PieChart width={300} height={300}>
                 <Pie
                   data={receptionData}
@@ -171,7 +171,7 @@ const OwnerDashboard = () => {
                 <Tooltip />
               </PieChart>
             </div>
-            <div className="chart line-container">
+            <div className="Owndashboard-chart line-container">
               <LineChart width={470} height={300} data={receptionData}>
                 <CartesianGrid strokeDasharray="4 4" />
                 <XAxis dataKey="name" />
@@ -182,16 +182,16 @@ const OwnerDashboard = () => {
               </LineChart>
             </div>
           </div>
-          <button className="backup-btn" onClick={storeBackupData}>Store Backup</button>
+          <button className="Owndashboard-backup-btn" onClick={storeBackupData}>Store Backup</button>
         </section>
 
-        <section className="chart-section">
-          <div className="sales-header">
+        <section className="Owndashboard-chart-section">
+          <div className="Owndashboard-sales-header">
             <h2>Sales Overview</h2>
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
-              className="period-select"
+              className="Owndashboard-period-select"
             >
               <option value="yearly">Yearly</option>
               <option value="monthly">Monthly</option>
@@ -211,12 +211,12 @@ const OwnerDashboard = () => {
       </main>
 
       {showPopup && (
-        <div className="dashboard-popup-success">
-          <div className="dashboard-popup-box">
-            <div className="dashboard-popup-icon">✅</div>
+        <div className="Owndashboard-popup-success">
+          <div className="Owndashboard-popup-box">
+            <div className="Owndashboard-popup-icon">✅</div>
             <h3>Stored Successfully!</h3>
             <p>Dashboard backup has been stored.</p>
-            <button className="dashboard-popup-ok" onClick={() => setShowPopup(false)}>OK</button>
+            <button className="Owndashboard-popup-ok" onClick={() => setShowPopup(false)}>OK</button>
           </div>
         </div>
       )}

@@ -1,4 +1,4 @@
-.dashboard-container {
+.Owndashboard-container {
   margin-left: 15%;
   padding: 2rem;
   background-color: #f9f9f9;
@@ -6,7 +6,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.metrics-row {
+.Owndashboard-metrics-row {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
@@ -17,7 +17,7 @@
   min-width: 200px;
 }
 
-.metric-card {
+.Owndasboard-metric-card {
   flex: 1 1 300px;
   background: linear-gradient(135deg, #20c997, #17a2b8);
   padding: 1.5rem;
@@ -26,38 +26,38 @@
   transition: 0.3s ease;
 }
 
-.metric-card h3 {
+.Owndashboard-metric-card h3 {
   font-size: 1.4rem;
   margin-bottom: 1rem;
    color:white;
 }
 
-.metric-card.small-card {
+.Owndashboard-metric-card.small-card {
   flex: 1 1 250px; /* smaller size */
 }
 
-.metric-card.large-card {
+.Owndashboard-metric-card.large-card {
   flex: 2 1 450px; /* larger size */
 }
 
-.metric-values {
+.Owndashboard-metric-values {
   display: flex;
   justify-content: space-between;
 }
 
-.metric-values div p {
+.Owndashboard-metric-values div p {
   font-size: 2rem;
   font-weight: bold; 
   color:white;
   margin: 0;
 }
 
-.metric-values div span {
+.Owndashboard-metric-values div span {
   font-size: 0.9rem;
   color:white;
 }
 
-.chart-section {
+.Owndashboard-chart-section {
   background-color: #ffffff;
   padding: 2rem;
   border-radius: 10px;
@@ -65,13 +65,13 @@
   box-shadow: 0 0 12px rgba(251, 251, 251, 0.05);
 }
 
-.chart-section h2 {
+.Owndashboard-chart-section h2 {
   margin-bottom: 1.5rem;
   font-size: 1.6rem;
   color: #004d4d;
 }
 
-.chart-row.fixed-chart-row {
+.Owndashboard-chart-row.fixed-chart-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -79,8 +79,8 @@
   padding: 1rem 0;
 }
 
-.chart.pie-container,
-.chart.line-container {
+.Owndashboard-chart.pie-container,
+.Owndashboard-chart.line-container {
   flex: 1;
   max-width: 50%;
   display: flex;
@@ -88,7 +88,7 @@
   align-items: center;
 }
 
-.backup-btn {
+.Owndashboard-backup-btn {
   margin-left: auto;
   display: block;
   margin-top: 20px;
@@ -102,18 +102,18 @@
   transition: background-color 0.3s ease;
 }
 
-.backup-btn:hover {
+.Owndashboard-backup-btn:hover {
   background-color: #006666;
 }
 
-.sales-header {
+.Owndashboard-sales-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.period-select {
+.Owndashboard-period-select {
   padding: 0.3rem 0.5rem;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -122,25 +122,25 @@
 }
 
 @media (max-width: 900px) {
-  .metrics-row,
-  .chart-row.fixed-chart-row {
+  .Owndashboard-metrics-row,
+  .Owndashboard-chart-row.fixed-chart-row {
     flex-direction: column;
   }
 
-  .chart.pie-container,
-  .chart.line-container {
+  .Owndashboard-chart.pie-container,
+  .Owndashboard-chart.line-container {
     max-width: 100%;
   }
 }
 
-.dashboard-blur {
+.Owndashboard-blur {
   filter: blur(3px);
   pointer-events: none;
   user-select: none;
 }
 
 /* Success popup styling */
-.dashboard-popup-success {
+.Owndashboard-popup-success {
   position: fixed;
   top: 0;
   left: 0;
@@ -153,7 +153,7 @@
   z-index: 999;
 }
 
-.dashboard-popup-box {
+.Owndashboard-popup-box {
   background: white;
   padding: 20px 30px;
   border-radius: 10px;
@@ -162,16 +162,16 @@
   max-width: 300px;
 }
 
-.dashboard-popup-box h3 {
+.Owndashboard-popup-box h3 {
   margin-bottom: 10px;
   color: green;
 }
 
-.dashboard-popup-icon {
+.Owndashboard-popup-icon {
   font-size: 40px;
 }
 
-.dashboard-popup-ok {
+.Owndashboard-popup-ok {
   margin-top: 15px;
   padding: 6px 12px;
   border: none;
