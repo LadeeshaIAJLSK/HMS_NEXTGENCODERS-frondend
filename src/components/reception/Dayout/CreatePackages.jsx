@@ -113,7 +113,7 @@ export default class CreatePackages extends Component {
                     <br />
                     
                     <div className="form-group">
-                        <label>Package Price (Rs per child)</label>&nbsp;&nbsp;
+                        <label>Package Price (Rs per person)</label>&nbsp;&nbsp;
                         <input
                             type="number"
                             className="form-control"
@@ -177,7 +177,7 @@ export default class CreatePackages extends Component {
                         <h5>{this.state.PackageName}</h5>
                         <p>{this.state.description}</p>
                         <p><strong>Type:</strong> {this.state.PackageType}</p>
-                        <p><strong>Price:</strong> Rs {this.state.packgeprice} per child</p>
+                        <p><strong>Price:</strong> Rs {this.state.packgeprice} per person</p>
                         {this.state.packageincludes && (
                             <div>
                                 <strong>Features:</strong>

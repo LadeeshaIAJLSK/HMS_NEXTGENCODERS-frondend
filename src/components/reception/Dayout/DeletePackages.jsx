@@ -134,7 +134,7 @@ export default class DeletePackages extends Component {
                             <h5 className="text-danger">{pkg.name}</h5>
                             <p><strong>Description:</strong> {pkg.description || 'No description'}</p>
                             <p><strong>Category:</strong> {pkg.category}</p>
-                            <p><strong>Price:</strong> Rs {pkg.pricePerChild} per child</p>
+                            <p><strong>Price:</strong> Rs {pkg.pricePerChild} per person</p>
                             
                             {pkg.features && pkg.features.length > 0 && (
                                 <div>

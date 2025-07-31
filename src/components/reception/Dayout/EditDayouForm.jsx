@@ -584,7 +584,7 @@ useEffect(() => {
                 className="dayout-btn dayout-btn-success"
                 onClick={handleAddPerson}
               >
-                ➕ 
+                + 
               </button>
             </div>
             
@@ -598,7 +598,7 @@ useEffect(() => {
                       className="dayout-btn dayout-btn-danger"
                       onClick={() => handleRemovePerson(index)}
                     >
-                      ✖️ 
+                      -
                     </button>
                   )}
                 </div>
@@ -731,7 +731,7 @@ useEffect(() => {
                       <strong>Category:</strong> {pkg.category}
                     </p>
                     <p className="dayout-package-price">
-                      <strong>Rs {pkg.pricePerChild}</strong> per child
+                      <strong>Rs {pkg.pricePerChild}</strong> per person
                     </p>
                     {pkg.features && pkg.features.length > 0 && (
                       <div className="dayout-package-features">

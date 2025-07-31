@@ -18,7 +18,10 @@
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #072902;
+  color: #6c6c6d;
+  
+  margin-right: 30px;
+  
 }
 
 /* Header Styles */
@@ -28,15 +31,15 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px 0;
-  border-bottom: 3px solid var(--secondary-color);
+  border-bottom: 3px solid #008080;
 }
 
 .vdd-title {
-  color: var(--primary-color);
-  font-size: 2.2rem;
-  font-weight: 700;
+  color: #008080;
+  font-size: 1.5rem;
+  font-weight: 600;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
 }
 
 .vdd-btn-group {
@@ -66,7 +69,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(44, 46, 71, 0.2), transparent);
   transition: left 0.5s;
 }
 
@@ -75,17 +78,17 @@
 }
 
 .vdd-btn-outline-secondary {
-  background: #ffffff;
-  color: var(--secondary-color);
+  background: #0b116b;
+  color: white;
   border: 2px solid var(--secondary-color);
-  box-shadow: var(--box-shadow);
+  
 }
 
 .vdd-btn-outline-secondary:hover {
-  background: var(--secondary-color);
+  background:#336477;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 128, 128, 0.3);
+  
 }
 
 .vdd-btn-success {
@@ -100,7 +103,7 @@
 }
 
 .vdd-btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(135deg, #008080, #008080);
   color: white;
   box-shadow: var(--box-shadow);
 }
@@ -184,7 +187,7 @@
 
 .vdd-card-header {
   padding: 20px 24px;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(135deg, #00a99d, #008080);
   color: white;
   border-bottom: none;
   position: relative;
@@ -194,7 +197,7 @@
   margin: 0;
   font-size: 1.3rem;
   font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  text-shadow: 0 2px 4px vdd-card-title;
 }
 
 .vdd-payment-header {
@@ -205,6 +208,7 @@
 
 .vdd-card-body {
   padding: 24px;
+  
 }
 
 /* Status Grid */
@@ -230,7 +234,7 @@
 
 .vdd-status-label {
   font-size: 0.9rem;
-  color: var(--dark-color);
+  color: #000000;
   margin-bottom: 8px;
   font-weight: 600;
   text-transform: uppercase;
@@ -253,7 +257,7 @@
 }
 
 .vdd-status-confirmed {
-  background: linear-gradient(135deg, var(--success-color), var(--secondary-color));
+  background: linear-gradient(135deg, #00806b, var(--secondary-color));
   color: white;
 }
 
@@ -284,7 +288,7 @@
 
 .vdd-code {
   background: var(--light-color);
-  color: var(--primary-color);
+  color: #008080;
   padding: 4px 8px;
   border-radius: var(--border-radius);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -298,28 +302,14 @@
   gap: 16px;
 }
 
-.vdd-info-item {
-  padding: 12px 16px;
-  background: linear-gradient(135deg, var(--light-color), #f8f9fa);
-  border-radius: var(--border-radius);
-  border-left: 4px solid var(--secondary-color);
-  transition: var(--transition);
-}
+
 
 .vdd-info-item:hover {
   transform: translateX(4px);
   box-shadow: 0 4px 8px rgba(0, 128, 128, 0.2);
 }
 
-/* Guest Info */
-.vdd-guest-info p {
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  background: var(--light-color);
-  border-radius: var(--border-radius);
-  border-left: 3px solid var(--primary-color);
-  transition: var(--transition);
-}
+
 
 .vdd-guest-info p:hover {
   background: #e8f5e8;

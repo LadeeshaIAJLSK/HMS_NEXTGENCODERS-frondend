@@ -1,6 +1,6 @@
 /* Scoped CSS for PackageHome component only */
 .pkg-home-enhanced {
-  --primary-color: #00421e;
+  --primary-color: #008080;
   --secondary-color: #008080;
   --accent-color: #e74c3c;
   --light-color: #ecf0f1;
@@ -13,10 +13,11 @@
   --transition: all 0.3s ease;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #072902;
+  color: #008080;
   padding: 20px;
   min-height: 100vh;
   background-color: #f8f9fa;
+  margin-right: 35px;
 }
 
 .pkg-home-enhanced * {
@@ -103,7 +104,7 @@
 }
 
 .pkg-btn-secondary {
-  background-color: var(--secondary-color);
+  background-color: rgb(31, 155, 37);
   color: white;
 }
 
@@ -114,7 +115,7 @@
 }
 
 .pkg-btn-edit {
-  background-color: var(--warning-color);
+  background-color: rgb(3, 3, 107);
   color: white;
   padding: 0.5rem 1rem;
   font-size: 0.85rem;

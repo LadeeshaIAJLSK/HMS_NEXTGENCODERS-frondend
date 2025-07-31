@@ -5,7 +5,7 @@
   --accent-color: #e74c3c;
   --light-color: #ecf0f1;
   --dark-color: #020e1b;
-  --success-color: #00431c;
+  --success-color: #008080;
   --warning-color: #f39c12;
   --danger-color: #e74c3c;
   --border-radius: 6px;
@@ -25,6 +25,7 @@
 .dayout-container {
   max-width: 1400px;
   margin: 0 auto;
+  margin-right: 25px;
 }
 
 .dayout-main-heading {
@@ -288,7 +289,7 @@
 }
 
 .dayout-person-card {
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: var(--border-radius);
   padding: 1.5rem;

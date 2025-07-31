@@ -266,7 +266,7 @@ const PackageHome = () => {
                   <div className="pkg-package-price">
                     <span className="pkg-price-label">Price:</span>
                     <span className="pkg-price-value">Rs {pkg.pricePerChild}</span>
-                    <span className="pkg-price-unit">per child</span>
+                    <span className="pkg-price-unit">per person</span>
                   </div>
 
                   {pkg.features && pkg.features.length > 0 && (

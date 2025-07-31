@@ -17,22 +17,23 @@ const Ressidebar = () => {
           <Link to="/recepdashboard">📊 Dashboard</Link>
         </li>
         <li>
-          <Link to="/page1">📝 Create Reservation</Link>
+          <Link to="/page1">🛏️ Overnight Reservation</Link>
         </li>
         <li>
-          <Link to="/edit-reservation">📦 Manage Reservation</Link>
+          <Link to="/dayout-create">🏖️ DayOut Reservation</Link>
         </li>
         <li>
-          <Link to="/rooms">📂 All Rooms</Link>
+          <Link to="/edit-reservation">📝 Manage Reservation</Link>
         </li>
         <li>
-          <Link to="/dayout-create">📈 DayOut Reservation</Link>
+          <Link to="/rooms">🔑 All Rooms</Link>
+        </li>
+        
+        <li>
+          <Link to="/dayout-packages">🛎️ Package Settings</Link>
         </li>
         <li>
-          <Link to="/dayout-packages">📈 Package management</Link>
-        </li>
-        <li>
-          <Link to="/"><span>⏻</span> Logout </Link>
+          <Link to="/"> <span>⏻</span> Logout </Link>
         </li>
       </ul>
     </div>

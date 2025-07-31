@@ -3,9 +3,11 @@
 /* Table Container - matching ViewReservationDetails layout exactly */
 .reservations-table-container {
   max-width: 1400px;
-  margin: 0 auto;
+  
   padding: 0;
   background: transparent;
+  
+
 }
 
 .reservations-table-wrapper {
