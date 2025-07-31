@@ -478,7 +478,6 @@ const DayoutReservation = () => {
                         onClick={() => handleRemovePerson(index)}
                       >
                         -
-
                       </button>
                     )}
                   </div>
@@ -611,7 +610,7 @@ const DayoutReservation = () => {
                         <strong>Category:</strong> {pkg.category}
                       </p>
                       <p className="dayout-package-price">
-                        <strong>Rs {pkg.pricePerChild}</strong> per person
+                        <strong>Rs {pkg.pricePerChild}</strong> 
                       </p>
                       {pkg.features && pkg.features.length > 0 && (
                         <div className="dayout-package-features">

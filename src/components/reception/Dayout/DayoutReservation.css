@@ -15,6 +15,7 @@
   line-height: 1.6;
   color: #072902;
   padding: 20px;
+  margin-right: 20px;
 }
 
 .dayout-form-scope * {
@@ -497,16 +498,27 @@
 .dayout-btn-success {
   background-color: var(--success-color);
   color: white;
+  font-size: 12px;     /* Smaller text */
+  padding: 2px 2px;    /* Less padding = smaller size */
+  border: none;
+  width: 40px;
+  height: 30px;
+  border-radius: 4px;
+  cursor: pointer
+  
 }
 
 .dayout-btn-success:hover {
-  background-color: #003016;
+  background-color: #2caf69;
   transform: translateY(-1px);
 }
 
 .dayout-btn-danger {
   background-color: var(--danger-color);
   color: white;
+  
+  height: 1px;
+  padding: 20px;
 }
 
 .dayout-btn-danger:hover {
