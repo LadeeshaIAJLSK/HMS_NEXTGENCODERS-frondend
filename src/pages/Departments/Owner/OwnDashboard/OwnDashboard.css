@@ -180,3 +180,52 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* Revenue-specific tweaks */
+.metric-card.large-card .metric-values.revenue {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.revenue-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 0 1rem;
+  min-width: 110px;
+}
+
+.revenue-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.revenue-item .currency {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color:#ffffff;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+
+.revenue-item p {
+  font-size: 2.2rem;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.revenue-item span {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  text-align: center;
+}

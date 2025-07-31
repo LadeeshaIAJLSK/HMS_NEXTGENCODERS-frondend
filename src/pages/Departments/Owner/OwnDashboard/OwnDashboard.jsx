@@ -17,7 +17,7 @@ import {
 import "./OwnDashboard.css";
 import Ownsidebar from "../../../../components/owner/ownSidebar/Ownsidebar";
 
-const COLORS = ["#FF6384", "#36A2EB", "#d1a83f", "#9e15a0"];
+const COLORS = ["#FF6384", "#36A2EB", "#f6f630ff", "#9e15a0"];
 
 const OwnerDashboard = () => {
   const [receptionData, setReceptionData] = useState([]);
@@ -131,23 +131,27 @@ const OwnerDashboard = () => {
             </div>
           </div>
 
-          <div className="metric-card large-card">
-            <h3>Today's Revenue</h3>
-            <div className="metric-values">
-              <div>
-                <p>{receptionRevenue ? `Rs. ${receptionRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
-                <span>Reception</span>
-              </div>
-              <div>
-                <p>{restaurantRevenue ? `Rs. ${restaurantRevenue.toFixed(2)}` : "Rs. 0.00"}</p>
-                <span>Restaurant</span>
-              </div>
-              <div>
-                <p>{`Rs. ${totalRevenue.toFixed(2)}`}</p>
-                <span>Total</span>
-              </div>
-            </div>
-          </div>
+         <div className="metric-card large-card">
+  <h3>Today's Revenue</h3>
+  <div className="metric-values revenue">
+    <div className="revenue-item">
+      <div className="currency">Rs.</div>
+      <p>{receptionRevenue ? receptionRevenue.toFixed(2) : "0.00"}</p>
+      <span>Reception</span>
+    </div>
+    <div className="revenue-item">
+      <div className="currency">Rs.</div>
+      <p>{restaurantRevenue ? restaurantRevenue.toFixed(2) : "0.00"}</p>
+      <span>Restaurant</span>
+    </div>
+    <div className="revenue-item">
+      <div className="currency">Rs.</div>
+      <p>{totalRevenue.toFixed(2)}</p>
+      <span>Total</span>
+    </div>
+  </div>
+</div>
+
         </section>
 
         <section className="chart-section">
