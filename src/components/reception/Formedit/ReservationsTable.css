@@ -212,7 +212,7 @@
 
 /* Edit Button */
 .reservations-table .action-buttons button:first-child {
-  background: #040a63;
+  background: #0569d4;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -227,14 +227,14 @@
 
 /* View Button */
 .reservations-table .action-buttons button:last-child {
-  background: var(--secondary-color);
+  background:  green;
   color: #ffffff;
   border: none;
   border-radius: 6px;
 }
 
 .reservations-table .action-buttons button:last-child:hover {
-  background: #a09d05;
+  background: #05a039;
   transform: translateY(-1px);
 
 }
