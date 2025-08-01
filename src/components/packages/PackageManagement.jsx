@@ -132,7 +132,7 @@ const PackageManagement = () => {
           <div className="flex justify-between items-center">
             <div>
               <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                <img src="/favicon.svg" alt="Nexus Hotel" className="w-6 h-6" />
+                <img src="/favicon.svg" alt="NexStay Hotel" className="w-6 h-6" />
                 <span>
                   Powered by{" "}
                   <span className="font-semibold text-gray-800">NexStay</span>
@@ -418,7 +418,7 @@ className="bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2 px-6 ro
                   </div>
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                     <span className="text-white opacity-0 group-hover:opacity-100 font-semibold text-lg">
-                      Click to Open Dashboard
+                      {/* Click to Open Dashboard */}
                     </span>
                   </div>
                 </div>
