@@ -125,7 +125,7 @@ const Login = () => {
               className="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-r"
               role="alert"
             >
-              <p className="text-green-700">{location.state.message}</p>
+              <p className="text-blue-700">{location.state.message}</p>
             </div>
           )}
 

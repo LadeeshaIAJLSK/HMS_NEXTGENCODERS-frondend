@@ -66,7 +66,7 @@ const ForgotPassword = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#008080] focus:border-[#008080] focus:z-10 sm:text-sm"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -78,7 +78,7 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#008080] hover:bg-[#006666] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#008080] disabled:opacity-50"
             >
               {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
@@ -86,13 +86,13 @@ const ForgotPassword = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+<Link to="/login" className="font-medium text-[#008080] hover:text-[#006666]">
                 Back to Login
               </Link>
             </div>
             {otpSent && (
               <div className="text-sm">
-                <Link to="/reset-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <Link to="/reset-password" className="font-medium text-[#008080] hover:text-[#006666]">
                   Enter OTP
                 </Link>
               </div>

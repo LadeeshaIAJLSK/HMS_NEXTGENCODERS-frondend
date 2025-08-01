@@ -121,13 +121,13 @@ const Cart = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Your Cart</h1>
-          {/* <button
+          <button
             onClick={() => navigate("/hms-home")}
             className="text-[#008080] hover:text-[#004d4d]"
 
           >
             Browse More Packages
-          </button> */}
+          </button>
 
           <LogoutButton onLogout={() => navigate("/login")} />
         </div>
