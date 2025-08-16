@@ -177,7 +177,7 @@ const handleSubmit = async (e) => {
                     <td>{room.RStatus || "No Status"}</td>
                     <td>{room.RType || "No Type"}</td>
                     <td>{room.RClass || "No Class"}</td>
-                    <td>{room.Price ? `$${room.Price}` : "No Price"}</td>
+                    <td>{room.Price ? `Rs.${room.Price}` : "No Price"}</td>
                     <td>
                       <button className={styles["roomhome-icon-btn"]} onClick={() => openEditModal(room)}>
                         ✏️
