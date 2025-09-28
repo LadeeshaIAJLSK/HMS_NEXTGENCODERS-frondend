@@ -244,7 +244,7 @@ tr:hover {
 /* Low stock styles */
 .low-stock-row {
   background-color: #fff3cd !important;
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #ffbf00;
 }
 
 .low-stock-row:hover {

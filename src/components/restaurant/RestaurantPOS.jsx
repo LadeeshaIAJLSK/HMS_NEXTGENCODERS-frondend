@@ -5,8 +5,13 @@ import { fetchCategories } from "../../api/categoryApi";
 import { fetchProductsByCategory, updateMultipleProductStock } from "../../api/productApi";
 import { createOrder } from "../../api/orderApi";
 import LowStockAlert from "./LowStockAlert";
+import { fetchGuestNames } from '../../api/Api';
+import { useNotifications } from "../../context/NotificationContext";
 
 const RestaurantPOS = () => {
+  // Get notifications context for low stock alerts
+  const { checkLowStockProducts } = useNotifications();
+  
   // State for categories, subcategories, products, selection
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
@@ -156,6 +161,9 @@ const RestaurantPOS = () => {
           
           await updateMultipleProductStock(stockUpdates);
           console.log("Stock updated successfully");
+          
+          // Check for low stock products immediately after stock update
+          await checkLowStockProducts();
         } catch (stockError) {
           console.error("Error updating stock:", stockError);
           // Don't fail the order if stock update fails
@@ -179,18 +187,36 @@ const RestaurantPOS = () => {
     }
   };
 
-  // Dummy guest+room list
-  const guestList = [
-    { id: 1, name: 'John Doe', room: '101' },
-    { id: 2, name: 'Jane Smith', room: '102' },
-    { id: 3, name: 'Alice Johnson', room: '201' },
-    { id: 4, name: 'Bob Lee', room: '202' },
-    { id: 5, name: 'Charlie Brown', room: '301' },
-    { id: 6, name: 'David Kim', room: '302' },
-    { id: 7, name: 'Eva Green', room: '303' },
-  ];
+  // Remove the dummy guestList
+  const [guestList, setGuestList] = useState([]);
   const [guestSearch, setGuestSearch] = useState("");
   const [selectedGuest, setSelectedGuest] = useState(null);
+  const [loadingGuests, setLoadingGuests] = useState(false);
+
+  // New state for enhanced guest popup with kitchen option
+  const [showKitchenNoteInGuest, setShowKitchenNoteInGuest] = useState(false);
+  const [kitchenNoteForGuest, setKitchenNoteForGuest] = useState("");
+  const [selectedGuestForKitchen, setSelectedGuestForKitchen] = useState(null);
+
+  // Fetch guests when opening the popup
+  const handleShowGuestPopup = async () => {
+    setLoadingGuests(true);
+    try {
+      const guests = await fetchGuestNames();
+      // Map backend data to expected structure
+      setGuestList(
+        guests.map(g => ({
+          id: g._id,
+          name: `${g.firstName}${g.surname ? ' ' + g.surname : ''}`,
+          room: Array.isArray(g.selectedRooms) && g.selectedRooms.length > 0 ? g.selectedRooms[0] : 'N/A',
+        }))
+      );
+    } catch {
+      setGuestList([]);
+    }
+    setLoadingGuests(false);
+    setShowGuestPopup(true);
+  };
 
   // Filtered guest list
   const filteredGuests = guestList.filter(g => {
@@ -204,9 +230,14 @@ const RestaurantPOS = () => {
   // Handle guest select
   const handleSelectGuest = (guest) => {
     setSelectedGuest(guest);
-    setShowGuestPopup(false);
     
-    // Process the order for the selected guest
+    // If kitchen option is enabled, don't close popup yet
+    if (showKitchenNoteInGuest) {
+      return;
+    }
+    
+    // Otherwise, close popup and process the order for the selected guest
+    setShowGuestPopup(false);
     if (billItems.length > 0) {
       handleCheckout(false, guest);
     }
@@ -222,15 +253,18 @@ const RestaurantPOS = () => {
     }
     
     setBillItems((prev) => {
-      const idx = prev.findIndex((item) => item._id === product._id);
-      if (idx !== -1) {
+      const found = prev.find((item) => item._id === product._id);
+      if (found) {
         // Update quantity
-        const updated = [...prev];
-        updated[idx] = {
-          ...updated[idx],
-          quantity: updated[idx].quantity + 1,
-          amount: (updated[idx].quantity + 1) * updated[idx].price,
-        };
+        const updated = prev.map(item =>
+          item._id === product._id
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+                amount: (item.quantity + 1) * item.price,
+              }
+            : item
+        );
         return updated;
       } else {
         // Add new item
@@ -255,6 +289,116 @@ const RestaurantPOS = () => {
 
   // Calculate total
   const totalAmount = billItems.reduce((sum, item) => sum + item.amount, 0);
+
+  // --- Add state for kitchen note popup ---
+  const [showKitchenNotePopup, setShowKitchenNotePopup] = useState(false);
+  const [kitchenNote, setKitchenNote] = useState("");
+
+  // --- Handler for sending to kitchen ---
+  const handleSendToKitchen = async () => {
+    if (billItems.length === 0) return;
+    setOrderProcessing(true);
+    try {
+      // Prepare order data
+      const orderData = {
+        items: billItems.map(item => ({
+          productId: item._id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          amount: item.amount
+        })),
+        total: totalAmount,
+        status: "preparing",
+        orderType: orderType,
+        isWalkin: true,
+        note: kitchenNote
+      };
+      // Create order in backend
+      const order = await createOrder(orderData);
+      // Update product stock after successful order creation
+      if (order && order.status === "preparing") {
+        try {
+          const stockUpdates = billItems.map(item => ({
+            productId: item._id,
+            quantity: -item.quantity // Negative to reduce stock
+          }));
+          await updateMultipleProductStock(stockUpdates);
+          
+          // Check for low stock products immediately after stock update
+          await checkLowStockProducts();
+        } catch (stockError) {
+          console.error("Error updating stock:", stockError);
+        }
+      }
+      setCreatedOrder(order);
+      setShowSuccessPopup(true);
+      setShowKitchenNotePopup(false);
+      setBillItems([]);
+      setKitchenNote("");
+    } catch (error) {
+      console.error("Error sending to kitchen:", error);
+      alert("Failed to send order to kitchen. Please try again.");
+    } finally {
+      setOrderProcessing(false);
+    }
+  };
+
+  // --- Handler for sending to kitchen with guest ---
+  const handleSendToKitchenWithGuest = async () => {
+    if (billItems.length === 0 || !selectedGuestForKitchen) return;
+    setOrderProcessing(true);
+    try {
+      // Prepare order data with guest info
+      const orderData = {
+        items: billItems.map(item => ({
+          productId: item._id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          amount: item.amount
+        })),
+        total: totalAmount,
+        status: "preparing",
+        orderType: orderType,
+        isWalkin: false,
+        note: kitchenNoteForGuest,
+        guestInfo: {
+          guestId: selectedGuestForKitchen.id.toString(),
+          guestName: selectedGuestForKitchen.name,
+          roomNo: selectedGuestForKitchen.room
+        }
+      };
+      // Create order in backend
+      const order = await createOrder(orderData);
+      // Update product stock after successful order creation
+      if (order && order.status === "preparing") {
+        try {
+          const stockUpdates = billItems.map(item => ({
+            productId: item._id,
+            quantity: -item.quantity // Negative to reduce stock
+          }));
+          await updateMultipleProductStock(stockUpdates);
+          
+          // Check for low stock products immediately after stock update
+          await checkLowStockProducts();
+        } catch (stockError) {
+          console.error("Error updating stock:", stockError);
+        }
+      }
+      setCreatedOrder(order);
+      setShowSuccessPopup(true);
+      setShowKitchenNoteInGuest(false);
+      setBillItems([]);
+      setKitchenNoteForGuest("");
+      setSelectedGuestForKitchen(null);
+    } catch (error) {
+      console.error("Error sending to kitchen with guest:", error);
+      alert("Failed to send order to kitchen. Please try again.");
+    } finally {
+      setOrderProcessing(false);
+    }
+  };
 
   // Fetch all categories on mount
   useEffect(() => {
@@ -307,12 +451,25 @@ const RestaurantPOS = () => {
         // Fetch products for the selected category
         const prods = await fetchProductsByCategory(catId);
         
+        console.log('Raw products from API:', prods);
+        
         // Filter to only show active products and ensure price is available
-        const activeProducts = prods.filter(product => 
-          product.active && 
-          product.price !== undefined && 
-          product.price !== null
-        );
+        const activeProducts = prods.filter(product => {
+          const isValid = product.active && 
+            product.price !== undefined && 
+            product.price !== null &&
+            product._id && 
+            product.name;
+          
+          if (!isValid) {
+            console.warn('Filtered out invalid product:', product);
+          }
+          
+          return isValid;
+        });
+        
+        // Log for debugging
+        console.log('Filtered active products:', activeProducts);
         
         setProducts(activeProducts);
         setFilteredProducts(activeProducts);
@@ -379,6 +536,7 @@ const RestaurantPOS = () => {
 
         {/* Tiles Grid: Products */}
         <div className={styles.tilesGrid}>
+          {console.log('Rendering grid with', filteredProducts.length, 'products')}
           {loading ? (
             <div style={{ gridColumn: "span 6", textAlign: "center", padding: 40 }}>Loading...</div>
           ) : filteredProducts.length === 0 ? (
@@ -386,18 +544,29 @@ const RestaurantPOS = () => {
               {searchQuery ? "No products match your search" : selectedMain ? "No active products found in this category" : "Please select a category"}
             </div>
           ) : (
-            filteredProducts.map((prod) => (
-              <div
-                className={styles.tile}
-                key={prod._id}
-                onClick={() => handleAddToBill(prod)}
-                style={{ cursor: "pointer" }}
-                title="Add to bill"
-              >
-                <div className={styles.tileName}>{prod.name}</div>
-                <div className={styles.tilePrice}>Rs.{prod.price ? prod.price.toFixed(2) : '0.00'}</div>
-              </div>
-            ))
+            filteredProducts.map((prod) => {
+              // Validate product has required properties
+              if (!prod._id || !prod.name || prod.price === undefined || prod.price === null) {
+                console.warn('Invalid product data:', prod);
+                return null; // Skip rendering invalid products
+              }
+              
+              // Log product being rendered for debugging
+              console.log('Rendering product:', { id: prod._id, name: prod.name, price: prod.price });
+              
+              return (
+                <div
+                  className={styles.tile}
+                  key={prod._id}
+                  onClick={() => handleAddToBill(prod)}
+                  style={{ cursor: "pointer" }}
+                  title="Add to bill"
+                >
+                  <div className={styles.tileName}>{prod.name}</div>
+                  <div className={styles.tilePrice}>Rs.{prod.price ? prod.price.toFixed(2) : '0.00'}</div>
+                </div>
+              );
+            }).filter(Boolean) // Remove null entries
           )}
         </div>
       </div>
@@ -484,17 +653,30 @@ const RestaurantPOS = () => {
         <div className={styles.buttonRow}>
           <button className={styles.actionBtn} onClick={handleShowReceipt} disabled={billItems.length === 0 || orderProcessing}>Cash</button>
           <button className={styles.actionBtn} onClick={() => setShowCardPopup(true)} disabled={billItems.length === 0 || orderProcessing}>Card</button>
-          <button className={styles.actionBtn} disabled={billItems.length === 0 || orderProcessing} onClick={() => setShowGuestPopup(true)}>Add to Bill</button>
+          <button className={styles.actionBtn} disabled={billItems.length === 0 || orderProcessing} onClick={handleShowGuestPopup}>Add to Bill</button>
         </div>
         <div className={styles.buttonRow}>
-          <button className={styles.actionBtn} disabled={billItems.length === 0}>Send to Kitchen</button>
-          <button className={styles.actionBtn} disabled={billItems.length === 0}>Add a Note</button>
+          <button className={styles.actionBtn} disabled={billItems.length === 0} onClick={() => setShowKitchenNotePopup(true)}>Send to Kitchen</button>
         </div>
       </div>
     {/* Guest Select Popup */}
     {showGuestPopup && (
       <div className={styles.receiptOverlay}>
         <div className={styles.guestPopup}>
+          <button
+            className={styles.closeBtn}
+            onClick={() => {
+              setShowGuestPopup(false);
+              // Reset all guest popup states
+              setShowKitchenNoteInGuest(false);
+              setKitchenNoteForGuest("");
+              setSelectedGuestForKitchen(null);
+              setSelectedGuest(null);
+            }}
+            aria-label="Close"
+          >
+            &times;
+          </button>
           <div className={styles.guestContent}>
             <h2 className={styles.receiptTitle}>Select Guest</h2>
             <input
@@ -505,7 +687,9 @@ const RestaurantPOS = () => {
               autoFocus
             />
             <div className={styles.guestList}>
-              {filteredGuests.length === 0 ? (
+              {loadingGuests ? (
+                <div className={styles.guestEmpty}>Loading guests...</div>
+              ) : filteredGuests.length === 0 ? (
                 <div className={styles.guestEmpty}>No guests found.</div>
               ) : (
                 filteredGuests.map((g) => (
@@ -522,6 +706,95 @@ const RestaurantPOS = () => {
                     <div className={styles.guestRoom}>Room {g.room}</div>
                   </div>
                 ))
+              )}
+            </div>
+            
+            {/* Kitchen Option for Guest Orders */}
+            <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={showKitchenNoteInGuest}
+                    onChange={(e) => {
+                      setShowKitchenNoteInGuest(e.target.checked);
+                      if (!e.target.checked) {
+                        setKitchenNoteForGuest("");
+                        setSelectedGuestForKitchen(null);
+                      }
+                    }}
+                    style={{ marginRight: '8px' }}
+                  />
+                  Send to Kitchen
+                </label>
+              </div>
+              
+              {showKitchenNoteInGuest && (
+                <div style={{ marginTop: '10px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>
+                    Kitchen Note (optional):
+                  </label>
+                  <textarea
+                    value={kitchenNoteForGuest}
+                    onChange={e => setKitchenNoteForGuest(e.target.value)}
+                    rows={3}
+                    style={{ 
+                      width: '100%', 
+                      padding: '8px', 
+                      borderRadius: '4px', 
+                      border: '1px solid #ccc', 
+                      resize: 'vertical',
+                      fontSize: '14px'
+                    }}
+                    placeholder="Type any special instructions for the kitchen..."
+                  />
+                  
+                  <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
+                    <button
+                      className={styles.receiptBtnCancel}
+                      onClick={() => {
+                        setShowKitchenNoteInGuest(false);
+                        setKitchenNoteForGuest("");
+                        setSelectedGuestForKitchen(null);
+                      }}
+                      style={{ flex: 1 }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className={styles.receiptBtnCheckout}
+                      onClick={() => {
+                        // Set the selected guest for kitchen
+                        setSelectedGuestForKitchen(selectedGuest);
+                        // Process the kitchen order
+                        handleSendToKitchenWithGuest();
+                      }}
+                      disabled={orderProcessing || !selectedGuest}
+                      style={{ flex: 1 }}
+                    >
+                      {orderProcessing ? "Processing..." : "Send to Kitchen"}
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Regular Add to Bill button when kitchen option is not selected */}
+              {!showKitchenNoteInGuest && selectedGuest && (
+                <div style={{ marginTop: '15px' }}>
+                  <button
+                    className={styles.receiptBtnCheckout}
+                    onClick={() => {
+                      setShowGuestPopup(false);
+                      if (billItems.length > 0) {
+                        handleCheckout(false, selectedGuest);
+                      }
+                    }}
+                    disabled={orderProcessing}
+                    style={{ width: '100%' }}
+                  >
+                    {orderProcessing ? "Processing..." : "Add to Bill"}
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -747,6 +1020,34 @@ const RestaurantPOS = () => {
     
     {/* Low Stock Alert */}
     <LowStockAlert />
+    {/* Kitchen Note Popup */}
+    {showKitchenNotePopup && (
+      <div className={styles.receiptOverlay}>
+        <div className={styles.receiptPopup} style={{ maxWidth: 400 }}>
+          <div className={styles.receiptContent}>
+            <h2 className={styles.receiptTitle}>Send to Kitchen</h2>
+            <div style={{ marginBottom: 16 }}>
+              <label htmlFor="kitchenNote" style={{ display: 'block', marginBottom: 8 }}>Add Note (optional):</label>
+              <textarea
+                id="kitchenNote"
+                value={kitchenNote}
+                onChange={e => setKitchenNote(e.target.value)}
+                rows={4}
+                style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #ccc', resize: 'vertical' }}
+                placeholder="Type any special instructions for the kitchen..."
+                autoFocus
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button className={styles.receiptBtnCancel} onClick={() => { setShowKitchenNotePopup(false); setKitchenNote(""); }}>Cancel</button>
+              <button className={styles.receiptBtnCheckout} onClick={handleSendToKitchen} disabled={orderProcessing}>
+                {orderProcessing ? "Processing..." : "Send"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
   );
 };

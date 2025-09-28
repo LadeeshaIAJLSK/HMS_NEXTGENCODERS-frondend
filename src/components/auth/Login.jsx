@@ -58,10 +58,12 @@ const Login = () => {
                 "url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3')",
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-blue-800/90"></div>
+<div className="absolute inset-0 bg-gradient-to-br from-[#1a237e] via-[#008080] to-[#006b57]"></div>
+
+
           </div>
           <div className="relative p-8 text-white h-full flex flex-col justify-center">
-            <h2 className="text-4xl font-bold mb-6">Welcome to Nexus Hotels</h2>
+            <h2 className="text-4xl font-bold mb-6">Welcome to NexStay Hotels</h2>
             <p className="text-lg text-blue-100 mb-8">
               Where luxury meets innovation in hospitality management
             </p>
@@ -104,7 +106,7 @@ const Login = () => {
         <div className="md:w-1/2 p-8 md:p-12 bg-white">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-gray-800 mb-2">
-              Sign In to Nexus HMS
+              Sign In to NexStay HMS
             </h2>
             <p className="text-gray-600">Access your hotel management portal</p>
           </div>
@@ -199,7 +201,8 @@ const Login = () => {
               <div className="text-sm">
                 <Link
                   to="/forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                  className="font-medium text-[#008080] hover:text-[#00a3a3] transition-colors"
+
                 >
                   Forgot your password?
                 </Link>
@@ -207,7 +210,8 @@ const Login = () => {
               <div className="text-sm">
                 <Link
                   to="/register"
-                  className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                  className="font-medium text-[#008080] hover:text-[#00a3a3] transition-colors"
+
                 >
                   Create new account
                 </Link>
@@ -218,7 +222,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#008080] hover:bg-[#006666] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#008080] transition-colors disabled:opacity-50"
               >
                 {loading ? (
                   <svg
