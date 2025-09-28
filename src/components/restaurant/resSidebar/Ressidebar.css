@@ -44,5 +44,14 @@
   
   ul li a:hover {
     background: #005f66;
+    text-decoration: unset;
+    color: white;
   }
   
+  .restaurant-container {
+    display: flex;
+  }
+  .content {
+    margin-left: 250px;
+    padding: 20px;
+  }
