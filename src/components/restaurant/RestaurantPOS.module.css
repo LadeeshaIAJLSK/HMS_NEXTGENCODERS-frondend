@@ -2,19 +2,23 @@
   display: flex;
   height: 100vh;
   background: #fff;
+  overflow: hidden; /* Prevent horizontal scroll */
 }
 .sidebar {
   width: 200px;
   background: #188a94;
   min-width: 200px;
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
 }
 .mainArea {
   flex: 1 1 auto;
-  padding: 0;
+  margin-top: 5px;
+  padding-left: 55px; /* Reduced from 52px */
   display: flex;
   flex-direction: column;
   border-right: 1px solid #eee;
   background: #fff;
+  min-width: 0; /* Allow flex item to shrink below content size */
 }
 .tabsRow {
   display: flex;
@@ -32,12 +36,12 @@
 
 .tab {
   display: inline-block;
-  min-width: 120px;
+  min-width: 100px; /* Reduced from 120px */
   text-align: center;
-  padding: 12px 18px;
+  padding: 10px 14px; /* Reduced padding */
   border-right: 1px solid #eee;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px; /* Reduced from 16px */
   cursor: pointer;
   background: transparent;
   transition: all 0.2s ease;
@@ -70,9 +74,9 @@
 
 .subTab {
   display: inline-block;
-  min-width: 110px;
-  padding: 10px 18px;
-  font-size: 15px;
+  min-width: 90px; /* Reduced from 110px */
+  padding: 8px 14px; /* Reduced padding */
+  font-size: 13px; /* Reduced from 15px */
   border-right: 1px solid #eee;
   cursor: pointer;
   background: #f0f6f7;
@@ -97,17 +101,21 @@
 }
 .tilesGrid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-gap: 8px;
-  grid-auto-rows: 100px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Use auto-fill instead of auto-fit */
+  grid-gap: 6px; /* Reduced from 8px */
+  grid-auto-rows: 90px; /* Reduced from 100px */
   flex: 1 1 auto;
   background: #fff;
-  padding: 10px;
+  padding: 8px; /* Reduced from 10px */
   overflow-y: auto;
+  min-height: 0; /* Allow grid to shrink */
+  align-items: start; /* Ensure items align to top */
+  justify-items: stretch; /* Ensure items stretch to fill grid cells */
 }
 .tile {
   border: 1px solid #e0e0e0;
   height: 100%;
+  width: 100%; /* Ensure tile takes full width of grid cell */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,11 +123,14 @@
   cursor: pointer;
   transition: all 0.2s ease;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 6px; /* Reduced from 8px */
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   position: relative;
   overflow: hidden;
-  padding: 10px 5px;
+  padding: 8px 4px; /* Reduced padding */
+  min-width: 0; /* Allow tile to shrink */
+  max-width: 100%; /* Prevent overflow */
+  box-sizing: border-box; /* Include padding and border in width calculation */
 }
 .tile:hover {
   background: #f0f8fa;
@@ -128,44 +139,48 @@
   border-color: #188a94;
 }
 .tileName {
-  font-size: 15px;
+  font-size: 13px; /* Reduced from 15px */
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 4px; /* Reduced from 5px */
   text-align: center;
   color: #333;
   max-width: 95%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  word-wrap: break-word; /* Allow long words to break */
 }
 .tilePrice {
-  font-size: 14px;
+  font-size: 12px; /* Reduced from 14px */
   color: #188a94;
   font-weight: 500;
   background-color: rgba(24,138,148,0.1);
-  padding: 3px 8px;
-  border-radius: 12px;
+  padding: 2px 6px; /* Reduced padding */
+  border-radius: 10px; /* Reduced from 12px */
 }
 .orderSection {
-  width: 370px;
+  width: 320px; /* Reduced from 370px */
+  min-width: 280px; /* Add minimum width */
+  max-width: 350px; /* Add maximum width */
   background: #f9f9f9;
   display: flex;
   flex-direction: column;
   border-left: 1px solid #eee;
   padding: 0 0 0 0;
+  flex-shrink: 0; /* Prevent order section from shrinking */
 }
 .orderTop {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 18px 14px 0 14px;
+  gap: 8px; /* Reduced from 10px */
+  padding: 14px 12px 0 12px; /* Reduced padding */
 }
 .searchInput {
   width: 100%;
-  padding: 10px 15px;
+  padding: 8px 12px; /* Reduced padding */
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 15px;
+  font-size: 14px; /* Reduced from 15px */
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: all 0.2s ease;
 }
@@ -177,33 +192,35 @@
 }
 .toggleRow {
   display: flex;
-  gap: 24px;
+  gap: 20px; /* Reduced from 24px */
   align-items: center;
   margin-top: 2px;
+  font-size: 13px; /* Add font size */
 }
 .orderList {
   flex: 1 1 auto;
   overflow-y: auto;
-  margin: 8px 0;
+  margin: 6px 0; /* Reduced from 8px */
 }
 .orderTable {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
+  font-size: 13px; /* Reduced from 14px */
 }
 .orderTable th, .orderTable td {
   border-bottom: 1px solid #eee;
-  padding: 7px 8px;
+  padding: 6px 6px; /* Reduced padding */
   text-align: left;
-  font-size: 14px;
+  font-size: 13px; /* Reduced from 14px */
 }
 .orderTable th {
   font-weight: 600;
   background: #f2f2f2;
 }
 .totalRow {
-  padding: 10px 14px;
-  font-size: 15px;
+  padding: 8px 12px; /* Reduced padding */
+  font-size: 14px; /* Reduced from 15px */
   font-weight: 600;
   border-top: 1px solid #eee;
   background: #f2f2f2;
@@ -212,17 +229,17 @@
 }
 .buttonRow {
   display: flex;
-  gap: 10px;
-  padding: 10px 14px 0 14px;
+  gap: 8px; /* Reduced from 10px */
+  padding: 8px 12px 0 12px; /* Reduced padding */
 }
 .actionBtn {
   flex: 1;
-  padding: 9px 0;
+  padding: 8px 0; /* Reduced from 9px */
   background: #188a94;
   color: #fff;
   border: none;
   border-radius: 3px;
-  font-size: 15px;
+  font-size: 14px; /* Reduced from 15px */
   font-weight: 500;
   cursor: pointer;
   transition: background 0.17s;
@@ -295,7 +312,7 @@
 }
 
 .cardFormGroup input {
-  padding: 12px;
+  padding: 5px;
   border: none;
   background-color: #eee;
   border-radius: 4px;
@@ -611,4 +628,129 @@
 }
 .removeBtn:hover {
   color: #a31515;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 70px;
+  right: 545px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #464343;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.2s;
+}
+.closeBtn:hover {
+  color: #188a94;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .orderSection {
+    width: 300px;
+    min-width: 260px;
+  }
+  
+  .tilesGrid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-gap: 4px;
+  }
+  
+  .tileName {
+    font-size: 12px;
+  }
+  
+  .tilePrice {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .orderSection {
+    width: 280px;
+    min-width: 240px;
+  }
+  
+  .mainArea {
+    padding-left: 15px;
+  }
+  
+  .tilesGrid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    grid-gap: 3px;
+  }
+  
+  .tab {
+    min-width: 80px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .subTab {
+    min-width: 70px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: 60px;
+    min-width: auto;
+  }
+  
+  .mainArea {
+    flex: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .orderSection {
+    width: 100%;
+    min-width: auto;
+    max-width: none;
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #eee;
+  }
+  
+  .tilesGrid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-gap: 2px;
+    grid-auto-rows: 70px;
+  }
+  
+  .tile {
+    padding: 4px 2px;
+  }
+  
+  .tileName {
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  
+  .tilePrice {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+  
+  .tab {
+    min-width: 70px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  .subTab {
+    min-width: 60px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
 }

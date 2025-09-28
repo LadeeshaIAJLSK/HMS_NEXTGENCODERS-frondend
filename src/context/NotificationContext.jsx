@@ -45,7 +45,7 @@ export const NotificationProvider = ({ children }) => {
   // Check for low stock products on mount and every 2 minutes
   useEffect(() => {
     checkLowStockProducts();
-    const interval = setInterval(checkLowStockProducts, 120000); // 2 minutes
+    const interval = setInterval(checkLowStockProducts, 15000); // 2 minutes
     return () => clearInterval(interval);
   }, []);
 

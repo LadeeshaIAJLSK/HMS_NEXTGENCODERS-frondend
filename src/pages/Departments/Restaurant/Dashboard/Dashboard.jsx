@@ -211,9 +211,7 @@ export default function Dashboard() {
       <Navbar />
       
       <div className="dashboard-content">
-        <div className="dashboard-header">
-          <h1>NexStay Hotel</h1>
-        </div>
+        {/* Removed the dashboard-header section with "NexStay Hotel" */}
         
         <div className="search-filters">
           <div className="search-container">
@@ -249,6 +247,7 @@ export default function Dashboard() {
                 <option>Completed</option>
                 <option>Preparing</option>
                 <option>Payment Pending</option>
+                <option>Accepted</option>
               </select>
             </div>
           </div>
@@ -300,7 +299,7 @@ export default function Dashboard() {
                     <span className={`status-pill ${order.status.toLowerCase().replace(' ', '-')}`}>
                       {order.status}
                     </span>
-                    {order.status === "preparing" && <div className="prep-time">15 Min</div>}
+                    {order.status === "preparing" && <div className="prep-time"></div>}
                   </td>
                   <td className="time-column">
                     <div>{formatDate(order.createdAt)}</div>
@@ -316,7 +315,7 @@ export default function Dashboard() {
                       >
                         View Bill
                       </button>
-                      {order.status === "payment pending" && (
+                      {order.status === "Accepted" && (
                         <button 
                           className="res-dashboard-action-btn res-dashboard-add-btn"
                           onClick={() => handleAddPayment(order)}
