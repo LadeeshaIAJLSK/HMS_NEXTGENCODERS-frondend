@@ -1,8 +1,10 @@
-import React from "react";
-import { Link } from "react-router";
-import "./Navbar.css"; 
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import "./Ressidebar.css";
 
-const Navbar = () => {
+const Ressidebar = () => {
+
+
   return (
     <div className="sidebar">
       <h2>NexStay Hotel</h2>
@@ -12,23 +14,29 @@ const Navbar = () => {
       </div>
       <ul>
         <li>
-          <Link to="/dashboard">📊 Dashboard</Link>
+          <Link to="/restaurant/dashboard">📊 Dashboard</Link>
         </li>
         <li>
-          <Link to="/create-order">📝 Create Order</Link>
+          <Link to="/restaurant/create-order">📝 Create Order</Link>
         </li>
         <li>
-          <Link to="/products">📦 Products</Link>
+          <Link to="/restaurant/products">📦 Products</Link>
         </li>
         <li>
-          <Link to="/category">📂 Category</Link>
+          <Link to="/restaurant/categories">📂 Category</Link>
         </li>
         <li>
-          <Link to="/analytics">📈 Analytics</Link>
+          <Link to="/restaurant/analytics">📈 Analytics</Link>
+        </li>
+        <li>
+          <Link to="/"><span>⏻</span> Logout </Link>
+        </li>
+        <li className="logout-item">
+          
         </li>
       </ul>
     </div>
   );
 };
 
-export default Navbar;
+export default Ressidebar;
